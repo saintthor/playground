@@ -1,0 +1,72 @@
+{
+  "name": "P2P 区块链 Playground",
+  "version": "1.0.0",
+  "buildTime": "2025-07-25T10:35:51.176Z",
+  "buildNumber": "mdior6yx-jnp3ks",
+  "files": [
+    "CHANGELOG.md",
+    "DEPLOYMENT.md",
+    "DEPLOYMENT_GUIDE.md",
+    "LICENSE",
+    "README.md",
+    "build-info.json",
+    "docs/API_REFERENCE.md",
+    "docs/DEPLOYMENT_CHECKLIST.md",
+    "docs/README.md",
+    "docs/TECHNICAL_DOCUMENTATION.md",
+    "docs/USER_MANUAL.md",
+    "index.html",
+    "manifest.json",
+    "package.json",
+    "src/index.js",
+    "src/models/Block.js",
+    "src/models/BlockChain.js",
+    "src/models/Node.js",
+    "src/models/User.js",
+    "src/services/AutoTransferManager.js",
+    "src/services/ChainDefParser.js",
+    "src/services/ChainManager.js",
+    "src/services/Crypto.js",
+    "src/services/ErrorHandler.js",
+    "src/services/Logger.js",
+    "src/services/MsgRouter.js",
+    "src/services/NetManager.js",
+    "src/services/PaymentRateController.js",
+    "src/services/PerformanceOptimizer.js",
+    "src/services/SystemMonitor.js",
+    "src/services/Timer.js",
+    "src/services/Validator.js",
+    "src/styles/main.css",
+    "src/ui/AccessibilityManager.js",
+    "src/ui/CtrlPanel.js",
+    "src/ui/LogPanel.js",
+    "src/ui/MainPanel.js",
+    "src/ui/NotificationManager.js",
+    "src/ui/UIManager.js",
+    "src/ui/VirtualScroll.js"
+  ],
+  "deployment": {
+    "requirements": {
+      "server": "HTTP 服务器 (Apache, Nginx, 或任何静态文件服务器)",
+      "browser": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+"
+    },
+    "instructions": "参见 DEPLOYMENT_GUIDE.md",
+    "verification": {
+      "command": "node scripts/deploy-verify.js",
+      "endpoints": [
+        "/",
+        "/docs/",
+        "/src/index.js",
+        "/manifest.json"
+      ]
+    }
+  },
+  "security": {
+    "contentSecurityPolicy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
+    "headers": [
+      "X-Content-Type-Options: nosniff",
+      "X-Frame-Options: DENY",
+      "X-XSS-Protection: 1; mode=block"
+    ]
+  }
+}

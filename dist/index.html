@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P 区块链 Playground</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <h1>P2P 区块链 Playground</h1>
+        </header>
+        
+        <main class="app-main">
+            <!-- 控制面板 -->
+            <section id="control-panel" class="panel control-panel">
+                <h2>控制面板</h2>
+                <div class="panel-content">
+                    <!-- 控制面板内容将由 CtrlPanel 类动态生成 -->
+                </div>
+            </section>
+            
+            <!-- 主面板 -->
+            <section id="main-panel" class="panel main-panel">
+                <h2>网络状态</h2>
+                <div class="panel-content">
+                    <!-- 主面板内容将由 MainPanel 类动态生成 -->
+                </div>
+            </section>
+            
+            <!-- 日志面板 -->
+            <section id="log-panel" class="panel log-panel">
+                <h2>操作日志</h2>
+                <div class="panel-content">
+                    <!-- 日志面板内容将由 LogPanel 类动态生成 -->
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="src/index.js"></script>
+</body>
+</html>

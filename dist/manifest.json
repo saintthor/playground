@@ -1,0 +1,10 @@
+{
+  "name": "P2P Blockchain Playground",
+  "short_name": "P2P Blockchain",
+  "description": "P2P 网络区块链演示 playground",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff"
+}
