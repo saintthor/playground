@@ -1,402 +1,290 @@
 /**
  * CtrlPanel - 控制面板
- * 负责系统控制、网络参数设置、区块链定义编辑等功能
+ * 负责系统控制、参数设置和区块链定义管理
  */
-export class CtrlPanel {
+class CtrlPanel {
     constructor(uiManager) {
         this.uiManager = uiManager;
         this.app = uiManager.app;
         this.isInitialized = false;
-        
-        // 默认配置
-        this.defaultConfig = {
-            nodeCount: 5,
-            userCount: 10,
-            maxConnections: 3,
+        this.currentConfig = {
+            nodeCount: 30,
+            userCount: 30,
+            maxConnections: 5,
             failureRate: 0.1,
-            paymentRate: 0.2,
+            paymentRate: 0.05,
             tickInterval: 1000,
-            chainDefinition: `# 区块链定义示例
-# 格式: 序列号范围 面值
-1-100 1
+            chainDefinition: `1-100 1
 101-200 5
-201-250 10
-251-300 20`
+201-300 10
+301-400 20
+401-500 50`
         };
-        
-        this.currentConfig = { ...this.defaultConfig };
-        this.systemState = 'stopped'; // stopped, running, paused
     }
-
-    /**
-     * 初始化控制面板
-     */
+    
     init() {
         try {
-            this.renderControlButtons();
-            this.renderNetworkSettings();
-            this.renderChainDefinition();
-            this.renderRuntimeControls();
+            this.render();
             this.setupEventListeners();
-            
             this.isInitialized = true;
             console.log('CtrlPanel 初始化完成');
         } catch (error) {
             console.error('CtrlPanel 初始化失败:', error);
-            throw error;
         }
     }
-
-    /**
-     * 渲染控制按钮
-     */
-    renderControlButtons() {
-        const controlButtonsContainer = document.querySelector('#system-controls .control-buttons');
-        if (!controlButtonsContainer) {
-            throw new Error('控制按钮容器未找到');
-        }
-
-        controlButtonsContainer.innerHTML = `
-            <button id="btn-start" class="btn btn-success" ${this.systemState !== 'stopped' ? 'disabled' : ''}>
-                开始
-            </button>
-            <button id="btn-pause" class="btn btn-warning" ${this.systemState !== 'running' ? 'disabled' : ''}>
-                ${this.systemState === 'paused' ? '继续' : '暂停'}
-            </button>
-            <button id="btn-stop" class="btn btn-danger" ${this.systemState === 'stopped' ? 'disabled' : ''}>
-                结束
-            </button>
-        `;
-    }
-
-    /**
-     * 渲染网络参数设置
-     */
-    renderNetworkSettings() {
-        const settingsContainer = document.querySelector('#network-settings .settings-form');
-        if (!settingsContainer) {
-            throw new Error('网络设置容器未找到');
-        }
-
-        const isRunning = this.systemState !== 'stopped';
+    
+    render() {
+        const controlPanel = document.getElementById('control-panel');
+        if (!controlPanel) return;
         
-        settingsContainer.innerHTML = `
-            <div class="form-group">
-                <label class="form-label" for="node-count">节点数量</label>
-                <input type="number" id="node-count" class="form-control" 
-                       value="${this.currentConfig.nodeCount}" 
-                       min="2" max="20" ${isRunning ? 'disabled' : ''}>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="user-count">虚拟用户数量</label>
-                <input type="number" id="user-count" class="form-control" 
-                       value="${this.currentConfig.userCount}" 
-                       min="2" max="50" ${isRunning ? 'disabled' : ''}>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="max-connections">最大连接数</label>
-                <input type="number" id="max-connections" class="form-control" 
-                       value="${this.currentConfig.maxConnections}" 
-                       min="1" max="10">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="failure-rate">连接故障率 (%)</label>
-                <input type="range" id="failure-rate" class="form-control" 
-                       value="${this.currentConfig.failureRate * 100}" 
-                       min="0" max="50" step="1">
-                <small class="text-muted">当前: ${(this.currentConfig.failureRate * 100).toFixed(0)}%</small>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="payment-rate">支付速率 (%)</label>
-                <input type="range" id="payment-rate" class="form-control" 
-                       value="${this.currentConfig.paymentRate * 100}" 
-                       min="0" max="100" step="5">
-                <small class="text-muted">当前: ${(this.currentConfig.paymentRate * 100).toFixed(0)}%</small>
-            </div>
-        `;
-    }
-
-    /**
-     * 渲染区块链定义编辑器
-     */
-    renderChainDefinition() {
-        const chainDefContainer = document.querySelector('#chain-definition .chain-def-editor');
-        if (!chainDefContainer) {
-            throw new Error('区块链定义容器未找到');
-        }
-
-        const isRunning = this.systemState !== 'stopped';
+        const systemControls = controlPanel.querySelector('#system-controls .control-buttons');
+        const networkSettings = controlPanel.querySelector('#network-settings .settings-form');
+        const chainDefinition = controlPanel.querySelector('#chain-definition .chain-def-editor');
+        const runtimeControls = controlPanel.querySelector('#runtime-controls .runtime-settings');
         
-        chainDefContainer.innerHTML = `
-            <div class="form-group">
-                <label class="form-label" for="chain-def-text">区块链定义</label>
-                <textarea id="chain-def-text" class="form-control" rows="6" 
-                          ${isRunning ? 'disabled' : ''}
-                          placeholder="输入区块链定义...">${this.currentConfig.chainDefinition}</textarea>
-                <small class="text-muted">格式: 序列号范围 面值 (例: 1-100 1)</small>
-            </div>
-            
-            <div class="d-flex gap-2">
-                <button id="btn-validate-def" class="btn btn-secondary btn-sm" ${isRunning ? 'disabled' : ''}>
-                    验证定义
-                </button>
-                <button id="btn-reset-def" class="btn btn-secondary btn-sm" ${isRunning ? 'disabled' : ''}>
-                    重置为默认
-                </button>
-            </div>
-            
-            <div id="def-validation-result" class="mt-2"></div>
-        `;
-    }
-
-    /**
-     * 渲染运行时控制
-     */
-    renderRuntimeControls() {
-        const runtimeContainer = document.querySelector('#runtime-controls .runtime-settings');
-        if (!runtimeContainer) {
-            throw new Error('运行时控制容器未找到');
+        if (systemControls) {
+            this.renderSystemControls(systemControls);
         }
-
-        // 计算滑块值（3秒到无限制的映射）
-        const tickSliderValue = this.getTickSliderValue(this.currentConfig.tickInterval);
-        const tickDisplayText = this.getTickDisplayText(this.currentConfig.tickInterval);
-
-        runtimeContainer.innerHTML = `
+        
+        if (networkSettings) {
+            this.renderNetworkSettings(networkSettings);
+        }
+        
+        if (chainDefinition) {
+            this.renderChainDefinition(chainDefinition);
+        }
+        
+        if (runtimeControls) {
+            this.renderRuntimeControls(runtimeControls);
+        }
+    }
+    
+    renderSystemControls(container) {
+        container.innerHTML = `
+            <button class="btn btn-success" id="start-btn">开始</button>
+            <button class="btn btn-warning" id="pause-btn" disabled>暂停</button>
+            <button class="btn btn-danger" id="stop-btn" disabled>停止</button>
+        `;
+    }
+    
+    renderNetworkSettings(container) {
+        container.innerHTML = `
             <div class="form-group">
-                <label class="form-label" for="tick-interval-slider">滴答时间控制</label>
-                <input type="range" id="tick-interval-slider" class="form-control" 
-                       value="${tickSliderValue}" 
-                       min="0" max="100" step="1">
-                <small class="text-muted">当前: ${tickDisplayText}</small>
-                <div class="tick-range-labels">
-                    <span class="range-label-left">3秒</span>
-                    <span class="range-label-right">无限制</span>
-                </div>
+                <label class="form-label">节点数量</label>
+                <input type="number" class="form-control" id="node-count" value="${this.currentConfig.nodeCount}" min="1" max="100">
             </div>
             
             <div class="form-group">
-                <label class="form-label">运行时参数调整</label>
-                <div class="runtime-params">
-                    <div class="param-row">
-                        <label class="param-label" for="runtime-max-connections">最大连接数</label>
-                        <input type="number" id="runtime-max-connections" class="form-control param-input" 
-                               value="${this.currentConfig.maxConnections}" 
-                               min="1" max="10" ${this.systemState === 'stopped' ? 'disabled' : ''}>
-                    </div>
-                    <div class="param-row">
-                        <label class="param-label" for="runtime-failure-rate">连接故障率 (%)</label>
-                        <input type="range" id="runtime-failure-rate" class="form-control param-slider" 
-                               value="${this.currentConfig.failureRate * 100}" 
-                               min="0" max="50" step="1" ${this.systemState === 'stopped' ? 'disabled' : ''}>
-                        <small class="param-value">${(this.currentConfig.failureRate * 100).toFixed(0)}%</small>
-                    </div>
-                </div>
+                <label class="form-label">虚拟用户数量</label>
+                <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
             </div>
             
             <div class="form-group">
-                <label class="form-label">分叉攻击模拟</label>
-                <div class="attack-controls">
-                    <select id="attack-user" class="form-control" ${this.systemState !== 'running' ? 'disabled' : ''}>
-                        <option value="">选择攻击者</option>
-                        <!-- 用户选项将动态添加 -->
+                <label class="form-label">最大连接数</label>
+                <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">连接故障率 (%)</label>
+                <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
+                <small class="text-muted">当前: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">支付速率 (%)</label>
+                <input type="range" class="form-control" id="payment-rate" value="${this.currentConfig.paymentRate * 100}" min="0" max="20">
+                <small class="text-muted">当前: ${(this.currentConfig.paymentRate * 100).toFixed(1)}%</small>
+            </div>
+        `;
+    }
+    
+    renderChainDefinition(container) {
+        container.innerHTML = `
+            <div class="form-group">
+                <label class="form-label">区块链定义</label>
+                <textarea class="form-control" id="chain-definition" rows="6">${this.currentConfig.chainDefinition}</textarea>
+                <small class="text-muted">格式: 起始序列号-结束序列号 面值</small>
+            </div>
+            
+            <div class="form-group">
+                <button class="btn btn-primary" id="validate-definition">验证定义</button>
+            </div>
+            
+            <div id="def-validation-result"></div>
+        `;
+    }
+    
+    renderRuntimeControls(container) {
+        container.innerHTML = `
+            <div class="form-group">
+                <label class="form-label">滴答时间间隔</label>
+                <input type="range" class="form-control" id="tick-interval" value="1000" min="100" max="3000">
+                <small class="text-muted">当前: 1.0秒</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">分叉攻击测试</label>
+                <div class="d-flex gap-2">
+                    <select class="form-control" id="attack-user">
+                        <option value="">选择用户</option>
                     </select>
-                    <select id="attack-target-chain" class="form-control" ${this.systemState !== 'running' ? 'disabled' : ''}>
-                        <option value="">选择目标区块链</option>
-                        <!-- 区块链选项将动态添加 -->
-                    </select>
-                    <button id="btn-simulate-attack" class="btn btn-danger btn-sm" ${this.systemState !== 'running' ? 'disabled' : ''}>
-                        模拟分叉攻击
-                    </button>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">系统状态</label>
-                <div class="system-status">
-                    <span class="status-indicator status-${this.systemState}"></span>
-                    <span class="status-text">${this.getStatusText()}</span>
-                    <div class="status-details">
-                        <small class="text-muted">滴答数: <span id="current-tick">0</span></small>
-                        <small class="text-muted">运行时间: <span id="runtime">0s</span></small>
-                    </div>
+                    <button class="btn btn-warning btn-sm" id="trigger-attack">触发攻击</button>
                 </div>
             </div>
         `;
     }
-
-    /**
-     * 设置事件监听器
-     */
+    
     setupEventListeners() {
-        // 控制按钮事件
-        document.getElementById('btn-start')?.addEventListener('click', () => this.handleStart());
-        document.getElementById('btn-pause')?.addEventListener('click', () => this.handlePause());
-        document.getElementById('btn-stop')?.addEventListener('click', () => this.handleStop());
-
-        // 网络参数变化事件
-        document.getElementById('node-count')?.addEventListener('change', (e) => {
-            this.currentConfig.nodeCount = parseInt(e.target.value);
-        });
+        // 系统控制按钮
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const stopBtn = document.getElementById('stop-btn');
         
-        document.getElementById('user-count')?.addEventListener('change', (e) => {
-            this.currentConfig.userCount = parseInt(e.target.value);
-        });
+        if (startBtn) startBtn.addEventListener('click', () => this.handleStart());
+        if (pauseBtn) pauseBtn.addEventListener('click', () => this.handlePause());
+        if (stopBtn) stopBtn.addEventListener('click', () => this.handleStop());
         
-        document.getElementById('max-connections')?.addEventListener('input', (e) => {
-            this.currentConfig.maxConnections = parseInt(e.target.value);
-            this.notifyConfigChange('maxConnections', this.currentConfig.maxConnections);
-        });
+        // 网络设置
+        const nodeCount = document.getElementById('node-count');
+        const userCount = document.getElementById('user-count');
+        const maxConnections = document.getElementById('max-connections');
+        const failureRate = document.getElementById('failure-rate');
+        const paymentRate = document.getElementById('payment-rate');
         
-        document.getElementById('failure-rate')?.addEventListener('input', (e) => {
-            this.currentConfig.failureRate = parseFloat(e.target.value) / 100;
-            this.updateRangeDisplay('failure-rate', this.currentConfig.failureRate * 100, '%');
-            this.notifyConfigChange('failureRate', this.currentConfig.failureRate);
-        });
+        if (nodeCount) nodeCount.addEventListener('change', (e) => this.updateConfig('nodeCount', parseInt(e.target.value)));
+        if (userCount) userCount.addEventListener('change', (e) => this.updateConfig('userCount', parseInt(e.target.value)));
+        if (maxConnections) maxConnections.addEventListener('change', (e) => this.updateConfig('maxConnections', parseInt(e.target.value)));
+        if (failureRate) failureRate.addEventListener('input', (e) => this.updateFailureRate(e.target.value));
+        if (paymentRate) paymentRate.addEventListener('input', (e) => this.updatePaymentRate(e.target.value));
         
-        document.getElementById('payment-rate')?.addEventListener('input', (e) => {
-            this.currentConfig.paymentRate = parseFloat(e.target.value) / 100;
-            this.updateRangeDisplay('payment-rate', this.currentConfig.paymentRate * 100, '%');
-            this.notifyConfigChange('paymentRate', this.currentConfig.paymentRate);
-        });
-
-        // 区块链定义事件
-        document.getElementById('chain-def-text')?.addEventListener('input', (e) => {
-            this.currentConfig.chainDefinition = e.target.value;
-        });
+        // 区块链定义
+        const chainDefinition = document.getElementById('chain-definition');
+        const validateBtn = document.getElementById('validate-definition');
         
-        document.getElementById('btn-validate-def')?.addEventListener('click', () => this.validateChainDefinition());
-        document.getElementById('btn-reset-def')?.addEventListener('click', () => this.resetChainDefinition());
-
-        // 运行时控制事件
-        document.getElementById('tick-interval-slider')?.addEventListener('input', (e) => {
-            const sliderValue = parseInt(e.target.value);
-            const tickInterval = this.getTickIntervalFromSlider(sliderValue);
-            this.currentConfig.tickInterval = tickInterval;
-            
-            const displayText = this.getTickDisplayText(tickInterval);
-            this.updateTickSliderDisplay(displayText);
-            this.notifyConfigChange('tickInterval', tickInterval);
-        });
+        if (chainDefinition) chainDefinition.addEventListener('change', (e) => this.updateConfig('chainDefinition', e.target.value));
+        if (validateBtn) validateBtn.addEventListener('click', () => this.validateChainDefinition());
         
-        // 运行时参数调整事件
-        document.getElementById('runtime-max-connections')?.addEventListener('input', (e) => {
-            this.currentConfig.maxConnections = parseInt(e.target.value);
-            this.notifyConfigChange('maxConnections', this.currentConfig.maxConnections);
-        });
+        // 运行时控制
+        const tickInterval = document.getElementById('tick-interval');
+        const triggerAttack = document.getElementById('trigger-attack');
         
-        document.getElementById('runtime-failure-rate')?.addEventListener('input', (e) => {
-            this.currentConfig.failureRate = parseFloat(e.target.value) / 100;
-            this.updateRuntimeParamDisplay('runtime-failure-rate', this.currentConfig.failureRate * 100, '%');
-            this.notifyConfigChange('failureRate', this.currentConfig.failureRate);
-        });
-        
-        document.getElementById('btn-simulate-attack')?.addEventListener('click', () => this.handleSimulateAttack());
+        if (tickInterval) tickInterval.addEventListener('input', (e) => this.updateTickInterval(e.target.value));
+        if (triggerAttack) triggerAttack.addEventListener('click', () => this.triggerAttack());
     }
-
-    /**
-     * 处理开始按钮
-     */
+    
     handleStart() {
-        try {
-            // 验证配置
-            this.validateConfiguration();
-            
-            // 通知应用开始
-            if (this.app && this.app.start) {
-                this.app.start(this.currentConfig);
-            }
-            
-            this.systemState = 'running';
-            this.updateUI();
-            
-            console.log('系统启动', this.currentConfig);
-        } catch (error) {
-            console.error('启动失败:', error);
-            alert(`启动失败: ${error.message}`);
+        console.log('启动系统');
+        if (this.app && this.app.start) {
+            this.app.start(this.currentConfig);
         }
+        
+        // 更新按钮状态
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        
+        if (startBtn) startBtn.disabled = true;
+        if (pauseBtn) pauseBtn.disabled = false;
+        if (stopBtn) stopBtn.disabled = false;
+        
+        // 自动隐藏控制面板
+        this.minimizeControlPanel();
     }
-
-    /**
-     * 处理暂停/继续按钮
-     */
+    
     handlePause() {
-        try {
-            if (this.systemState === 'running') {
-                // 暂停
-                if (this.app && this.app.pause) {
-                    this.app.pause();
-                }
-                this.systemState = 'paused';
-                console.log('系统暂停');
-            } else if (this.systemState === 'paused') {
-                // 继续
-                if (this.app && this.app.resume) {
+        console.log('暂停/继续系统');
+        const pauseBtn = document.getElementById('pause-btn');
+        
+        if (this.app && this.app.isPaused !== undefined) {
+            if (this.app.isPaused) {
+                // 当前是暂停状态，点击后恢复
+                if (this.app.resume) {
                     this.app.resume();
                 }
-                this.systemState = 'running';
-                console.log('系统继续');
+                if (pauseBtn) {
+                    pauseBtn.textContent = '暂停';
+                    pauseBtn.className = 'btn btn-warning';
+                }
+            } else {
+                // 当前是运行状态，点击后暂停
+                if (this.app.pause) {
+                    this.app.pause();
+                }
+                if (pauseBtn) {
+                    pauseBtn.textContent = '继续';
+                    pauseBtn.className = 'btn btn-success';
+                }
             }
-            
-            this.updateUI();
-        } catch (error) {
-            console.error('暂停/继续操作失败:', error);
-            alert(`操作失败: ${error.message}`);
         }
     }
-
-    /**
-     * 处理结束按钮
-     */
+    
     handleStop() {
-        try {
-            // 通知应用停止
-            if (this.app && this.app.stop) {
-                this.app.stop();
-            }
-            
-            this.systemState = 'stopped';
-            this.updateUI();
-            
-            console.log('系统停止');
-        } catch (error) {
-            console.error('停止失败:', error);
-            alert(`停止失败: ${error.message}`);
+        console.log('停止系统');
+        if (this.app && this.app.stop) {
+            this.app.stop();
+        }
+        
+        // 更新按钮状态
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        
+        if (startBtn) startBtn.disabled = false;
+        if (pauseBtn) pauseBtn.disabled = true;
+        if (stopBtn) stopBtn.disabled = true;
+    }
+    
+    updateConfig(key, value) {
+        this.currentConfig[key] = value;
+        console.log('配置更新:', key, value);
+    }
+    
+    updateFailureRate(value) {
+        const rate = parseFloat(value) / 100;
+        this.currentConfig.failureRate = rate;
+        
+        const small = document.querySelector('#failure-rate + small');
+        if (small) {
+            small.textContent = `当前: ${value}%`;
         }
     }
-
-    /**
-     * 处理分叉攻击模拟
-     */
-    handleSimulateAttack() {
-        const attackUserSelect = document.getElementById('attack-user');
-        const attackUser = attackUserSelect?.value;
-        if (!attackUser) {
-            alert('请选择攻击者');
+    
+    updatePaymentRate(value) {
+        const rate = parseFloat(value) / 100;
+        this.currentConfig.paymentRate = rate;
+        
+        const small = document.querySelector('#payment-rate + small');
+        if (small) {
+            small.textContent = `当前: ${value}%`;
+        }
+    }
+    
+    updateTickInterval(value) {
+        this.currentConfig.tickInterval = parseInt(value);
+        
+        const small = document.querySelector('#tick-interval + small');
+        if (small) {
+            small.textContent = `当前: ${(value / 1000).toFixed(1)}秒`;
+        }
+    }
+    
+    triggerAttack() {
+        const attackUser = document.getElementById('attack-user');
+        if (!attackUser || !attackUser.value) {
+            alert('请选择要攻击的用户');
             return;
         }
-
-        try {
-            // 通知应用执行攻击
-            if (this.app && this.app.simulateAttack) {
-                this.app.simulateAttack(attackUser);
-            }
-            
-            console.log('模拟分叉攻击:', attackUser);
-        } catch (error) {
-            console.error('攻击模拟失败:', error);
-            alert(`攻击模拟失败: ${error.message}`);
+        
+        console.log('触发分叉攻击:', attackUser.value);
+        if (this.app && this.app.triggerAttack) {
+            this.app.triggerAttack(attackUser.value);
         }
     }
-
+    
     /**
      * 验证区块链定义
      */
-    validateChainDefinition() {
+    async validateChainDefinition() {
         const resultContainer = document.getElementById('def-validation-result');
         if (!resultContainer) return;
 
@@ -404,12 +292,23 @@ export class CtrlPanel {
             const definition = this.currentConfig.chainDefinition;
             const result = this.parseChainDefinition(definition);
             
-            resultContainer.innerHTML = `
-                <div class="alert alert-success">
-                    <strong>验证成功!</strong><br>
-                    共定义 ${result.ranges.length} 个范围，总计 ${result.totalCount} 个区块链
-                </div>
-            `;
+            // 计算定义文件的SHA256哈希值并转换为base64格式
+            let definitionHash;
+            try {
+                // 使用Crypto服务计算SHA256哈希
+                const hexHash = await Crypto.sha256(definition);
+                // 将十六进制哈希转换为base64格式
+                const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
+            } catch (cryptoError) {
+                console.error('哈希计算失败:', cryptoError);
+                // 使用模拟SHA256哈希并转换为base64
+                const hexHash = Crypto.mockSha256(definition);
+                const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
+            }
+            
+            this.updateValidationResult(result, definitionHash);
         } catch (error) {
             resultContainer.innerHTML = `
                 <div class="alert alert-danger">
@@ -418,116 +317,435 @@ export class CtrlPanel {
             `;
         }
     }
-
+    
     /**
      * 解析区块链定义
      */
     parseChainDefinition(definition) {
-        const lines = definition.split('\n').filter(line => 
-            line.trim() && !line.trim().startsWith('#')
-        );
-        
+        const lines = definition.trim().split('\n');
         const ranges = [];
         let totalCount = 0;
         
         for (const line of lines) {
-            const match = line.trim().match(/^(\d+)-(\d+)\s+(\d+(?:\.\d+)?)$/);
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            
+            const match = trimmed.match(/^(\d+)-(\d+)\s+(\d+)$/);
             if (!match) {
-                throw new Error(`无效的定义行: ${line}`);
+                throw new Error(`无效的定义格式: ${trimmed}`);
             }
             
             const start = parseInt(match[1]);
             const end = parseInt(match[2]);
-            const value = parseFloat(match[3]);
+            const value = parseInt(match[3]);
             
             if (start > end) {
-                throw new Error(`无效的范围: ${start}-${end}`);
+                throw new Error(`起始序列号不能大于结束序列号: ${trimmed}`);
             }
             
-            ranges.push({ start, end, value });
-            totalCount += (end - start + 1);
-        }
-        
-        // 检查范围重叠
-        ranges.sort((a, b) => a.start - b.start);
-        for (let i = 1; i < ranges.length; i++) {
-            if (ranges[i].start <= ranges[i-1].end) {
-                throw new Error(`范围重叠: ${ranges[i-1].start}-${ranges[i-1].end} 和 ${ranges[i].start}-${ranges[i].end}`);
-            }
+            const count = end - start + 1;
+            ranges.push({ start, end, value, count });
+            totalCount += count;
         }
         
         return { ranges, totalCount };
     }
-
+    
     /**
-     * 重置区块链定义
+     * 更新验证结果显示
      */
-    resetChainDefinition() {
-        this.currentConfig.chainDefinition = this.defaultConfig.chainDefinition;
-        const textarea = document.getElementById('chain-def-text');
-        if (textarea) {
-            textarea.value = this.currentConfig.chainDefinition;
-        }
-        
-        // 清除验证结果
+    updateValidationResult(result, definitionHash) {
         const resultContainer = document.getElementById('def-validation-result');
-        if (resultContainer) {
-            resultContainer.innerHTML = '';
-        }
+        if (!resultContainer) return;
+        
+        resultContainer.innerHTML = `
+            <div class="alert alert-success">
+                <strong>验证成功!</strong><br>
+                共定义 ${result.ranges.length} 个范围，总计 ${result.totalCount} 个区块链<br>
+                <strong>定义文件哈希:</strong> <code class="definition-hash base64-data" data-type="hash" data-full-value="${definitionHash}">${definitionHash}</code><br>
+                <small class="text-muted">此哈希值将加入每条区块链的根区块</small>
+            </div>
+        `;
+        
+        // 添加哈希值的鼠标指向事件
+        this.setupHashHoverEvents();
     }
-
+    
     /**
-     * 验证配置
+     * 设置哈希值的鼠标指向事件
      */
-    validateConfiguration() {
-        // 验证网络参数
-        if (this.currentConfig.nodeCount < 2) {
-            throw new Error('节点数量至少为2');
-        }
-        
-        if (this.currentConfig.userCount < 2) {
-            throw new Error('虚拟用户数量至少为2');
-        }
-        
-        if (this.currentConfig.maxConnections < 1) {
-            throw new Error('最大连接数至少为1');
-        }
-        
-        // 验证区块链定义
-        this.parseChainDefinition(this.currentConfig.chainDefinition);
+    setupHashHoverEvents() {
+        const hashElements = document.querySelectorAll('.base64-data[data-type="hash"]');
+        hashElements.forEach(element => {
+            let hoverTimer = null;
+            let floatingDiv = null;
+            
+            element.addEventListener('mouseenter', (e) => {
+                // 清除之前的定时器
+                if (hoverTimer) {
+                    clearTimeout(hoverTimer);
+                }
+                
+                // 设置1秒后显示浮动窗口
+                hoverTimer = setTimeout(() => {
+                    floatingDiv = this.showFloatingVerifyDiv(e.target);
+                }, 1000);
+            });
+            
+            element.addEventListener('mouseleave', (e) => {
+                // 清除定时器
+                if (hoverTimer) {
+                    clearTimeout(hoverTimer);
+                    hoverTimer = null;
+                }
+                
+                // 延迟隐藏浮动窗口，给用户时间移动到浮动窗口上
+                setTimeout(() => {
+                    if (floatingDiv && !floatingDiv.matches(':hover')) {
+                        this.hideFloatingVerifyDiv(floatingDiv);
+                        floatingDiv = null;
+                    }
+                }, 200);
+            });
+        });
     }
-
+    
     /**
-     * 更新滑块显示
+     * 显示浮动验证窗口
      */
-    updateRangeDisplay(elementId, value, unit) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            const small = element.parentElement.querySelector('small');
-            if (small) {
-                small.textContent = `当前: ${Math.round(value)}${unit}`;
+    showFloatingVerifyDiv(element) {
+        const fullValue = element.getAttribute('data-full-value');
+        const dataType = element.getAttribute('data-type');
+        
+        if (!fullValue) return null;
+        
+        // 创建浮动窗口
+        const floatingDiv = document.createElement('div');
+        floatingDiv.className = 'hash-floating-verify';
+        floatingDiv.innerHTML = `
+            <div class="floating-verify-header">
+                <span class="verify-type">${dataType === 'hash' ? 'SHA256 哈希' : 'Base64 数据'}</span>
+                <button class="floating-verify-close">&times;</button>
+            </div>
+            <div class="floating-verify-content">
+                <div class="hash-display">
+                    <label>完整值:</label>
+                    <code class="full-hash">${fullValue}</code>
+                </div>
+                <div class="verify-actions">
+                    <button class="btn btn-sm btn-primary floating-copy-btn">复制验证代码</button>
+                    <button class="btn btn-sm btn-secondary floating-run-btn">运行验证</button>
+                </div>
+                <div class="verify-result" id="floating-verify-result"></div>
+                <div class="verify-code-preview">
+                    <pre><code>${this.generateVerifyCode(fullValue, dataType)}</code></pre>
+                </div>
+            </div>
+        `;
+        
+        // 定位浮动窗口
+        const rect = element.getBoundingClientRect();
+        floatingDiv.style.cssText = `
+            position: fixed;
+            top: ${rect.bottom + 10}px;
+            left: ${rect.left}px;
+            z-index: 10000;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 500px;
+            min-width: 300px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(floatingDiv);
+        
+        // 动画显示
+        setTimeout(() => {
+            floatingDiv.style.opacity = '1';
+            floatingDiv.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // 添加事件监听器
+        this.setupFloatingVerifyEvents(floatingDiv, fullValue, dataType);
+        
+        // 调整位置以确保在视窗内
+        this.adjustFloatingPosition(floatingDiv);
+        
+        return floatingDiv;
+    }
+    
+    /**
+     * 隐藏浮动验证窗口
+     */
+    hideFloatingVerifyDiv(floatingDiv) {
+        if (!floatingDiv || !floatingDiv.parentNode) return;
+        
+        floatingDiv.style.opacity = '0';
+        floatingDiv.style.transform = 'translateY(-10px)';
+        
+        setTimeout(() => {
+            if (floatingDiv.parentNode) {
+                document.body.removeChild(floatingDiv);
             }
+        }, 300);
+    }
+    
+    /**
+     * 设置浮动验证窗口事件
+     */
+    setupFloatingVerifyEvents(floatingDiv, fullValue, dataType) {
+        // 关闭按钮
+        const closeBtn = floatingDiv.querySelector('.floating-verify-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.hideFloatingVerifyDiv(floatingDiv);
+            });
+        }
+        
+        // 复制按钮
+        const copyBtn = floatingDiv.querySelector('.floating-copy-btn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                const code = this.generateVerifyCode(fullValue, dataType);
+                this.copyTextToClipboard(code, '验证代码已复制到剪贴板');
+            });
+        }
+        
+        // 运行按钮
+        const runBtn = floatingDiv.querySelector('.floating-run-btn');
+        if (runBtn) {
+            runBtn.addEventListener('click', () => {
+                this.runFloatingVerification(floatingDiv, fullValue, dataType);
+            });
+        }
+        
+        // 鼠标离开事件
+        floatingDiv.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!floatingDiv.matches(':hover')) {
+                    this.hideFloatingVerifyDiv(floatingDiv);
+                }
+            }, 500);
+        });
+    }
+    
+    /**
+     * 调整浮动窗口位置
+     */
+    adjustFloatingPosition(floatingDiv) {
+        const rect = floatingDiv.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // 如果超出右边界，向左调整
+        if (rect.right > viewportWidth - 20) {
+            const newLeft = viewportWidth - rect.width - 20;
+            floatingDiv.style.left = Math.max(20, newLeft) + 'px';
+        }
+        
+        // 如果超出下边界，向上调整
+        if (rect.bottom > viewportHeight - 20) {
+            const newTop = viewportHeight - rect.height - 20;
+            floatingDiv.style.top = Math.max(20, newTop) + 'px';
+        }
+    }
+    
+    /**
+     * 生成验证代码
+     */
+    generateVerifyCode(value, type) {
+        if (type === 'hash') {
+            return `// 验证 SHA256 哈希值
+const originalData = \`${this.currentConfig.chainDefinition}\`;
+const expectedHash = "${value}";
+
+// 计算哈希值 (异步函数)
+(async function() {
+    try {
+        const hexHash = await Crypto.sha256(originalData);
+        // 将十六进制哈希转换为base64格式
+        const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+        const actualHash = btoa(String.fromCharCode.apply(null, hashBytes));
+        
+        // 验证结果
+        console.log('原始数据:', originalData);
+        console.log('期望哈希 (base64):', expectedHash);
+        console.log('实际哈希 (base64):', actualHash);
+        console.log('验证结果:', actualHash === expectedHash ? '✓ 验证通过' : '✗ 验证失败');
+    } catch (error) {
+        console.error('验证失败:', error);
+    }
+})();`;
+        }
+        
+        return `// 验证 Base64 数据
+const base64Value = "${value}";
+const decoded = atob(base64Value);
+console.log('Base64 值:', base64Value);
+console.log('解码结果:', decoded);`;
+    }
+    
+    /**
+     * 最小化控制面板
+     */
+    minimizeControlPanel() {
+        const controlPanel = document.getElementById('control-panel');
+        if (controlPanel) {
+            controlPanel.classList.add('minimized');
         }
     }
 
     /**
-     * 通知配置变化
+     * 复制验证代码到剪贴板
      */
-    notifyConfigChange(key, value) {
-        if (this.app && this.app.updateConfig) {
-            this.app.updateConfig(key, value);
+    copyToClipboard() {
+        const codeElement = document.getElementById('verify-code');
+        if (!codeElement) return;
+        
+        const code = codeElement.textContent;
+        this.copyTextToClipboard(code, '验证代码已复制到剪贴板');
+    }
+
+    /**
+     * 复制控制台代码到剪贴板
+     */
+    copyConsoleCode() {
+        const consoleCodeElement = document.querySelector('.console-code code');
+        if (!consoleCodeElement) return;
+        
+        const code = consoleCodeElement.textContent;
+        this.copyTextToClipboard(code, '控制台代码已复制到剪贴板');
+    }
+
+    /**
+     * 通用复制文本到剪贴板方法
+     */
+    copyTextToClipboard(text, successMessage) {
+        if (navigator.clipboard && window.isSecureContext) {
+            // 使用现代 Clipboard API
+            navigator.clipboard.writeText(text).then(() => {
+                this.showCopyFeedback(successMessage, 'success');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                this.fallbackCopyTextToClipboard(text, successMessage);
+            });
+        } else {
+            // 回退到传统方法
+            this.fallbackCopyTextToClipboard(text, successMessage);
         }
     }
 
     /**
-     * 获取状态文本
+     * 回退复制方法
      */
-    getStatusText() {
-        switch (this.systemState) {
-            case 'stopped': return '已停止';
-            case 'running': return '运行中';
-            case 'paused': return '已暂停';
-            default: return '未知状态';
+    fallbackCopyTextToClipboard(text, successMessage) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                this.showCopyFeedback(successMessage, 'success');
+            } else {
+                this.showCopyFeedback('复制失败，请手动复制', 'error');
+            }
+        } catch (err) {
+            console.error('复制失败:', err);
+            this.showCopyFeedback('复制失败，请手动复制', 'error');
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+
+    /**
+     * 显示复制反馈
+     */
+    showCopyFeedback(message, type) {
+        // 创建反馈提示
+        const feedback = document.createElement('div');
+        feedback.className = `copy-feedback ${type}`;
+        feedback.textContent = message;
+        feedback.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            z-index: 10000;
+            transition: all 0.3s ease;
+            ${type === 'success' ? 'background: #28a745;' : 'background: #dc3545;'}
+        `;
+        
+        document.body.appendChild(feedback);
+        
+        // 3秒后自动移除
+        setTimeout(() => {
+            if (feedback.parentNode) {
+                feedback.style.opacity = '0';
+                feedback.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    document.body.removeChild(feedback);
+                }, 300);
+            }
+        }, 3000);
+    }
+    
+    /**
+     * 运行浮动验证
+     */
+    async runFloatingVerification(floatingDiv, fullValue, dataType) {
+        const resultElement = floatingDiv.querySelector('#floating-verify-result');
+        if (!resultElement) return;
+        
+        resultElement.innerHTML = '<div class="alert alert-info">验证中...</div>';
+        
+        try {
+            if (dataType === 'hash') {
+                // 验证哈希值
+                const originalData = this.currentConfig.chainDefinition;
+                const expectedHash = fullValue;
+                
+                const hexHash = await Crypto.sha256(originalData);
+                const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                const actualHash = btoa(String.fromCharCode.apply(null, hashBytes));
+                
+                const isValid = actualHash === expectedHash;
+                
+                resultElement.innerHTML = `
+                    <div class="alert alert-${isValid ? 'success' : 'danger'}">
+                        <strong>验证结果:</strong> ${isValid ? '✓ 验证通过' : '✗ 验证失败'}<br>
+                        <small>期望: ${expectedHash}</small><br>
+                        <small>实际: ${actualHash}</small>
+                    </div>
+                `;
+            } else {
+                // 验证Base64数据
+                const decoded = atob(fullValue);
+                resultElement.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>Base64解码结果:</strong><br>
+                        <code>${decoded}</code>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultElement.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>验证失败:</strong> ${error.message}
+                </div>
+            `;
         }
     }
 
@@ -535,263 +753,41 @@ export class CtrlPanel {
      * 更新用户选择列表
      */
     updateUserList(users) {
-        const attackUserSelect = document.getElementById('attack-user');
-        if (!attackUserSelect) return;
-
-        attackUserSelect.innerHTML = '<option value="">选择攻击者</option>';
+        const attackUser = document.getElementById('attack-user');
+        if (!attackUser || !users) return;
         
-        if (users && users.length > 0) {
-            users.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.textContent = `用户 ${user.id} (${user.publicKey.substring(0, 8)}...)`;
-                attackUserSelect.appendChild(option);
-            });
-        }
-    }
-
-    /**
-     * 更新整个UI
-     */
-    updateUI() {
-        this.renderControlButtons();
-        this.renderNetworkSettings();
-        this.renderChainDefinition();
-        this.renderRuntimeControls();
-        this.setupEventListeners();
-    }
-
-    /**
-     * 获取当前配置
-     */
-    getConfig() {
-        return { ...this.currentConfig };
-    }
-
-    /**
-     * 设置系统状态
-     */
-    setSystemState(state) {
-        this.systemState = state;
-        this.updateUI();
-    }
-
-    /**
-     * 获取滑块值（将滴答间隔映射到0-100的滑块值）
-     * 3秒(3000ms) -> 0, 无限制(0ms) -> 100
-     */
-    getTickSliderValue(tickInterval) {
-        if (tickInterval <= 0) return 100; // 无限制
-        if (tickInterval >= 3000) return 0; // 3秒
+        attackUser.innerHTML = '<option value="">选择用户</option>';
         
-        // 使用对数映射来提供更好的用户体验
-        // 将3000ms到1ms映射到0-100
-        const minMs = 1;
-        const maxMs = 3000;
-        const logMin = Math.log(minMs);
-        const logMax = Math.log(maxMs);
-        const logValue = Math.log(Math.max(minMs, tickInterval));
-        
-        // 反转映射：较大的间隔对应较小的滑块值
-        return Math.round(100 - ((logValue - logMin) / (logMax - logMin)) * 100);
-    }
-
-    /**
-     * 从滑块值获取滴答间隔
-     * 0 -> 3000ms, 100 -> 0ms (无限制)
-     */
-    getTickIntervalFromSlider(sliderValue) {
-        if (sliderValue >= 100) return 0; // 无限制
-        if (sliderValue <= 0) return 3000; // 3秒
-        
-        // 使用对数映射
-        const minMs = 1;
-        const maxMs = 3000;
-        const logMin = Math.log(minMs);
-        const logMax = Math.log(maxMs);
-        
-        // 反转映射：较大的滑块值对应较小的间隔
-        const normalizedValue = (100 - sliderValue) / 100;
-        const logValue = logMin + normalizedValue * (logMax - logMin);
-        
-        return Math.round(Math.exp(logValue));
-    }
-
-    /**
-     * 获取滴答时间的显示文本
-     */
-    getTickDisplayText(tickInterval) {
-        if (tickInterval <= 0) {
-            return '无限制';
-        } else if (tickInterval >= 1000) {
-            return `${(tickInterval / 1000).toFixed(1)}秒`;
-        } else {
-            return `${tickInterval}毫秒`;
-        }
-    }
-
-    /**
-     * 更新滴答滑块显示
-     */
-    updateTickSliderDisplay(displayText) {
-        const slider = document.getElementById('tick-interval-slider');
-        if (slider) {
-            const small = slider.parentElement.querySelector('small');
-            if (small) {
-                small.textContent = `当前: ${displayText}`;
-            }
-        }
-    }
-
-    /**
-     * 更新运行时参数显示
-     */
-    updateRuntimeParamDisplay(elementId, value, unit) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            const paramValue = element.parentElement.querySelector('.param-value');
-            if (paramValue) {
-                paramValue.textContent = `${Math.round(value)}${unit}`;
-            }
-        }
-    }
-
-    /**
-     * 更新区块链选择列表
-     */
-    updateChainList(blockchains) {
-        const attackChainSelect = document.getElementById('attack-target-chain');
-        if (!attackChainSelect) return;
-
-        attackChainSelect.innerHTML = '<option value="">选择目标区块链</option>';
-        
-        if (blockchains && blockchains.length > 0) {
-            blockchains.forEach(chain => {
-                const option = document.createElement('option');
-                option.value = chain.id;
-                option.textContent = `区块链 ${chain.id.substring(0, 8)}... (面值: ${chain.value})`;
-                attackChainSelect.appendChild(option);
-            });
-        }
-    }
-
-    /**
-     * 更新系统状态显示
-     */
-    updateSystemStatus(statusData) {
-        const currentTickElement = document.getElementById('current-tick');
-        const runtimeElement = document.getElementById('runtime');
-        
-        if (currentTickElement && statusData.currentTick !== undefined) {
-            currentTickElement.textContent = statusData.currentTick;
-        }
-        
-        if (runtimeElement && statusData.runtime !== undefined) {
-            const runtimeSeconds = Math.floor(statusData.runtime / 1000);
-            const minutes = Math.floor(runtimeSeconds / 60);
-            const seconds = runtimeSeconds % 60;
-            
-            if (minutes > 0) {
-                runtimeElement.textContent = `${minutes}分${seconds}秒`;
-            } else {
-                runtimeElement.textContent = `${seconds}秒`;
-            }
-        }
-    }
-
-    /**
-     * 处理分叉攻击模拟（增强版）
-     */
-    handleSimulateAttack() {
-        const attackUserSelect = document.getElementById('attack-user');
-        const attackChainSelect = document.getElementById('attack-target-chain');
-        
-        const attackUser = attackUserSelect?.value;
-        const targetChain = attackChainSelect?.value;
-        
-        if (!attackUser) {
-            alert('请选择攻击者');
-            return;
-        }
-
         try {
-            // 通知应用执行攻击
-            if (this.app && this.app.simulateAttack) {
-                this.app.simulateAttack(attackUser, targetChain);
+            // 检查 users 是否是 Map 对象
+            if (users instanceof Map) {
+                for (const [userId, user] of users) {
+                    const option = document.createElement('option');
+                    option.value = userId;
+                    option.textContent = `${userId} (资产: ${user.totalAssets || 0})`;
+                    attackUser.appendChild(option);
+                }
+            } else if (Array.isArray(users)) {
+                // 如果是数组
+                users.forEach((user, index) => {
+                    const option = document.createElement('option');
+                    option.value = user.id || `user${index}`;
+                    option.textContent = `${user.id || `user${index}`} (资产: ${user.totalAssets || 0})`;
+                    attackUser.appendChild(option);
+                });
+            } else if (typeof users === 'object') {
+                // 如果是普通对象
+                Object.entries(users).forEach(([userId, user]) => {
+                    const option = document.createElement('option');
+                    option.value = userId;
+                    option.textContent = `${userId} (资产: ${user.totalAssets || 0})`;
+                    attackUser.appendChild(option);
+                });
+            } else {
+                console.warn('updateUserList: users 参数格式不正确', users);
             }
-            
-            console.log('模拟分叉攻击:', { attackUser, targetChain });
-            
-            // 显示攻击确认信息
-            const attackInfo = targetChain ? 
-                `用户 ${attackUser} 对区块链 ${targetChain.substring(0, 8)}... 发起分叉攻击` :
-                `用户 ${attackUser} 发起随机分叉攻击`;
-            
-            // 可以在这里添加攻击日志或状态更新
-            console.log('攻击信息:', attackInfo);
-            
         } catch (error) {
-            console.error('攻击模拟失败:', error);
-            alert(`攻击模拟失败: ${error.message}`);
+            console.error('更新用户列表失败:', error);
         }
-    }
-
-    /**
-     * 启用/禁用运行时控制
-     */
-    setRuntimeControlsEnabled(enabled) {
-        const runtimeControls = [
-            'tick-interval-slider',
-            'runtime-max-connections', 
-            'runtime-failure-rate',
-            'attack-user',
-            'attack-target-chain',
-            'btn-simulate-attack'
-        ];
-        
-        runtimeControls.forEach(controlId => {
-            const element = document.getElementById(controlId);
-            if (element) {
-                element.disabled = !enabled;
-            }
-        });
-    }
-
-    /**
-     * 获取运行时控制状态
-     */
-    getRuntimeControlsState() {
-        return {
-            tickInterval: this.currentConfig.tickInterval,
-            maxConnections: this.currentConfig.maxConnections,
-            failureRate: this.currentConfig.failureRate,
-            systemState: this.systemState,
-            tickSliderValue: this.getTickSliderValue(this.currentConfig.tickInterval),
-            tickDisplayText: this.getTickDisplayText(this.currentConfig.tickInterval)
-        };
-    }
-
-    /**
-     * 重置运行时控制到默认值
-     */
-    resetRuntimeControls() {
-        this.currentConfig.tickInterval = this.defaultConfig.tickInterval;
-        this.currentConfig.maxConnections = this.defaultConfig.maxConnections;
-        this.currentConfig.failureRate = this.defaultConfig.failureRate;
-        
-        // 重新渲染运行时控制部分
-        this.renderRuntimeControls();
-        this.setupEventListeners();
-        
-        console.log('运行时控制已重置为默认值');
-    }
-
-    /**
-     * 销毁控制面板
-     */
-    destroy() {
-        // 移除事件监听器会在重新渲染时自动处理
-        this.isInitialized = false;
-        console.log('CtrlPanel 已销毁');
     }
 }

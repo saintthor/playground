@@ -41,6 +41,12 @@ body {
     gap: 1rem;
     padding: 1rem;
     max-height: calc(100vh - 80px);
+    transition: grid-template-columns 0.3s ease;
+}
+
+/* 控制面板最小化时的布局 */
+.app-main:has(.control-panel.minimized) {
+    grid-template-columns: 60px 1fr 350px;
 }
 
 /* 面板通用样式 */
@@ -72,12 +78,52 @@ body {
 /* 控制面板样式 */
 .control-panel {
     min-width: 280px;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 .control-panel .panel-content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+/* 控制面板最小化状态 */
+.control-panel.minimized {
+    min-width: 60px;
+    width: 60px;
+    cursor: pointer;
+}
+
+.control-panel.minimized .panel-content {
+    display: none;
+}
+
+.control-panel.minimized h2 {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.control-panel.minimized:hover {
+    min-width: 280px;
+    width: 280px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.control-panel.minimized:hover .panel-content {
+    display: flex;
+}
+
+.control-panel.minimized:hover h2 {
+    writing-mode: horizontal-tb;
+    text-orientation: initial;
+    padding: 1rem;
+    text-align: left;
+    font-size: 1.1rem;
 }
 
 /* 主面板样式 */
@@ -450,6 +496,154 @@ body {
     margin-bottom: 0.75rem;
 }
 
+/* 网络图容器样式 */
+.network-graph-container {
+    width: 100%;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.network-graph {
+    width: 100%;
+    min-height: 350px;
+    background: #f8f9fa;
+}
+
+.network-graph-display {
+    width: 100%;
+    height: 100%;
+}
+
+.network-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 0.75rem;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.9rem;
+}
+
+.network-stat {
+    color: #495057;
+    font-weight: 500;
+}
+
+.network-visual {
+    width: 100%;
+    height: 300px;
+    position: relative;
+}
+
+#d3-network-container {
+    width: 100% !important;
+    height: 300px !important;
+}
+
+/* 信息区域样式 */
+.info-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* 用户网格样式 */
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+}
+
+.user-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.375rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+    transform: translateY(-2px);
+}
+
+.user-card.transferring {
+    border-color: #ffc107;
+    background: #fff3cd;
+}
+
+.user-id {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.user-assets {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.transfer-indicator {
+    font-size: 0.75rem;
+    color: #856404;
+    margin-top: 0.25rem;
+}
+
+/* 区块链网格样式 */
+.chains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 0.5rem;
+}
+
+.chain-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.375rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.chain-card:hover {
+    border-color: #17a2b8;
+    box-shadow: 0 2px 8px rgba(23,162,184,0.15);
+    transform: translateY(-2px);
+}
+
+.chain-card.transferring {
+    border-color: #ffc107;
+    background: #fff3cd;
+}
+
+.chain-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #17a2b8;
+    margin-bottom: 0.5rem;
+}
+
+.chain-status {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
 /* 日志面板特定样式 */
 .log-controls {
     margin-bottom: 1rem;
@@ -463,14 +657,19 @@ body {
 }
 
 .log-entry {
-    padding: 0.5rem;
-    border-bottom: 1px solid #f8f9fa;
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid #f1f3f4;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: #fafbfc;
+    min-height: 32px;
 }
 
 .log-entry:hover {
-    background-color: #f8f9fa;
+    background-color: #f0f2f5;
 }
 
 .log-entry:last-child {
@@ -478,14 +677,19 @@ body {
 }
 
 .log-timestamp {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #6c757d;
-    margin-bottom: 0.25rem;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    min-width: 80px;
+    flex-shrink: 0;
 }
 
 .log-message {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #333;
+    flex: 1;
+    line-height: 1.3;
 }
 
 .log-type-block { border-left: 3px solid #007bff; }
@@ -1565,8 +1769,154 @@ small.text-muted {
 .log-stats span:last-child {
     color: #007bff;
     font-weight: 600;
-}/* 验证代
-码对话框样式 */
+}
+
+/* 浮动验证窗口样式 */
+.hash-floating-verify {
+    position: fixed;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 500px;
+    min-width: 300px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.floating-verify-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 8px 8px 0 0;
+}
+
+.verify-type {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.floating-verify-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.floating-verify-close:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.floating-verify-content {
+    padding: 1rem;
+}
+
+.hash-display {
+    margin-bottom: 1rem;
+}
+
+.hash-display label {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.full-hash {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    word-break: break-all;
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+.verify-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.verify-code-preview {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.verify-code-preview pre {
+    margin: 0;
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.verify-code-preview code {
+    background: none;
+    padding: 0;
+    color: #495057;
+}
+
+.verify-result {
+    margin-bottom: 1rem;
+}
+
+.verify-result .alert {
+    margin-bottom: 0;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.verify-result .alert small {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    word-break: break-all;
+}
+
+/* 复制反馈样式 */
+.copy-feedback {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    z-index: 10000;
+    transition: all 0.3s ease;
+}
+
+.copy-feedback.success {
+    background: #28a745;
+}
+
+.copy-feedback.error {
+    background: #dc3545;
+}
+
+/* 验证代码对话框样式 */
 .verify-code-dialog {
     position: fixed;
     top: 0;
@@ -2008,4 +2358,1564 @@ small.text-muted {
     border-radius: 50%;
     animation: spin 1s linear infinite;
     color: white;
+}
+
+/* 控制面板增强样式 */
+.control-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.control-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.control-section h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.control-buttons .btn {
+    flex: 1;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.85rem;
+}
+
+.settings-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.settings-form label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.settings-form input, .settings-form textarea, .settings-form select {
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.85rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* 滴答时间控制样式 */
+.tick-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.range-label-left, .range-label-right {
+    font-weight: 500;
+}
+
+/* 系统状态详细信息 */
+.status-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-left: auto;
+}
+
+.status-details small {
+    font-size: 0.7rem;
+    line-height: 1.2;
+}
+
+/* 主面板数据显示样式 */
+.user-assets-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.user-asset-card {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 0.75rem;
+    background: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.user-asset-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+}
+
+.user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.user-id {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+}
+
+.user-key {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-family: monospace;
+}
+
+.user-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.85rem;
+}
+
+.asset-value {
+    color: #28a745;
+    font-size: 0.9rem;
+}
+
+/* 区块链归属网格 */
+.chain-ownership-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.value-group {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.value-header {
+    background: #f8f9fa;
+    padding: 0.5rem 0.75rem;
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.chains-in-value {
+    padding: 0.75rem;
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.chain-ownership-card {
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.5rem;
+    background: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.chain-ownership-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.15);
+}
+
+.chain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.chain-id {
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: monospace;
+}
+
+.chain-serial {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+.chain-owner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.owner-label {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+.owner-id {
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.owner-id:hover {
+    text-decoration: underline;
+}
+
+.more-chains {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-style: italic;
+    padding: 0.5rem;
+    border: 1px dashed #e9ecef;
+    border-radius: 4px;
+}
+
+/* 网络状态网格 */
+.network-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+}
+
+.network-stat-card {
+    text-align: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.network-stat-card h6 {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.network-stat-card .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #495057;
+}
+
+/* 新的主面板布局样式 */
+.main-section.network-section {
+    height: 180px;
+    margin-bottom: 1rem;
+}
+
+.main-section.users-section {
+    height: 200px;
+    margin-bottom: 1rem;
+}
+
+.main-section.chains-section {
+    flex: 1;
+    min-height: 150px;
+}
+
+.network-graph-display {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.network-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.network-stat {
+    font-size: 0.8rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.network-visual {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.network-placeholder {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* 用户网格样式 */
+.users-container {
+    height: calc(100% - 2rem);
+    overflow-y: auto;
+}
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.user-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.user-card:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.user-card.transferring {
+    border-color: #ffc107;
+    background: #fff3cd;
+    animation: pulse-transfer 1s infinite;
+}
+
+@keyframes pulse-transfer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.user-card .user-id {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.user-card .user-assets {
+    font-size: 0.8rem;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.transfer-indicator {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ffc107;
+    color: #212529;
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* 区块链网格样式 */
+.chains-container {
+    height: calc(100% - 2rem);
+    overflow-y: auto;
+}
+
+.chains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.chain-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.chain-card:hover {
+    border-color: #17a2b8;
+    background: #d1ecf1;
+}
+
+.chain-card.transferring {
+    border-color: #dc3545;
+    background: #f8d7da;
+    animation: pulse-transfer 1s infinite;
+}
+
+.chain-card .chain-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.chain-card .chain-status {
+    font-size: 0.6rem;
+    color: #6c757d;
+}
+
+.chain-card.transferring .chain-status {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* 控制面板最小化功能 */
+.control-panel {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.control-panel.minimized {
+    width: 30px !important;
+    min-width: 30px;
+    overflow: hidden;
+}
+
+.control-panel.minimized .panel-content {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-100%);
+}
+
+.control-panel.minimized h2 {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.control-panel.minimized:hover {
+    width: 300px !important;
+}
+
+.control-panel.minimized:hover .panel-content {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+.control-panel.minimized:hover h2 {
+    writing-mode: horizontal-tb;
+    text-orientation: initial;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+/* 定义文件哈希显示样式 */
+.definition-hash {
+    font-family: 'Courier New', monospace;
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    word-break: break-all;
+}/*
+ 详情弹窗样式 */
+.detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.detail-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.detail-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.detail-modal-content {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.detail-modal.show .detail-modal-content {
+    transform: scale(1);
+}
+
+.detail-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-modal-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.detail-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.detail-modal-close:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.detail-modal-body {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.detail-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    align-items: center;
+}
+
+.detail-info-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.detail-info-value {
+    font-size: 0.9rem;
+    color: #495057;
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+}
+
+.detail-info-value.detail-chain-value {
+    color: #28a745;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.detail-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+}
+
+.detail-list-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.detail-list-value {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.detail-block-type {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.detail-block-type.root {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.detail-block-type.ownership {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.detail-block-type.transfer {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+/* 弹窗中的转账状态样式 */
+.detail-info-value.transferring {
+    color: #ffc107 !important;
+    font-weight: 600;
+    animation: pulse-text 1s infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* 用户和区块链卡片点击样式 */
+.user-card, .chain-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-card:hover, .chain-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.user-card.transferring, .chain-card.transferring {
+    border-color: #ffc107;
+    background-color: #fff8e1;
+}
+
+/* 网络图容器样式 */
+.network-graph-display {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.network-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.network-stat {
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.network-visual {
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background: white;
+}
+
+#d3-network-container {
+    position: relative;
+}
+
+/* D3.js 网络图样式 */
+.links line {
+    stroke-opacity: 0.8;
+}
+
+.nodes circle {
+    cursor: pointer;
+}
+
+.nodes text {
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 用户和区块链网格样式 - 进一步缩小版本 */
+.users-grid, .chains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.user-card, .chain-card {
+    padding: 0.25rem;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background: white;
+    text-align: center;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.125rem;
+    font-size: 0.75rem;
+}
+
+.user-id, .chain-id {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.7rem;
+}
+
+.user-assets, .chain-value {
+    font-weight: 500;
+    color: #28a745;
+    font-size: 0.8rem;
+}
+
+.chain-status {
+    font-size: 0.6rem;
+    color: #6c757d;
+}
+
+.user-id, .chain-value {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.8rem;
+}
+
+.user-assets, .chain-status {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+.transfer-indicator {
+    font-size: 0.6rem;
+    color: #ffc107;
+    font-weight: 600;
+    background: #fff8e1;
+    padding: 1px 4px;
+    border-radius: 2px;
+}/* 验
+证代码对话框完整样式 */
+.verify-code-tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.verify-code-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.verify-code-tab:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.verify-code-tab.active {
+    color: #007bff;
+    background: white;
+    border-bottom-color: #007bff;
+}
+
+.verify-code-tab-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.verify-code-tab-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    padding: 1.5rem;
+}
+
+.verify-code-tab-pane.active {
+    opacity: 1;
+    visibility: visible;
+    position: relative;
+}
+
+.code-editor {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.code-editor pre {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.code-editor code {
+    font-family: 'Courier New', monospace;
+    color: #495057;
+}
+
+.code-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.code-result {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 1rem;
+    min-height: 60px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.console-instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.console-code {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+.console-code pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #495057;
+}
+/
+* 响应式调整 - 主面板 */
+@media (max-width: 768px) {
+    .info-sections {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .network-graph-container {
+        margin-bottom: 0.5rem;
+    }
+    
+    .network-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .chains-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .network-visual {
+        height: 250px;
+    }
+    
+    #d3-network-container {
+        height: 250px !important;
+    }
+    
+    .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .chains-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+}
+
+/* 浮动验证窗口响应式 */
+@media (max-width: 768px) {
+    .hash-floating-verify {
+        max-width: 90vw;
+        min-width: 280px;
+    }
+    
+    .verify-code-preview {
+        max-height: 150px;
+    }
+    
+    .verify-actions {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+
+/* 网络图优化 */
+.network-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+/* 确保网络图容器占满宽度 */
+.main-panel .panel-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.network-graph-container {
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    flex: 2; /* 增加网络图的权重 */
+    min-height: 500px; /* 增加最小高度 */
+    display: flex;
+    flex-direction: column;
+}
+
+.network-graph {
+    width: 100%;
+    height: 100%;
+    min-height: 500px; /* 增加最小高度 */
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.network-graph-display {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.network-visual {
+    flex: 1;
+    width: 100%;
+    min-height: 450px; /* 增加网络图可视区域高度 */
+}
+
+#d3-network-container {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 450px !important;
+}
+
+.info-sections {
+    padding: 1rem;
+    flex: 1; /* 减少用户和区块链区域的权重 */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    max-height: 300px; /* 限制最大高度 */
+}
+
+.network-stats {
+    border-radius: 0;
+    flex-shrink: 0;
+    padding: 0.75rem;
+}
+/* 日志面
+板样式 */
+.log-controls {
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.log-display {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background: #ffffff; /* 使用白色背景，不会太深 */
+    max-height: calc(100vh - 200px);
+}
+
+.log-entry {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 4px;
+    border-left: 3px solid #e9ecef;
+    background: #f8f9fa; /* 浅灰色背景 */
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.log-entry:last-child {
+    margin-bottom: 0;
+}
+
+.log-timestamp {
+    color: #6c757d;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    font-family: monospace;
+}
+
+.log-message {
+    color: #495057;
+}
+
+/* 不同类型日志的样式 */
+.log-type-block {
+    border-left-color: #007bff;
+    background: #e3f2fd;
+}
+
+.log-type-network {
+    border-left-color: #28a745;
+    background: #e8f5e8;
+}
+
+.log-type-security {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+}
+
+.log-type-system {
+    border-left-color: #ffc107;
+    background: #fff8e1;
+}
+
+.log-filters select {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.log-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.log-pagination .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+#log-page-info {
+    font-size: 0.75rem;
+    margin: 0 0.25rem;
+}/
+* 详情弹窗样式 */
+.detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.detail-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.detail-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.detail-modal-content {
+    position: relative;
+    margin: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    max-height: 90vh;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.detail-modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.detail-modal-header h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #495057;
+}
+
+.detail-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.detail-modal-close:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.detail-modal-body {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+/* 用户详情样式 */
+.user-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.user-basic-info,
+.user-chains-section,
+.user-logs-section {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.user-basic-info h5,
+.user-chains-section h5,
+.user-logs-section h5 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.detail-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.detail-info-label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.detail-info-value {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-family: monospace;
+}
+
+.detail-info-value.transferring {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.crypto-key,
+.crypto-hash {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    background: #e9ecef;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: help;
+}
+
+/* 区块链列表样式 */
+.chains-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.chain-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chain-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.chain-id {
+    font-family: monospace;
+    font-weight: 600;
+    color: #495057;
+}
+
+.chain-value {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.chain-status {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #d4edda;
+    color: #155724;
+}
+
+.chain-status.transferring {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* 日志列表样式 */
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.log-item {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border-left: 3px solid #e9ecef;
+    background: #f8f9fa;
+    font-size: 0.85rem;
+}
+
+.log-item.log-type-block {
+    border-left-color: #007bff;
+    background: #e3f2fd;
+}
+
+.log-item.log-type-network {
+    border-left-color: #28a745;
+    background: #e8f5e8;
+}
+
+.log-item.log-type-security {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+}
+
+.log-timestamp {
+    color: #6c757d;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    font-family: monospace;
+}
+
+.log-message {
+    color: #495057;
+}
+
+/* 区块链详情样式 */
+.chain-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.chain-basic-info,
+.root-block-section,
+.chain-blocks-section {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.block-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.block-verify-section {
+    display: flex;
+    justify-content: center;
+}
+
+.blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.block-item {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+.block-item.root-block {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.block-index {
+    font-weight: 600;
+    color: #495057;
+}
+
+.block-type {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #d4edda;
+    color: #155724;
+}
+
+.block-item.root-block .block-type {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.block-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.block-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+}
+
+.field-label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.85rem;
+}
+
+.field-value {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-family: monospace;
+}
+
+/* 区块验证样式 */
+.block-verification-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.verification-info {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+.verification-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.verification-result {
+    min-height: 60px;
+}
+
+.verification-details {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.verification-details div {
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .detail-modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .detail-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .block-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-modal-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-modal-content {
+        width: 98%;
+        max-height: 98vh;
+    }
+    
+    .verification-actions {
+        flex-direction: column;
+    }
+    
+    .chain-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
 }

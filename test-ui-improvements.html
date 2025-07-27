@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI 改进测试</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <h1>P2P 区块链 Playground - UI 改进测试</h1>
+        </header>
+
+        <main class="app-main">
+            <!-- 控制面板 -->
+            <section id="control-panel" class="panel control-panel">
+                <h2>控制面板</h2>
+                <div class="panel-content">
+                    <div class="control-section">
+                        <h3>测试哈希验证</h3>
+                        <p>测试哈希值: <span class="base64-data" data-type="hash" data-full-value="a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890">a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890</span></p>
+                        <p>测试Base64: <span class="base64-data" data-type="signature" data-full-value="dGVzdCBkYXRh">dGVzdCBkYXRh</span></p>
+                        <button id="test-copy" class="btn btn-primary">测试复制功能</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 主面板 -->
+            <section id="main-panel" class="panel main-panel">
+                <div class="panel-content">
+                    <!-- 网络图容器 -->
+                    <div class="network-graph-container">
+                        <div class="network-graph" id="network-graph">
+                            <div class="network-graph-display">
+                                <div class="network-stats">
+                                    <span class="network-stat">节点: 30</span>
+                                    <span class="network-stat">连接: 45</span>
+                                    <span class="network-stat">故障: 5</span>
+                                </div>
+                                <div class="network-visual">
+                                    <div id="d3-network-container" style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                        <p>网络图将在这里显示</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 信息区域 -->
+                    <div class="info-sections">
+                        <div class="main-section users-section">
+                            <h3>用户 (30)</h3>
+                            <div class="users-container">
+                                <div class="users-grid">
+                                    <div class="user-card" data-user-id="user1">
+                                        <div class="user-id">User1</div>
+                                        <div class="user-assets">150</div>
+                                    </div>
+                                    <div class="user-card transferring" data-user-id="user2">
+                                        <div class="user-id">User2</div>
+                                        <div class="user-assets">200</div>
+                                        <div class="transfer-indicator">转账中</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="main-section chains-section">
+                            <h3>区块链 (100)</h3>
+                            <div class="chains-container">
+                                <div class="chains-grid">
+                                    <div class="chain-card" data-chain-id="chain1">
+                                        <div class="chain-value">1</div>
+                                        <div class="chain-status">正常</div>
+                                    </div>
+                                    <div class="chain-card transferring" data-chain-id="chain2">
+                                        <div class="chain-value">5</div>
+                                        <div class="chain-status">转移中</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 日志面板 -->
+            <section id="log-panel" class="panel log-panel">
+                <h2>操作日志</h2>
+                <div class="panel-content">
+                    <div class="log-item">
+                        <div class="log-header">
+                            <span class="log-type log-type-block">区块</span>
+                            <span class="log-time">2024-01-01 12:00:00</span>
+                        </div>
+                        <div class="log-message">区块已添加到区块链</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 加载脚本 -->
+    <script src="src/services/Crypto.js"></script>
+    <script src="src/ui/CtrlPanel.js"></script>
+    <script src="src/ui/MainPanel.js"></script>
+    <script>
+        // 简单的测试脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建一个模拟的CtrlPanel实例来测试功能
+            const mockApp = {
+                currentConfig: {
+                    chainDefinition: '1-100 1\n101-200 5'
+                }
+            };
+            
+            const mockUIManager = {
+                app: mockApp
+            };
+            
+            const ctrlPanel = new CtrlPanel(mockUIManager);
+            const mainPanel = new MainPanel(mockUIManager);
+            
+            // 设置哈希悬停事件
+            ctrlPanel.setupHashHoverEvents();
+            
+            // 测试复制功能
+            document.getElementById('test-copy').addEventListener('click', function() {
+                ctrlPanel.copyTextToClipboard('测试复制内容', '复制测试成功');
+            });
+            
+            // 测试网络图显示
+            const mockNetworkData = {
+                totalUsers: 30,
+                totalConnections: 45,
+                activeConnections: 40,
+                failureRate: 0.1,
+                maxConnections: 5
+            };
+            
+            const mockUserData = new Map([
+                ['user1', { totalAssets: 150, isTransferring: false }],
+                ['user2', { totalAssets: 200, isTransferring: true }]
+            ]);
+            
+            const mockChainData = new Map([
+                ['chain1', { chainId: 'chain1', value: 1, isTransferring: false }],
+                ['chain2', { chainId: 'chain2', value: 5, isTransferring: true }]
+            ]);
+            
+            // 模拟数据更新
+            setTimeout(() => {
+                mainPanel.updateAllData({
+                    networkData: mockNetworkData,
+                    userData: mockUserData,
+                    chainData: mockChainData
+                });
+            }, 1000);
+            
+            console.log('测试页面已加载');
+        });
+    </script>
+</body>
+</html>

@@ -59,7 +59,7 @@ describe('安全机制和攻击检测集成测试', () => {
 
         testBlockchain = new BlockChain(testDefinition, '42');
         // Wait for root block creation to complete
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await testBlockchain.waitForInit();
         await testBlockchain.createOwnerBlock(users[0].getPubKey(), users[0].privateKey);
 
         // 初始化网络状态

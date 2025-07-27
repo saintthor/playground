@@ -46,12 +46,8 @@ describe('AutoTransferManager Integration', () => {
         mockBlockchain2 = new BlockChain(chainDef2, '11');
 
         // 等待区块链初始化完成
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        // 确保根区块已创建
-        while (!mockBlockchain1.rootBlock || !mockBlockchain2.rootBlock) {
-            await new Promise(resolve => setTimeout(resolve, 10));
-        }
+        await mockBlockchain1.waitForInit();
+        await mockBlockchain2.waitForInit();
 
         // 创建所有权区块
         await mockBlockchain1.createOwnerBlock(mockUser1.getPubKey(), mockUser1.privateKey);

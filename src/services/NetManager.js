@@ -17,7 +17,7 @@ export class NetManager {
      * @param {number} config.failureRate - 连接故障率 (0-1)
      */
     constructor(config = {}) {
-        this.nodeCount = config.nodeCount || 10;
+        this.nodeCount = config.nodeCount || 30;
         this.connectionCount = config.connectionCount || 3;
         this.failureRate = config.failureRate !== undefined ? config.failureRate : 0.1;
         

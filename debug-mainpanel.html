@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug MainPanel</title>
+</head>
+<body>
+    <h1>Debug MainPanel 加载</h1>
+    <div id="result"></div>
+
+    <script>
+        console.log('开始加载脚本...');
+        
+        // 检查每个脚本加载后的状态
+        window.addEventListener('load', function() {
+            console.log('页面加载完成');
+            
+            // 检查 MainPanel 是否定义
+            if (typeof MainPanel !== 'undefined') {
+                document.getElementById('result').innerHTML = '<p style="color: green;">✅ MainPanel 已正确定义</p>';
+                console.log('MainPanel 已定义:', MainPanel);
+            } else {
+                document.getElementById('result').innerHTML = '<p style="color: red;">❌ MainPanel 未定义</p>';
+                console.error('MainPanel 未定义');
+            }
+        });
+    </script>
+
+    <!-- 只加载 MainPanel -->
+    <script src="src/ui/MainPanel.js"></script>
+    
+    <script>
+        console.log('MainPanel 脚本加载后，检查定义:', typeof MainPanel);
+        
+        // 尝试创建 MainPanel 实例
+        if (typeof MainPanel !== 'undefined') {
+            try {
+                const mockUIManager = { app: {} };
+                const mainPanel = new MainPanel(mockUIManager);
+                console.log('✅ MainPanel 实例创建成功:', mainPanel);
+                document.getElementById('result').innerHTML += '<p style="color: green;">✅ MainPanel 实例创建成功</p>';
+            } catch (error) {
+                console.error('❌ MainPanel 实例创建失败:', error);
+                document.getElementById('result').innerHTML += '<p style="color: red;">❌ MainPanel 实例创建失败: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

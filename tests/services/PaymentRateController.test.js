@@ -42,7 +42,8 @@ describe('PaymentRateController', () => {
         mockBlockchain2 = new BlockChain(chainDef2, '11');
 
         // 等待区块链初始化完成
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await mockBlockchain1.waitForInit();
+        await mockBlockchain2.waitForInit();
 
         // 设置区块链所有者
         mockBlockchain1.currentOwner = mockUser1.getPubKey();

@@ -26,9 +26,20 @@ export class BlockChain {
         this.value = this.calculateValue();
         this.rootBlock = null;
         this.ownerBlock = null;
+        this.initialized = false;
         
-        // 创建根区块
-        this.createRootBlock();
+        // 异步创建根区块
+        this.initPromise = this.createRootBlock();
+    }
+    
+    /**
+     * 等待初始化完成
+     */
+    async waitForInit() {
+        if (!this.initialized) {
+            await this.initPromise;
+        }
+        return this;
     }
 
     /**
@@ -66,6 +77,7 @@ export class BlockChain {
         
         this.id = this.rootBlock.getId();
         this.addBlock(this.rootBlock);
+        this.initialized = true;
     }
 
     /**

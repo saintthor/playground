@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Task Completion Sound",
+  "description": "Plays ~/1.wav audio file whenever work is completed",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*tasks.md",
+      "**/*SUMMARY.md",
+      "**/*FIXES*.md",
+      "test-*.html"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Work has been completed. Please play the audio file ~/1.wav to notify the user. Check if this represents completion of a meaningful work phase (like bug fixes, feature implementation, or testing)."
+  }
+}

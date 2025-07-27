@@ -11,9 +11,6 @@
  * @version 1.0.0
  * @since 2024
  */
-import { UIManager } from './ui/UIManager.js';
-import { PerformanceOptimizer } from './services/PerformanceOptimizer.js';
-import { Crypto } from './services/Crypto.js';
 
 /**
  * 主应用程序类
@@ -44,32 +41,25 @@ class App {
     constructor() {
         /** @type {UIManager} 用户界面管理器 */
         this.uiManager = new UIManager(this);
-        
+
         /** @type {boolean} 系统运行状态 */
         this.isRunning = false;
-        
+
         /** @type {boolean} 系统暂停状态 */
         this.isPaused = false;
-        
+
         /** @type {PerformanceOptimizer} 性能优化器实例 */
         this.performanceOptimizer = null;
-        
-        /** @type {Object} 系统配置对象 */
-        this.config = {
-            nodeCount: 5,
-            userCount: 10,
-            maxConnections: 3,
-            failureRate: 0.1,
-            paymentRate: 0.2,
-            tickInterval: 1000
-        };
-        
+
+        /** @type {Object|null} 系统配置对象 */
+        this.config = null;
+
         /** @type {Map<string, Function>} 事件监听器映射 */
         this.eventListeners = new Map();
-        
+
         /** @type {number} 应用启动时间戳 */
         this.startTime = null;
-        
+
         /** @type {Object} 性能指标收集器 */
         this.performanceMetrics = {
             startTime: null,
@@ -77,25 +67,19 @@ class App {
             errorCounts: new Map(),
             memoryUsage: []
         };
-        
-        /** @type {boolean} 系统暂停状态 */
-        this.isPaused = false;
-        
-        /** @type {Object|null} 系统配置对象 */
-        this.config = null;
-        
+
         /** @type {PerformanceOptimizer|null} 性能优化器实例 */
         this.performanceOptimizer = null;
-        
+
         /** @type {Map<string, Object>} 模拟用户数据存储 */
         this.mockUsers = new Map();
-        
+
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
         this.mockChains = new Map();
-        
+
         /** @type {string|null} 当前选中的用户ID */
         this.selectedUser = null;
-        
+
         /** @type {string|null} 当前选中的区块链ID */
         this.selectedChain = null;
     }
@@ -116,10 +100,10 @@ class App {
      */
     async init() {
         console.log('初始化 P2P 区块链 Playground');
-        
+
         // 初始化性能优化器
         await this.initPerformanceOptimizer();
-        
+
         // 初始化用户界面
         this.uiManager.initUI();
     }
@@ -144,10 +128,10 @@ class App {
         try {
             this.performanceOptimizer = new PerformanceOptimizer();
             await this.performanceOptimizer.init();
-            
+
             // 设置 Crypto 服务使用性能优化器
             Crypto.setPerformanceOptimizer(this.performanceOptimizer);
-            
+
             console.log('性能优化器初始化完成');
         } catch (error) {
             console.warn('性能优化器初始化失败，将使用默认实现:', error);
@@ -175,27 +159,31 @@ class App {
         this.config = config;
         this.isRunning = true;
         this.isPaused = false;
-        
+
         // 生成模拟数据
         this.generateMockData(config);
-        
-        // 更新用户列表（模拟数据）
-        const mockUsers = [];
-        for (let i = 1; i <= config.userCount; i++) {
-            mockUsers.push({
-                id: `user${i}`,
-                publicKey: `mockPublicKey${i}${'0'.repeat(40)}`
-            });
-        }
-        
+
+        // 更新用户列表（使用真实的用户数据）
+        const mockUsers = Array.from(this.mockUsers.entries()).map(([publicKey, userData]) => ({
+            id: publicKey, // 用户ID就是公钥
+            publicKey: publicKey,
+            totalAssets: userData.totalAssets
+        }));
+
         if (this.uiManager.panels.control) {
             this.uiManager.panels.control.updateUserList(mockUsers);
         }
-        
+
         // 启动主面板实时更新
         if (this.uiManager.panels.main) {
             this.uiManager.panels.main.startRealTimeUpdate();
         }
+        
+        // 启动自动转账模拟
+        this.startAutoTransfer();
+        
+        // 启动滴答计数器
+        this.startTickCounter();
     }
 
     /**
@@ -241,12 +229,18 @@ class App {
         this.isRunning = false;
         this.isPaused = false;
         this.config = null;
-        
+
         // 停止主面板实时更新
         if (this.uiManager.panels.main) {
             this.uiManager.panels.main.stopRealTimeUpdate();
         }
+
+        // 停止自动转账
+        this.stopAutoTransfer();
         
+        // 停止滴答计数器
+        this.stopTickCounter();
+
         // 清空模拟数据
         this.mockUsers.clear();
         this.mockChains.clear();
@@ -300,19 +294,19 @@ class App {
      */
     cleanup() {
         console.log('清理应用资源');
-        
+
         // 停止系统
         this.stop();
-        
+
         // 清理性能优化器
         if (this.performanceOptimizer) {
             this.performanceOptimizer.cleanup();
             this.performanceOptimizer = null;
         }
-        
+
         // 重置 Crypto 服务
         Crypto.setPerformanceOptimizer(null);
-        
+
         console.log('应用资源清理完成');
     }
 
@@ -410,19 +404,30 @@ class App {
     generateMockData(config) {
         this.mockUsers.clear();
         this.mockChains.clear();
+        this.currentTick = 0; // 初始化滴答计数器
 
-        // 生成模拟用户数据
+        // 生成模拟用户数据 - 用户ID就是公钥
+        const users = [];
         for (let i = 1; i <= config.userCount; i++) {
-            const userId = `user${i}`;
-            const publicKey = `mockPublicKey${i}${'0'.repeat(40)}`;
+            // 生成真实格式的公钥（32字节随机数据）并转换为base64
+            const keyBytes = new Uint8Array(32);
+            for (let j = 0; j < 32; j++) {
+                keyBytes[j] = Math.floor(Math.random() * 256);
+            }
+            const publicKeyBase64 = btoa(String.fromCharCode.apply(null, keyBytes));
             
-            this.mockUsers.set(userId, {
-                id: userId,
-                publicKey: publicKey,
-                totalAssets: Math.floor(Math.random() * 500) + 100,
-                chainCount: Math.floor(Math.random() * 10) + 1,
-                ownedChains: []
-            });
+            const userData = {
+                displayNumber: i, // 用于显示的编号，不是ID
+                publicKey: publicKeyBase64, // 用户ID就是公钥
+                totalAssets: 0,
+                chainCount: 0,
+                ownedChains: [],
+                isTransferring: false, // 初始状态为false，后续会动态更新
+                lastTransferTick: 0
+            };
+            
+            users.push(userData);
+            this.mockUsers.set(publicKeyBase64, userData);
         }
 
         // 生成模拟区块链数据
@@ -431,34 +436,53 @@ class App {
         
         for (const range of chainDefinition.ranges) {
             for (let serial = range.start; serial <= range.end; serial++) {
-                const chainId = `chain${chainCounter++}`;
-                const randomUserId = `user${Math.floor(Math.random() * config.userCount) + 1}`;
-                const randomUser = this.mockUsers.get(randomUserId);
+                // 随机选择一个用户作为拥有者
+                const randomUser = users[Math.floor(Math.random() * users.length)];
                 
+                // 生成定义文件哈希
+                const definitionHash = this.generateBase64Hash('chain_definition');
+                
+                // 创建根区块数据 - 只包含定义哈希和序列号
+                const rootBlockData = {
+                    type: 'root',
+                    creator: 'system',
+                    tick: this.currentTick - Math.floor(Math.random() * 1000),
+                    data: `${definitionHash}\n${serial}`, // 简化格式：第一行是定义哈希，第二行是序列号
+                    previousHash: ''
+                };
+                
+                // 计算根区块哈希（base64格式）
+                const rootBlockHash = this.generateBase64Hash(JSON.stringify(rootBlockData));
+                rootBlockData.hash = rootBlockHash;
+                
+                // 区块链ID就是根区块的哈希值
+                const chainId = rootBlockHash;
+                
+                // 创建所有权区块 - 精简数据
+                const ownerBlockData = {
+                    type: 'ownership',
+                    creator: randomUser.publicKey,
+                    tick: this.currentTick - Math.floor(Math.random() * 500),
+                    data: randomUser.publicKey, // 简化：只包含拥有者公钥
+                    previousHash: rootBlockHash
+                };
+                
+                // 计算所有权区块哈希
+                const ownerBlockHash = this.generateBase64Hash(JSON.stringify(ownerBlockData));
+                ownerBlockData.hash = ownerBlockHash;
+
                 const chainData = {
-                    chainId: chainId,
+                    displayNumber: chainCounter++, // 用于显示的编号，不是ID
                     ownerId: randomUser.publicKey,
-                    ownerUserId: randomUserId,
                     value: range.value,
                     serialNumber: serial.toString(),
-                    blocks: [
-                        {
-                            blockId: `${chainId}_root`,
-                            type: 'root',
-                            creator: 'system',
-                            timestamp: Date.now() - Math.random() * 86400000
-                        },
-                        {
-                            blockId: `${chainId}_owner`,
-                            type: 'ownership',
-                            creator: randomUser.publicKey,
-                            timestamp: Date.now() - Math.random() * 43200000
-                        }
-                    ]
+                    isTransferring: false,
+                    lastTransferTick: 0,
+                    blocks: [rootBlockData, ownerBlockData]
                 };
 
                 this.mockChains.set(chainId, chainData);
-                
+
                 // 更新用户的拥有区块链列表
                 randomUser.ownedChains.push({
                     chainId: chainId,
@@ -468,23 +492,25 @@ class App {
             }
         }
 
-        // 重新计算用户资产
-        for (const [userId, user] of this.mockUsers) {
+        // 重新计算用户资产和区块链数量
+        for (const [publicKey, user] of this.mockUsers) {
             user.totalAssets = user.ownedChains.reduce((total, chain) => total + chain.value, 0);
             user.chainCount = user.ownedChains.length;
         }
+        
+        console.log(`生成了 ${this.mockUsers.size} 个用户和 ${this.mockChains.size} 条区块链`);
     }
 
     /**
      * 解析区块链定义
      */
     parseChainDefinition(definition) {
-        const lines = definition.split('\n').filter(line => 
+        const lines = definition.split('\n').filter(line =>
             line.trim() && !line.trim().startsWith('#')
         );
-        
+
         const ranges = [];
-        
+
         for (const line of lines) {
             const match = line.trim().match(/^(\d+)-(\d+)\s+(\d+(?:\.\d+)?)$/);
             if (match) {
@@ -494,7 +520,7 @@ class App {
                 ranges.push({ start, end, value });
             }
         }
-        
+
         return { ranges };
     }
 
@@ -519,7 +545,7 @@ class App {
         const totalChains = this.mockChains.size;
         const totalValue = Array.from(this.mockChains.values())
             .reduce((sum, chain) => sum + chain.value, 0);
-        const activeConnections = this.config ? 
+        const activeConnections = this.config ?
             Math.floor(this.config.nodeCount * this.config.maxConnections * (1 - this.config.failureRate)) : 0;
 
         return {
@@ -541,7 +567,7 @@ class App {
         console.log('应用处理用户选择:', userId);
         this.selectedUser = userId;
         this.selectedChain = null;
-        
+
         // 可以在这里添加日志过滤逻辑
         if (this.uiManager.panels.log) {
             // 过滤显示与该用户相关的日志
@@ -556,11 +582,208 @@ class App {
         console.log('应用处理区块链选择:', chainId);
         this.selectedChain = chainId;
         this.selectedUser = null;
-        
+
         // 可以在这里添加日志过滤逻辑
         if (this.uiManager.panels.log) {
             // 过滤显示与该区块链相关的日志
             // this.uiManager.panels.log.filterByChain(chainId);
+        }
+    }
+
+    /**
+     * 启动自动转账模拟
+     */
+    startAutoTransfer() {
+        if (this.autoTransferInterval) {
+            clearInterval(this.autoTransferInterval);
+        }
+
+        this.autoTransferInterval = setInterval(() => {
+            if (!this.isRunning || this.isPaused) return;
+
+            // 根据支付速率决定是否进行转账
+            if (Math.random() < this.config.paymentRate) {
+                this.simulateTransfer();
+            }
+        }, this.config.tickInterval || 200);
+    }
+
+    /**
+     * 模拟转账操作
+     */
+    simulateTransfer() {
+        const users = Array.from(this.mockUsers.keys());
+        if (users.length < 2) return;
+
+        // 随机选择发送者
+        const senderUserId = users[Math.floor(Math.random() * users.length)];
+        const sender = this.mockUsers.get(senderUserId);
+        
+        if (!sender || sender.ownedChains.length === 0) return;
+
+        // 随机选择接收者（不能是自己）
+        const receivers = users.filter(id => id !== senderUserId);
+        const receiverUserId = receivers[Math.floor(Math.random() * receivers.length)];
+        const receiver = this.mockUsers.get(receiverUserId);
+
+        if (!receiver) return;
+
+        // 随机选择要转移的区块链
+        const chainToTransfer = sender.ownedChains[Math.floor(Math.random() * sender.ownedChains.length)];
+        const chain = this.mockChains.get(chainToTransfer.chainId);
+
+        if (!chain) return;
+
+        // 标记为转移中
+        sender.isTransferring = true;
+        chain.isTransferring = true;
+
+        // 记录日志
+        if (this.uiManager.panels.log) {
+            this.uiManager.panels.log.addLog('block', 
+                `${senderUserId} 向 ${receiverUserId} 转移区块链 (面值: ${chainToTransfer.value})`,
+                { senderId: senderUserId, receiverId: receiverUserId, chainId: chainToTransfer.chainId }
+            );
+        }
+
+        // 模拟网络延迟后完成转账
+        setTimeout(() => {
+            this.completeTransfer(senderUserId, receiverUserId, chainToTransfer.chainId);
+        }, Math.random() * 2000 + 500); // 0.5-2.5秒延迟
+    }
+
+    /**
+     * 完成转账操作
+     */
+    completeTransfer(senderUserId, receiverUserId, chainId) {
+        const sender = this.mockUsers.get(senderUserId);
+        const receiver = this.mockUsers.get(receiverUserId);
+        const chain = this.mockChains.get(chainId);
+
+        if (!sender || !receiver || !chain) return;
+
+        // 从发送者移除区块链
+        sender.ownedChains = sender.ownedChains.filter(c => c.chainId !== chainId);
+        sender.totalAssets = sender.ownedChains.reduce((total, c) => total + c.value, 0);
+        sender.chainCount = sender.ownedChains.length;
+
+        // 添加到接收者
+        receiver.ownedChains.push({
+            chainId: chainId,
+            serialNumber: chain.serialNumber,
+            value: chain.value
+        });
+        receiver.totalAssets = receiver.ownedChains.reduce((total, c) => total + c.value, 0);
+        receiver.chainCount = receiver.ownedChains.length;
+
+        // 更新区块链所有者
+        chain.ownerUserId = receiverUserId;
+        chain.ownerId = receiver.publicKey;
+
+        // 清除转移状态
+        sender.isTransferring = false;
+        chain.isTransferring = false;
+
+        // 记录完成日志
+        if (this.uiManager.panels.log) {
+            this.uiManager.panels.log.addLog('block', 
+                `转账完成: ${chainId} 已转移至 ${receiverUserId}`,
+                { senderId: senderUserId, receiverId: receiverUserId, chainId: chainId }
+            );
+        }
+    }
+
+    /**
+     * 停止自动转账
+     */
+    stopAutoTransfer() {
+        if (this.autoTransferInterval) {
+            clearInterval(this.autoTransferInterval);
+            this.autoTransferInterval = null;
+        }
+    }
+
+    /**
+     * 启动滴答计数器
+     */
+    startTickCounter() {
+        if (this.tickInterval) {
+            clearInterval(this.tickInterval);
+        }
+
+        this.tickInterval = setInterval(() => {
+            if (!this.isRunning || this.isPaused) return;
+            
+            this.updateTick();
+        }, this.config.tickInterval || 1000); // 默认每秒一个滴答
+    }
+
+    /**
+     * 停止滴答计数器
+     */
+    stopTickCounter() {
+        if (this.tickInterval) {
+            clearInterval(this.tickInterval);
+            this.tickInterval = null;
+        }
+    }
+
+    /**
+     * 生成base64格式的哈希值
+     * 使用简单的哈希算法生成模拟哈希值并转换为base64格式
+     */
+    generateBase64Hash(data) {
+        let hash = 0;
+        for (let i = 0; i < data.length; i++) {
+            const char = data.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // 转换为32位整数
+        }
+        
+        // 生成32字节的哈希数据
+        const hashBytes = new Uint8Array(32);
+        const hashValue = Math.abs(hash);
+        for (let i = 0; i < 32; i++) {
+            hashBytes[i] = (hashValue + i * 7) % 256;
+        }
+        
+        // 转换为base64
+        return btoa(String.fromCharCode.apply(null, hashBytes));
+    }
+
+    /**
+     * 更新滴答计数器
+     */
+    updateTick() {
+        this.currentTick++;
+        
+        // 更新转账状态 - 随机改变一些用户和区块链的转账状态
+        if (this.currentTick % 10 === 0) { // 每10个滴答更新一次状态
+            for (const [publicKey, user] of this.mockUsers) {
+                // 如果用户当前正在转账，有50%概率结束转账
+                if (user.isTransferring && Math.random() < 0.5) {
+                    user.isTransferring = false;
+                    user.lastTransferTick = this.currentTick;
+                }
+                // 如果用户没有在转账，有5%概率开始转账
+                else if (!user.isTransferring && Math.random() < 0.05) {
+                    user.isTransferring = true;
+                    user.lastTransferTick = this.currentTick;
+                }
+            }
+            
+            for (const [chainId, chain] of this.mockChains) {
+                // 如果区块链当前正在转移，有50%概率结束转移
+                if (chain.isTransferring && Math.random() < 0.5) {
+                    chain.isTransferring = false;
+                    chain.lastTransferTick = this.currentTick;
+                }
+                // 如果区块链没有在转移，有3%概率开始转移
+                else if (!chain.isTransferring && Math.random() < 0.03) {
+                    chain.isTransferring = true;
+                    chain.lastTransferTick = this.currentTick;
+                }
+            }
         }
     }
 }

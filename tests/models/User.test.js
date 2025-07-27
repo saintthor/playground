@@ -23,7 +23,8 @@ describe('User', () => {
         mockBlockchain2 = new BlockChain(chainDef2, '11');
 
         // 等待区块链初始化完成
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await mockBlockchain1.waitForInit();
+        await mockBlockchain2.waitForInit();
     });
 
     describe('构造函数和初始化', () => {
