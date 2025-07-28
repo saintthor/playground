@@ -9,7 +9,8 @@ class MainPanel {
         this.isInitialized = false;
         this.updateInterval = null;
         this.networkGraphInitialized = false;
-        this.networkLinks = null; // 存储网络连接的引用
+        this.networkLinks = null;
+        this.networkSimulation = null;
     }
     
     init() {
@@ -53,23 +54,9 @@ class MainPanel {
                     </div>
                 </div>
             </div>
-            
-            <!-- 详情弹窗 -->
-            <div id="detail-modal" class="detail-modal">
-                <div class="detail-modal-overlay" onclick="this.parentElement.classList.remove('show')"></div>
-                <div class="detail-modal-content">
-                    <div class="detail-modal-header">
-                        <h4 id="detail-modal-title">详情</h4>
-                        <button class="detail-modal-close" onclick="document.getElementById('detail-modal').classList.remove('show')">&times;</button>
-                    </div>
-                    <div class="detail-modal-body" id="detail-modal-body">
-                        <!-- 详情内容将在这里动态生成 -->
-                    </div>
-                </div>
-            </div>
         `;
-    }
-    
+    }    
+
     updateAllData(data) {
         if (!this.isInitialized) return;
         
@@ -103,8 +90,20 @@ class MainPanel {
             return;
         }
         
-        const nodeCount = networkData.totalUsers || 0;
+        const nodeCount = networkData.nodeCount || 0;
         const failedConnections = Math.floor((networkData.totalConnections || 0) * (networkData.failureRate || 0));
+        
+        // 检查网络配置是否发生变化
+        const currentConfig = {
+            nodeCount: nodeCount,
+            maxConnections: networkData.maxConnections || 3,
+            failureRate: networkData.failureRate || 0
+        };
+        
+        const configChanged = !this.lastNetworkConfig || 
+            this.lastNetworkConfig.nodeCount !== currentConfig.nodeCount ||
+            this.lastNetworkConfig.maxConnections !== currentConfig.maxConnections ||
+            this.lastNetworkConfig.failureRate !== currentConfig.failureRate;
         
         // 如果网络图还未初始化，创建完整的HTML结构
         if (!this.networkGraphInitialized) {
@@ -116,25 +115,41 @@ class MainPanel {
                         <span class="network-stat">故障: ${failedConnections}</span>
                     </div>
                     <div class="network-visual">
-                        <div id="d3-network-container" style="width: 100%; height: 300px;"></div>
+                        <div id="d3-network-container" style="width: 100%; height: 100%;"></div>
                     </div>
                 </div>
             `;
             
             container.innerHTML = html;
+            this.networkGraphInitialized = true;
             
-            // 渲染D3.js网络图
+            // 首次渲染网络图
             setTimeout(() => {
                 this.renderD3NetworkGraph(nodeCount, networkData);
-                this.networkGraphInitialized = true;
             }, 100);
         } else {
-            // 只更新统计信息和连接状态
-            this.updateNetworkStats(networkData);
-            this.updateNetworkConnections(networkData);
+            // 更新统计信息
+            const statsContainer = container.querySelector('.network-stats');
+            if (statsContainer) {
+                statsContainer.innerHTML = `
+                    <span class="network-stat">节点: ${nodeCount}</span>
+                    <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
+                    <span class="network-stat">故障: ${failedConnections}</span>
+                `;
+            }
+            
+            // 只有在配置发生变化时才重新渲染网络图
+            if (configChanged) {
+                setTimeout(() => {
+                    this.renderD3NetworkGraph(nodeCount, networkData);
+                }, 100);
+            }
         }
-    }
-    
+        
+        // 保存当前配置
+        this.lastNetworkConfig = currentConfig;
+    }  
+  
     renderUsers(container, userData) {
         if (!userData || userData.size === 0) {
             container.innerHTML = '<p class="text-muted">暂无用户数据</p>';
@@ -198,8 +213,8 @@ class MainPanel {
                 card.remove();
             }
         });
-    }
-    
+    }    
+
     renderChains(container, chainData) {
         if (!chainData || chainData.size === 0) {
             container.innerHTML = '<p class="text-muted">暂无区块链数据</p>';
@@ -266,10 +281,8 @@ class MainPanel {
                 card.remove();
             }
         });
-    }
-    
+    }    
 
-    
     renderD3NetworkGraph(nodeCount, networkData) {
         const container = document.getElementById('d3-network-container');
         if (!container) return;
@@ -285,7 +298,7 @@ class MainPanel {
         d3.select(container).selectAll("*").remove();
         
         const width = container.clientWidth || 400;
-        const height = 300;
+        const height = container.clientHeight || 500; // 使用容器高度，默认500px
         
         // 创建SVG
         const svg = d3.select(container)
@@ -302,31 +315,42 @@ class MainPanel {
             });
         }
         
-        // 生成连接数据 - 创建一个更真实的网络拓扑
+        // 生成连接数据 - 确保每个节点都达到最大连接数
         const links = [];
         const maxConnections = networkData.maxConnections || 3;
-        const activeConnections = networkData.activeConnections || Math.min(nodeCount * 2, 50);
+        const failureRate = networkData.failureRate || 0;
         
-        // 为每个节点创建连接，确保网络连通性
+        // 为每个节点创建连接，确保达到最大连接数
         for (let i = 0; i < nodeCount; i++) {
-            const connectionCount = Math.min(maxConnections, Math.floor(Math.random() * maxConnections) + 1);
-            for (let j = 0; j < connectionCount; j++) {
+            const connectedNodes = new Set();
+            
+            // 尝试为当前节点创建最大连接数的连接
+            while (connectedNodes.size < maxConnections && connectedNodes.size < nodeCount - 1) {
                 const targetId = Math.floor(Math.random() * nodeCount);
-                if (targetId !== i && !links.find(link => 
+                if (targetId !== i) {
+                    connectedNodes.add(targetId);
+                }
+            }
+            
+            // 创建连接（避免重复）
+            connectedNodes.forEach(targetId => {
+                // 检查是否已存在此连接（双向检查）
+                const existingLink = links.find(link => 
                     (link.source === i && link.target === targetId) || 
                     (link.source === targetId && link.target === i)
-                )) {
+                );
+                
+                if (!existingLink) {
                     links.push({
                         source: i,
                         target: targetId,
-                        active: Math.random() > (networkData.failureRate || 0)
+                        active: Math.random() > failureRate
                     });
                 }
-            }
+            });
         }
         
-        // 限制连接数量
-        const finalLinks = links.slice(0, activeConnections);
+        const finalLinks = links;
         
         // 创建力导向仿真
         const simulation = d3.forceSimulation(nodes)
@@ -410,9 +434,9 @@ class MainPanel {
         // 存储连接数据以便后续更新
         this.networkLinks = finalLinks;
         this.networkSimulation = simulation;
-    }
-    
-    updateNetworkStats(networkData) {
+    }    
+  
+  updateNetworkStats(networkData) {
         // 简单的统计更新
         console.log('更新网络统计:', networkData);
     }
@@ -457,22 +481,6 @@ class MainPanel {
             const data = this.app.getMainPanelData();
             this.updateAllData(data);
         }
-    }
-    
-    /**
-     * 设置选中的用户
-     */
-    setSelectedUser(userId) {
-        console.log('选择用户:', userId);
-        this.showUserDetails(userId);
-    }
-    
-    /**
-     * 设置选中的区块链
-     */
-    setSelectedChain(chainId) {
-        console.log('选择区块链:', chainId);
-        this.showChainDetails(chainId);
     }
     
     /**
@@ -526,15 +534,30 @@ class MainPanel {
      * 显示详情弹窗
      */
     showDetailModal(title, content) {
-        const modal = document.getElementById('detail-modal');
-        const modalTitle = document.getElementById('detail-modal-title');
-        const modalBody = document.getElementById('detail-modal-body');
+        // 创建弹窗HTML
+        const modalHTML = `
+            <div id="detail-modal" class="detail-modal show">
+                <div class="detail-modal-overlay" onclick="document.getElementById('detail-modal').remove()"></div>
+                <div class="detail-modal-content">
+                    <div class="detail-modal-header">
+                        <h4 id="detail-modal-title">${title}</h4>
+                        <button class="detail-modal-close" onclick="document.getElementById('detail-modal').remove()">&times;</button>
+                    </div>
+                    <div class="detail-modal-body" id="detail-modal-body">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
         
-        if (modal && modalTitle && modalBody) {
-            modalTitle.textContent = title;
-            modalBody.innerHTML = content;
-            modal.classList.add('show');
+        // 移除现有弹窗
+        const existingModal = document.getElementById('detail-modal');
+        if (existingModal) {
+            existingModal.remove();
         }
+        
+        // 添加新弹窗
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
     
     /**
@@ -569,7 +592,7 @@ class MainPanel {
                     <h5>拥有的区块链 (${userChains.length})</h5>
                     <div class="chains-list">
                         ${userChains.length > 0 ? userChains.map(chain => `
-                            <div class="chain-item" onclick="mainPanel.showChainDetails('${chain.id}')">
+                            <div class="chain-item" onclick="document.getElementById('detail-modal').remove(); window.mainPanel.showChainDetails('${chain.id}')">
                                 <span class="chain-id crypto-hash" title="${chain.id}">${this.truncateHash(chain.id)}</span>
                                 <span class="chain-value">${chain.value}</span>
                                 <span class="chain-status ${chain.isTransferring ? 'transferring' : ''}">${chain.isTransferring ? '转移中' : '正常'}</span>
@@ -643,9 +666,6 @@ class MainPanel {
                                 </span>
                             </div>
                         </div>
-                        <div class="block-verify-section">
-                            <button class="btn btn-primary btn-sm" onclick="mainPanel.verifyRootBlock('${chainId}', 0)">验证根区块</button>
-                        </div>
                     </div>
                 </div>
                 ` : ''}
@@ -658,7 +678,6 @@ class MainPanel {
                                 <div class="block-header">
                                     <span class="block-index">#${index}</span>
                                     <span class="block-type">${index === 0 ? '根区块' : (block.type === 'ownership' ? '所有权区块' : '普通区块')}</span>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="mainPanel.verifyBlock('${chainId}', ${index})">验证</button>
                                 </div>
                                 <div class="block-content">
                                     <div class="block-field">
@@ -679,18 +698,6 @@ class MainPanel {
                                         <span class="field-value crypto-hash" title="${block.previousHash}">${this.truncateHash(block.previousHash)}</span>
                                     </div>
                                     ` : ''}
-                                    ${block.data?.owner ? `
-                                    <div class="block-field">
-                                        <span class="field-label">拥有者:</span>
-                                        <span class="field-value crypto-key" title="${block.data.owner}">${this.truncateKey(block.data.owner)}</span>
-                                    </div>
-                                    ` : ''}
-                                    ${block.data?.signature ? `
-                                    <div class="block-field">
-                                        <span class="field-label">签名:</span>
-                                        <span class="field-value crypto-hash" title="${block.data.signature}">${this.truncateHash(block.data.signature)}</span>
-                                    </div>
-                                    ` : ''}
                                 </div>
                             </div>
                         `).join('') : '<p class="text-muted">暂无区块数据</p>'}
@@ -705,8 +712,8 @@ class MainPanel {
      */
     getUserRelatedLogs(userId) {
         // 从应用的日志系统获取与用户相关的日志
-        if (this.app && this.app.uiManager && this.app.uiManager.logPanel && this.app.uiManager.logPanel.logs) {
-            return this.app.uiManager.logPanel.logs.filter(log => 
+        if (this.app && this.app.uiManager && this.app.uiManager.panels && this.app.uiManager.panels.log && this.app.uiManager.panels.log.logs) {
+            return this.app.uiManager.panels.log.logs.filter(log => 
                 log.message.includes(userId) || 
                 (log.relatedData && (log.relatedData.userId === userId || log.relatedData.fromUser === userId || log.relatedData.toUser === userId))
             );
@@ -718,7 +725,7 @@ class MainPanel {
      * 截断密钥显示
      */
     truncateKey(key) {
-        if (!key || key === '未设置') return key;
+        if (!key || key === '未设置' || key === '未知') return key;
         if (key.length <= 20) return key;
         return key.substring(0, 10) + '...' + key.substring(key.length - 10);
     }
@@ -730,184 +737,5 @@ class MainPanel {
         if (!hash || hash === '未知') return hash;
         if (hash.length <= 16) return hash;
         return hash.substring(0, 8) + '...' + hash.substring(hash.length - 8);
-    }
-    
-    /**
-     * 验证根区块
-     */
-    verifyRootBlock(chainId, blockId) {
-        console.log('验证根区块:', chainId, blockId);
-        
-        const chainData = this.app.mockChains.get(chainId);
-        if (!chainData || !chainData.blocks || chainData.blocks.length === 0) {
-            alert('区块链数据不完整');
-            return;
-        }
-        
-        const rootBlock = chainData.blocks[0];
-        this.showBlockVerificationModal(chainId, rootBlock, 0, true);
-    }
-    
-    /**
-     * 验证区块
-     */
-    verifyBlock(chainId, blockIndex) {
-        console.log('验证区块:', chainId, blockIndex);
-        
-        const chainData = this.app.mockChains.get(chainId);
-        if (!chainData || !chainData.blocks || !chainData.blocks[blockIndex]) {
-            alert('区块数据不完整');
-            return;
-        }
-        
-        const block = chainData.blocks[blockIndex];
-        this.showBlockVerificationModal(chainId, block, blockIndex, blockIndex === 0);
-    }
-    
-    /**
-     * 显示区块验证弹窗
-     */
-    showBlockVerificationModal(chainId, block, blockIndex, isRootBlock) {
-        const verificationHTML = `
-            <div class="block-verification-container">
-                <h5>${isRootBlock ? '根区块' : '区块'} 验证</h5>
-                <div class="verification-info">
-                    <div class="detail-info-grid">
-                        <div class="detail-info-item">
-                            <span class="detail-info-label">区块链ID:</span>
-                            <span class="detail-info-value">${chainId}</span>
-                        </div>
-                        <div class="detail-info-item">
-                            <span class="detail-info-label">区块索引:</span>
-                            <span class="detail-info-value">#${blockIndex}</span>
-                        </div>
-                        <div class="detail-info-item">
-                            <span class="detail-info-label">区块ID:</span>
-                            <span class="detail-info-value">${block.id}</span>
-                        </div>
-                        <div class="detail-info-item">
-                            <span class="detail-info-label">时间戳:</span>
-                            <span class="detail-info-value">${block.timestamp}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="verification-actions">
-                    <button class="btn btn-primary" onclick="mainPanel.performBlockVerification('${chainId}', ${blockIndex})">开始验证</button>
-                    <button class="btn btn-secondary" onclick="mainPanel.showVerificationCode('${chainId}', ${blockIndex})">查看验证代码</button>
-                </div>
-                
-                <div class="verification-result" id="verification-result-${blockIndex}">
-                    <!-- 验证结果将显示在这里 -->
-                </div>
-            </div>
-        `;
-        
-        this.showDetailModal(`${isRootBlock ? '根区块' : '区块'} 验证`, verificationHTML);
-    }
-    
-    /**
-     * 执行区块验证
-     */
-    async performBlockVerification(chainId, blockIndex) {
-        const resultContainer = document.getElementById(`verification-result-${blockIndex}`);
-        if (!resultContainer) return;
-        
-        resultContainer.innerHTML = '<div class="alert alert-info">验证中...</div>';
-        
-        try {
-            const chainData = this.app.mockChains.get(chainId);
-            const block = chainData.blocks[blockIndex];
-            
-            // 模拟验证过程
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // 验证区块哈希
-            const expectedHash = block.hash;
-            const calculatedHash = await this.calculateBlockHash(block);
-            
-            const isValid = expectedHash === calculatedHash;
-            
-            resultContainer.innerHTML = `
-                <div class="alert alert-${isValid ? 'success' : 'danger'}">
-                    <h6>验证结果: ${isValid ? '✓ 验证通过' : '✗ 验证失败'}</h6>
-                    <div class="verification-details">
-                        <div><strong>期望哈希:</strong> <code>${expectedHash}</code></div>
-                        <div><strong>计算哈希:</strong> <code>${calculatedHash}</code></div>
-                        <div><strong>验证时间:</strong> ${new Date().toLocaleString()}</div>
-                    </div>
-                </div>
-            `;
-        } catch (error) {
-            resultContainer.innerHTML = `
-                <div class="alert alert-danger">
-                    <strong>验证失败:</strong> ${error.message}
-                </div>
-            `;
-        }
-    }
-    
-    /**
-     * 显示验证代码
-     */
-    showVerificationCode(chainId, blockIndex) {
-        const chainData = this.app.mockChains.get(chainId);
-        const block = chainData.blocks[blockIndex];
-        
-        const code = `
-// 区块验证代码
-const chainId = "${chainId}";
-const blockIndex = ${blockIndex};
-const block = ${JSON.stringify(block, null, 2)};
-
-// 计算区块哈希
-async function verifyBlock() {
-    const blockData = {
-        id: block.id,
-        timestamp: block.timestamp,
-        data: block.data || {},
-        previousHash: block.previousHash || ""
-    };
-    
-    const dataString = JSON.stringify(blockData);
-    const hash = await Crypto.sha256(dataString);
-    
-    console.log('区块数据:', blockData);
-    console.log('期望哈希:', block.hash);
-    console.log('计算哈希:', hash);
-    console.log('验证结果:', hash === block.hash ? '✓ 通过' : '✗ 失败');
-    
-    return hash === block.hash;
-}
-
-// 运行验证
-verifyBlock();
-        `;
-        
-        alert(`验证代码已生成，请在控制台中运行：\n\n${code}`);
-    }
-    
-    /**
-     * 计算区块哈希
-     */
-    async calculateBlockHash(block) {
-        // 创建用于哈希计算的区块数据（不包含hash字段）
-        const blockData = {
-            type: block.type,
-            creator: block.creator,
-            tick: block.tick,
-            data: block.data || {},
-            previousHash: block.previousHash || ""
-        };
-        
-        const dataString = JSON.stringify(blockData);
-        
-        try {
-            // 使用应用的base64哈希生成方法保持一致性
-            return this.app.generateBase64Hash(dataString);
-        } catch (error) {
-            console.error('哈希计算失败:', error);
-            return 'hash_calculation_failed';
-        }
     }
 }

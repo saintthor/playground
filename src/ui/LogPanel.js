@@ -84,7 +84,7 @@ class LogPanel {
         const logsHtml = recentLogs.map(log => `
             <div class="log-entry log-type-${log.type}">
                 <span class="log-timestamp">${log.timestamp}</span>
-                <span class="log-message">${log.message}</span>
+                <span class="log-message">${this.formatLogMessage(log.message)}</span>
             </div>
         `).join('');
         
@@ -108,5 +108,18 @@ class LogPanel {
     
     clearAllFilters() {
         console.log('清除所有过滤器');
+    }
+    
+    /**
+     * 格式化日志消息，截断base64数据只显示前6个字符
+     */
+    formatLogMessage(message) {
+        // 匹配base64格式的数据（长度大于10的字母数字字符串）
+        return message.replace(/\b[A-Za-z0-9+/]{10,}={0,2}\b/g, (match) => {
+            if (match.length > 6) {
+                return match.substring(0, 6) + '...';
+            }
+            return match;
+        });
     }
 }

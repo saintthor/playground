@@ -555,7 +555,10 @@ class App {
                 totalUsers: this.mockUsers.size,
                 totalChains: totalChains,
                 totalValue: totalValue,
-                activeConnections: activeConnections
+                activeConnections: activeConnections,
+                maxConnections: this.config.maxConnections || 5,
+                failureRate: this.config.failureRate || 0.1,
+                nodeCount: this.config.nodeCount || 30
             }
         };
     }
