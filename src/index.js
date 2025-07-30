@@ -536,7 +536,10 @@ class App {
                     totalUsers: 0,
                     totalChains: 0,
                     totalValue: 0,
-                    activeConnections: 0
+                    activeConnections: 0,
+                    nodeCount: 0,
+                    maxConnections: 3,
+                    failureRate: 0.1
                 }
             };
         }

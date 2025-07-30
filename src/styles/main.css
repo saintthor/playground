@@ -552,22 +552,25 @@ body {
 /* 用户网格样式 */
 .users-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, 20px);
+    gap: 2px;
+    justify-content: start;
 }
 
-.user-card {
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 0.375rem;
+.users-grid .user-card {
+    background: white !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 1px !important;
+    padding: 0 !important;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 60px;
+    width: 20px !important;
+    height: 20px !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-sizing: border-box !important;
 }
 
 .user-card:hover {
@@ -579,6 +582,12 @@ body {
 .user-card.transferring {
     border-color: #ffc107;
     background: #fff3cd;
+}
+
+.user-card.selected {
+    border-color: #007bff;
+    background: #e3f2fd;
+    box-shadow: 0 0 0 1px rgba(0,123,255,0.5);
 }
 
 .user-id {
@@ -603,22 +612,25 @@ body {
 /* 区块链网格样式 */
 .chains-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, 12px);
+    gap: 2px;
+    justify-content: start;
 }
 
-.chain-card {
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 0.375rem;
+.chains-grid .chain-card {
+    background: white !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 1px !important;
+    padding: 0 !important;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 50px;
+    width: 12px !important;
+    height: 12px !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-sizing: border-box !important;
 }
 
 .chain-card:hover {
@@ -630,6 +642,12 @@ body {
 .chain-card.transferring {
     border-color: #ffc107;
     background: #fff3cd;
+}
+
+.chain-card.selected {
+    border-color: #17a2b8;
+    background: #d1ecf1;
+    box-shadow: 0 0 0 1px rgba(23,162,184,0.5);
 }
 
 .chain-value {
@@ -2695,45 +2713,7 @@ small.text-muted {
     padding: 0.5rem;
 }
 
-.user-card {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 0.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-}
 
-.user-card:hover {
-    border-color: #007bff;
-    background: #e3f2fd;
-}
-
-.user-card.transferring {
-    border-color: #ffc107;
-    background: #fff3cd;
-    animation: pulse-transfer 1s infinite;
-}
-
-@keyframes pulse-transfer {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-.user-card .user-id {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.25rem;
-}
-
-.user-card .user-assets {
-    font-size: 0.8rem;
-    color: #28a745;
-    font-weight: 600;
-}
 
 .transfer-indicator {
     position: absolute;
@@ -2760,44 +2740,7 @@ small.text-muted {
     padding: 0.5rem;
 }
 
-.chain-card {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 0.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-}
 
-.chain-card:hover {
-    border-color: #17a2b8;
-    background: #d1ecf1;
-}
-
-.chain-card.transferring {
-    border-color: #dc3545;
-    background: #f8d7da;
-    animation: pulse-transfer 1s infinite;
-}
-
-.chain-card .chain-value {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.25rem;
-}
-
-.chain-card .chain-status {
-    font-size: 0.6rem;
-    color: #6c757d;
-}
-
-.chain-card.transferring .chain-status {
-    color: #dc3545;
-    font-weight: 600;
-}
 
 /* 控制面板最小化功能 */
 .control-panel {
@@ -3123,20 +3066,7 @@ small.text-muted {
     padding: 0.5rem;
 }
 
-.user-card, .chain-card {
-    padding: 0.25rem;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    background: white;
-    text-align: center;
-    min-height: 50px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 0.125rem;
-    font-size: 0.75rem;
-}
+
 
 .user-id, .chain-id {
     font-weight: 600;
@@ -3983,4 +3913,1662 @@ small.text-muted {
     border-radius: 0;
     flex-shrink: 0;
     padding: 0.75rem;
+}
+/* 标签页管理样
+式 */
+.main-panel-tabs {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-header {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0;
+    margin: 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    position: relative;
+}
+
+.tab-button:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.tab-button.active {
+    color: #007bff;
+    background: white;
+    border-bottom-color: #007bff;
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: white;
+}
+
+.tab-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.tab-pane.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tab-section-upper {
+    flex: 3;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-section-lower {
+    flex: 2;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+/* 标签页内容区域样式 */
+.tab-section-upper h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.tab-section-lower h4 {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 网络标签页样式 */
+#network-tab .tab-section-upper {
+    position: relative;
+}
+
+#network-tab .network-graph-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#network-tab .network-graph {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background: white;
+}
+
+/* 用户标签页样式 */
+#users-tab .users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+/* 删除了冲突的用户卡片样式 */
+
+#users-tab .user-id {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+#users-tab .user-assets {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+#users-tab .transfer-indicator {
+    font-size: 0.7rem;
+    color: #ffc107;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+/* 区块链标签页样式 */
+#chains-tab .chains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+/* 删除了冲突的区块链卡片样式 */
+
+#chains-tab .chain-id {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+#chains-tab .chain-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #17a2b8;
+    margin-bottom: 0.25rem;
+}
+
+#chains-tab .chain-status {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+#chains-tab .chain-card.transferring .chain-status {
+    color: #ffc107;
+}
+
+/* 详情区域样式 */
+.detail-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+.detail-content {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* 节点详情样式 */
+.node-details {
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.node-details-header {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.node-details-header h5 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.node-details-body {
+    padding: 1rem;
+}
+
+.node-info-section {
+    margin-bottom: 1.5rem;
+}
+
+.node-info-section:last-child {
+    margin-bottom: 0;
+}
+
+.node-info-section h6 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.node-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.node-user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.node-user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.node-user-id {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.node-user-key {
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-family: monospace;
+}
+
+.node-user-assets {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #28a745;
+}
+
+.node-connections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.node-connection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.node-connection-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.node-connection-target {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.node-connection-id {
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-family: monospace;
+}
+
+.node-connection-latency {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #17a2b8;
+}
+
+.node-connection-item.inactive {
+    opacity: 0.6;
+}
+
+.node-connection-item.inactive .node-connection-latency {
+    color: #dc3545;
+}
+
+/* 用户详情样式 */
+.user-details {
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.user-details-header {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.user-details-header h5 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.user-details-body {
+    padding: 1rem;
+}
+
+/* 区块链详情样式 */
+.chain-details {
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.chain-details-header {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.chain-details-header h5 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.chain-details-body {
+    padding: 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .tab-button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .tab-section-upper {
+        flex: 2;
+        padding: 0.75rem;
+    }
+    
+    .tab-section-lower {
+        flex: 3;
+        padding: 0.75rem;
+    }
+    
+    #users-tab .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    #chains-tab .chains-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .node-details-body,
+    .user-details-body,
+    .chain-details-body {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-header {
+        flex-direction: column;
+    }
+    
+    .tab-button {
+        border-bottom: none;
+        border-right: 3px solid transparent;
+    }
+    
+    .tab-button.active {
+        border-bottom: none;
+        border-right-color: #007bff;
+    }
+    
+    #users-tab .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    #chains-tab .chains-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+
+/* 标签页切换动画 */
+.tab-pane {
+    transform: translateX(10px);
+}
+
+.tab-pane.active {
+    transform: translateX(0);
+}
+
+/* 加载状态 */
+.tab-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+}
+
+.tab-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e9ecef;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+/* 选中状态指示 */
+.node-selected {
+    stroke: #007bff !important;
+    stroke-width: 3px !important;
+    filter: drop-shadow(0 0 6px rgba(0,123,255,0.5));
+}
+
+/* 标签页状态持久化指示 */
+.tab-state-indicator {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #28a745;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.tab-button.has-state .tab-state-indicator {
+    opacity: 1;
+}
+/*
+ 标签页结构样式 */
+.main-panel-tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tab-header {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0;
+    margin: 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    position: relative;
+}
+
+.tab-button:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.tab-button.active {
+    background: white;
+    color: #007bff;
+    border-bottom-color: #007bff;
+    font-weight: 600;
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: white;
+}
+
+.tab-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    flex-direction: column;
+    background: white;
+}
+
+.tab-pane.active {
+    display: flex;
+}
+
+.tab-section-upper {
+    flex: 3;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    overflow-y: auto;
+}
+
+.tab-section-lower {
+    flex: 2;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+/* 网络标签页特定样式 */
+#network-tab .tab-section-upper {
+    padding: 0;
+}
+
+#network-tab .network-graph {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background: #f8f9fa;
+    border: none;
+    border-radius: 0;
+}
+
+.node-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.node-details-container .text-muted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-style: italic;
+}
+
+/* 用户标签页特定样式 */
+#users-tab .users-container {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.user-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-details-container .text-muted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-style: italic;
+}
+
+/* 区块链标签页特定样式 */
+#chains-tab .chains-container {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.chain-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chain-details-container .text-muted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-style: italic;
+}
+
+/* 标签页切换动画 */
+.tab-pane {
+    transition: opacity 0.15s ease-in-out;
+}
+
+.tab-pane:not(.active) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tab-pane.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .tab-section-upper {
+        flex: 2;
+    }
+    
+    .tab-section-lower {
+        flex: 1;
+    }
+    
+    .tab-button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-header {
+        flex-direction: column;
+    }
+    
+    .tab-button {
+        border-bottom: none;
+        border-right: 3px solid transparent;
+    }
+    
+    .tab-button.active {
+        border-right-color: #007bff;
+        border-bottom-color: transparent;
+    }
+    
+    .tab-section-upper,
+    .tab-section-lower {
+        padding: 0.75rem;
+    }
+}
+
+/* 主面板标签页样式 */
+.main-panel-tabs {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 标签页性能优化样式 */
+.tab-button.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.tab-loading-indicator {
+    display: inline-block;
+    margin-left: 0.5rem;
+    animation: spin 1s linear infinite;
+    font-size: 0.9rem;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.tab-error-feedback {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #dc3545;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    z-index: 1000;
+    font-size: 0.9rem;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 标签页内容延迟加载样式 */
+.tab-pane:not(.active) {
+    display: none !important;
+}
+
+.tab-pane.active {
+    display: block !important;
+    animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 用户卡片和区块链卡片选中状态 */
+.user-card.selected {
+    border-color: #007bff;
+    background: #f8f9ff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.chain-card.selected {
+    border-color: #17a2b8;
+    background: #f0f9ff;
+    box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.25);
+}
+
+.tab-header {
+    display: flex;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-button:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.tab-button.active {
+    color: #007bff;
+    background: white;
+    border-bottom-color: #007bff;
+}
+
+.tab-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    flex-direction: column;
+}
+
+.tab-pane.active {
+    display: flex;
+}
+
+.tab-section-upper {
+    flex: 3;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    overflow-y: auto;
+}
+
+.tab-section-lower {
+    flex: 2;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+/* 节点详情样式 */
+.node-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.node-details-container .text-muted {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+}
+
+.node-details {
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.node-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.node-details-header h5 {
+    margin: 0;
+    color: #495057;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.node-id {
+    font-size: 0.9rem;
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.node-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.node-users-section,
+.node-connections-section {
+    margin-bottom: 1.5rem;
+}
+
+.node-users-section h6,
+.node-connections-section h6 {
+    margin-bottom: 0.75rem;
+    color: #495057;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.node-users-section h6::before {
+    content: "👥";
+    font-size: 1.1rem;
+}
+
+.node-connections-section h6::before {
+    content: "🔗";
+    font-size: 1.1rem;
+}
+
+.users-list,
+.connections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,123,255,0.15);
+}
+
+.user-display {
+    font-weight: 500;
+    color: #495057;
+}
+
+.user-assets {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.connection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.connection-item.active {
+    border-left: 4px solid #28a745;
+    background: #f8fff8;
+}
+
+.connection-item.inactive {
+    border-left: 4px solid #dc3545;
+    background: #fff8f8;
+}
+
+.connection-target {
+    font-weight: 500;
+    color: #495057;
+}
+
+.connection-latency {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #6c757d;
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+}
+
+.connection-status {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+}
+
+.status-active {
+    color: #155724;
+    background: #d4edda;
+}
+
+.status-inactive {
+    color: #721c24;
+    background: #f8d7da;
+}
+
+/* 空状态样式 */
+.node-users-section .text-muted,
+.node-connections-section .text-muted {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 4px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .node-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .user-item,
+    .connection-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .connection-latency {
+        align-self: flex-end;
+    }
+}
+/* ====
+= 标签页系统样式 ===== */
+
+/* 主标签页容器 */
+.main-panel-tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 标签页头部样式 */
+.tab-header {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-bottom: 3px solid transparent;
+    outline: none;
+}
+
+.tab-button:hover {
+    background: #e9ecef;
+    color: #495057;
+    transform: translateY(-1px);
+}
+
+.tab-button.active {
+    background: white;
+    color: #007bff;
+    border-bottom-color: #007bff;
+    font-weight: 600;
+    box-shadow: 0 -2px 4px rgba(0,123,255,0.1);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: white;
+    z-index: 1;
+}
+
+/* 标签页内容区域 */
+.tab-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: white;
+}
+
+.tab-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(20px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.tab-pane.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    z-index: 1;
+}
+
+/* 标签页上下分割布局 */
+.tab-section-upper {
+    flex: 3;
+    min-height: 0;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    overflow: auto;
+    background: #fafbfc;
+}
+
+.tab-section-lower {
+    flex: 2;
+    min-height: 0;
+    padding: 1rem;
+    overflow: auto;
+    background: white;
+}
+
+/* 网络标签页特定样式 */
+#network-tab .tab-section-upper {
+    padding: 0;
+    background: white;
+}
+
+#network-tab .network-graph {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#network-tab .network-graph-display {
+    flex: 1;
+    min-height: 0;
+}
+
+#network-tab .network-visual {
+    height: 100% !important;
+    min-height: 250px;
+}
+
+#network-tab #d3-network-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 节点详情容器样式 */
+.node-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.node-details-container.has-content {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.node-details-content {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+.node-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.node-details-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+}
+
+.node-details-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.node-details-section h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.node-users-list,
+.node-connections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.node-user-item,
+.node-connection-item {
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    font-size: 0.85rem;
+}
+
+.node-connection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.connection-latency {
+    font-size: 0.75rem;
+    color: #6c757d;
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* 用户标签页特定样式 */
+#users-tab .users-container {
+    height: 100%;
+    overflow: auto;
+}
+
+.user-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-details-container.has-content {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.user-details-content {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+/* 区块链标签页特定样式 */
+#chains-tab .chains-container {
+    height: 100%;
+    overflow: auto;
+}
+
+.chain-details-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.chain-details-container.has-content {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.chain-details-content {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* 标签页切换动画效果 */
+@keyframes tabSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes tabSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
+.tab-pane.slide-in {
+    animation: tabSlideIn 0.3s ease forwards;
+}
+
+.tab-pane.slide-out {
+    animation: tabSlideOut 0.3s ease forwards;
+}
+
+/* 标签页状态指示器 */
+.tab-button .tab-indicator {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #28a745;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tab-button.has-updates .tab-indicator {
+    opacity: 1;
+    animation: pulse 2s infinite;
+}
+
+/* 标签页加载状态 */
+.tab-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.tab-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e9ecef;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+/* 标签页错误状态 */
+.tab-error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #dc3545;
+    text-align: center;
+    padding: 2rem;
+}
+
+.tab-error-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.tab-error-message {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.tab-error-retry {
+    padding: 0.5rem 1rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
+}
+
+.tab-error-retry:hover {
+    background: #c82333;
+}
+
+/* 标签页空状态样式 */
+.tab-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #6c757d;
+    text-align: center;
+    padding: 2rem;
+}
+
+.tab-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.tab-empty-message {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.tab-empty-hint {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* 标签页响应式设计 */
+@media (max-width: 1200px) {
+    .tab-section-upper {
+        flex: 2.5;
+    }
+    
+    .tab-section-lower {
+        flex: 1.5;
+    }
+}
+
+@media (max-width: 992px) {
+    .tab-section-upper {
+        flex: 2;
+    }
+    
+    .tab-section-lower {
+        flex: 1;
+    }
+    
+    .node-details-sections {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .tab-header {
+        flex-wrap: wrap;
+    }
+    
+    .tab-button {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.75rem;
+    }
+    
+    .tab-section-upper,
+    .tab-section-lower {
+        padding: 0.75rem;
+    }
+    
+    .tab-section-upper {
+        flex: 1;
+    }
+    
+    .tab-section-lower {
+        flex: 1;
+    }
+    
+    .node-details-sections {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .node-users-list,
+    .node-connections-list {
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 576px) {
+    .tab-button {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    
+    .tab-section-upper,
+    .tab-section-lower {
+        padding: 0.5rem;
+    }
+    
+    .node-details-content,
+    .user-details-content,
+    .chain-details-content {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-header {
+        flex-direction: column;
+    }
+    
+    .tab-button {
+        flex: none;
+        width: 100%;
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 0;
+    }
+    
+    .tab-button.active {
+        border-bottom-color: #007bff;
+    }
+    
+    .tab-section-upper,
+    .tab-section-lower {
+        padding: 0.5rem;
+        flex: 1;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .tab-button {
+        border: 1px solid #000;
+    }
+    
+    .tab-button.active {
+        background: #000;
+        color: #fff;
+        border-color: #000;
+    }
+    
+    .tab-section-upper,
+    .tab-section-lower {
+        border: 1px solid #000;
+    }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+    .tab-button,
+    .tab-pane,
+    .tab-loading::before {
+        transition: none;
+        animation: none;
+    }
+    
+    .tab-pane.active {
+        transform: none;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    .tab-header {
+        background: #2d3748;
+        border-bottom-color: #4a5568;
+    }
+    
+    .tab-button {
+        color: #a0aec0;
+    }
+    
+    .tab-button:hover {
+        background: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .tab-button.active {
+        background: #1a202c;
+        color: #63b3ed;
+        border-bottom-color: #63b3ed;
+    }
+    
+    .tab-section-upper {
+        background: #2d3748;
+        border-bottom-color: #4a5568;
+    }
+    
+    .tab-section-lower {
+        background: #1a202c;
+    }
+    
+    .node-details-content,
+    .user-details-content,
+    .chain-details-content {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
 }

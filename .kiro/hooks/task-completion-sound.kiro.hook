@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "name": "Task Completion Sound",
-  "description": "Plays ~/1.wav audio file whenever work is completed",
+  "description": "Plays audio file whenever work is completed  with command\naplay ~/1.wav",
   "version": "1",
   "when": {
     "type": "fileEdited",
@@ -9,11 +9,13 @@
       "**/*tasks.md",
       "**/*SUMMARY.md",
       "**/*FIXES*.md",
-      "test-*.html"
+      "test-*.html",
+      "src/**/*.js",
+      "tests/**/*.js"
     ]
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Work has been completed. Please play the audio file ~/1.wav to notify the user. Check if this represents completion of a meaningful work phase (like bug fixes, feature implementation, or testing)."
+    "prompt": "Work has been completed. Please play the audio file with command aplay ~/1.wav to notify the user. Check if this represents completion of a meaningful work phase (like bug fixes, feature implementation, or testing). If a task was just completed, definitely play the sound."
   }
 }

@@ -11,15 +11,36 @@ class MainPanel {
         this.networkGraphInitialized = false;
         this.networkLinks = null;
         this.networkSimulation = null;
+        
+        // 标签页管理器
+        this.tabManager = null;
     }
     
     init() {
         try {
             this.render();
+            this.initTabManager();
             this.isInitialized = true;
             console.log('MainPanel 初始化完成');
         } catch (error) {
             console.error('MainPanel 初始化失败:', error);
+        }
+    }
+    
+    /**
+     * 初始化标签页管理器
+     */
+    initTabManager() {
+        try {
+            // 创建标签页管理器实例
+            this.tabManager = new TabManager(this);
+            
+            // 初始化标签页管理器
+            this.tabManager.init();
+            
+            console.log('TabManager 已集成到 MainPanel');
+        } catch (error) {
+            console.error('TabManager 初始化失败:', error);
         }
     }
     
@@ -30,27 +51,53 @@ class MainPanel {
         const panelContent = mainPanel.querySelector('.panel-content');
         if (!panelContent) return;
         
+        // 生成标签页HTML结构
         panelContent.innerHTML = `
-            <!-- P2P 网络图 - 占据全宽度，无标题 -->
-            <div class="network-graph-container">
-                <div class="network-graph" id="network-graph">
-                    <p class="text-muted">系统未启动</p>
-                </div>
-            </div>
-            
-            <!-- 用户和区块链信息放在网络图下方 -->
-            <div class="info-sections">
-                <div class="main-section users-section">
-                    <h3>用户 (<span id="user-count">0</span>)</h3>
-                    <div class="users-container" id="users-container">
-                        <p class="text-muted">系统未启动</p>
-                    </div>
+            <div class="main-panel-tabs">
+                <div class="tab-header">
+                    <button class="tab-button active" data-tab="network">网络</button>
+                    <button class="tab-button" data-tab="users">用户</button>
+                    <button class="tab-button" data-tab="chains">区块链</button>
                 </div>
                 
-                <div class="main-section chains-section">
-                    <h3>区块链 (<span id="chain-count">0</span>)</h3>
-                    <div class="chains-container" id="chains-container">
-                        <p class="text-muted">系统未启动</p>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="network-tab">
+                        <div class="tab-section-upper">
+                            <div class="network-graph" id="network-graph">
+                                <p class="text-muted">系统未启动</p>
+                            </div>
+                        </div>
+                        <div class="tab-section-lower">
+                            <div class="node-details-container" id="node-details-container">
+                                <p class="text-muted">请点击网络图上的节点查看详情</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="users-tab">
+                        <div class="tab-section-upper">
+                            <div class="users-container" id="users-container">
+                                <p class="text-muted">系统未启动</p>
+                            </div>
+                        </div>
+                        <div class="tab-section-lower">
+                            <div class="user-details-container" id="user-details-container">
+                                <p class="text-muted">请点击用户缩略图查看详情</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="chains-tab">
+                        <div class="tab-section-upper">
+                            <div class="chains-container" id="chains-container">
+                                <p class="text-muted">系统未启动</p>
+                            </div>
+                        </div>
+                        <div class="tab-section-lower">
+                            <div class="chain-details-container" id="chain-details-container">
+                                <p class="text-muted">请点击区块链缩略图查看详情</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -60,26 +107,48 @@ class MainPanel {
     updateAllData(data) {
         if (!this.isInitialized) return;
         
-        // 更新网络图
-        const networkGraph = document.getElementById('network-graph');
-        if (networkGraph) {
-            this.renderNetworkGraph(networkGraph, data.networkData);
+        // 使用增量更新系统（性能优化版本）
+        if (this.tabManager) {
+            this.tabManager.updateDataIncremental(data, this.lastData);
         }
         
-        // 更新用户列表
-        const usersContainer = document.getElementById('users-container');
-        const userCount = document.getElementById('user-count');
-        if (usersContainer && userCount) {
-            this.renderUsers(usersContainer, data.userData);
-            userCount.textContent = data.userData ? data.userData.size : 0;
-        }
-        
-        // 更新区块链列表
-        const chainsContainer = document.getElementById('chains-container');
-        const chainCount = document.getElementById('chain-count');
-        if (chainsContainer && chainCount) {
-            this.renderChains(chainsContainer, data.chainData);
-            chainCount.textContent = data.chainData ? data.chainData.size : 0;
+        // 保存当前数据作为下次更新的参考
+        this.lastData = this.deepCloneData(data);
+    }
+    
+    /**
+     * 深度克隆数据用于增量更新比较
+     * @param {Object} data - 要克隆的数据
+     * @returns {Object} - 克隆后的数据
+     */
+    deepCloneData(data) {
+        try {
+            // 对于Map类型的数据，需要特殊处理
+            const clonedData = {};
+            
+            if (data.networkData) {
+                clonedData.networkData = { ...data.networkData };
+            }
+            
+            if (data.userData) {
+                clonedData.userData = new Map();
+                for (const [key, value] of data.userData) {
+                    clonedData.userData.set(key, { ...value });
+                }
+            }
+            
+            if (data.chainData) {
+                clonedData.chainData = new Map();
+                for (const [key, value] of data.chainData) {
+                    clonedData.chainData.set(key, { ...value });
+                }
+            }
+            
+            return clonedData;
+            
+        } catch (error) {
+            console.error('深度克隆数据失败:', error);
+            return data; // 回退到原始数据
         }
     }
     
@@ -519,7 +588,13 @@ class MainPanel {
     showChainDetails(chainId) {
         console.log('显示区块链详情:', chainId);
         
-        // 获取区块链数据
+        // 如果有标签页管理器，使用标签页方式显示
+        if (this.tabManager) {
+            this.tabManager.showChainDetails(chainId);
+            return;
+        }
+        
+        // 回退到弹窗方式（兼容性）
         const chainData = this.app.mockChains.get(chainId);
         if (!chainData) {
             alert('区块链数据未找到');
@@ -738,4 +813,14 @@ class MainPanel {
         if (hash.length <= 16) return hash;
         return hash.substring(0, 8) + '...' + hash.substring(hash.length - 8);
     }
+}
+
+// 导出 MainPanel 类
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = MainPanel;
+}
+
+// ES6 导出
+if (typeof window !== 'undefined') {
+    window.MainPanel = MainPanel;
 }
