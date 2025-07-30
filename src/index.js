@@ -416,9 +416,22 @@ class App {
             }
             const publicKeyBase64 = btoa(String.fromCharCode.apply(null, keyBytes));
             
+            // 为每个用户分配3个节点
+            const nodeCount = config.nodeCount || 5;
+            const userNodes = [];
+            const availableNodes = Array.from({length: nodeCount}, (_, i) => i);
+            
+            // 随机选择3个不同的节点
+            for (let j = 0; j < Math.min(3, nodeCount); j++) {
+                const randomIndex = Math.floor(Math.random() * availableNodes.length);
+                userNodes.push(availableNodes.splice(randomIndex, 1)[0]);
+            }
+            
             const userData = {
                 displayNumber: i, // 用于显示的编号，不是ID
                 publicKey: publicKeyBase64, // 用户ID就是公钥
+                nodeId: userNodes[0], // 主节点（保持兼容性）
+                nodeIds: userNodes, // 所有分配的节点
                 totalAssets: 0,
                 chainCount: 0,
                 ownedChains: [],

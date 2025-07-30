@@ -552,25 +552,28 @@ body {
 /* 用户网格样式 */
 .users-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 20px);
-    gap: 2px;
+    grid-template-columns: repeat(auto-fill, 80px);
+    gap: 10px;
     justify-content: start;
+    padding: 10px;
 }
 
 .users-grid .user-card {
-    background: white !important;
-    border: 1px solid #e9ecef !important;
-    border-radius: 1px !important;
-    padding: 0 !important;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    width: 20px !important;
-    height: 20px !important;
+    width: 80px;
+    height: 60px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .user-card:hover {
@@ -612,25 +615,35 @@ body {
 /* 区块链网格样式 */
 .chains-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 12px);
-    gap: 2px;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 5px;
     justify-content: start;
+    padding: 10px;
 }
 
 .chains-grid .chain-card {
     background: white !important;
     border: 1px solid #e9ecef !important;
-    border-radius: 1px !important;
-    padding: 0 !important;
+    border-radius: 4px !important;
+    padding: 8px 4px !important;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    width: 12px !important;
-    height: 12px !important;
+    min-width: 60px !important;
+    height: 32px !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     box-sizing: border-box !important;
+}
+
+.chain-id-preview {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #495057;
+    font-family: 'Courier New', monospace;
+    line-height: 1;
 }
 
 .chain-card:hover {
@@ -2706,12 +2719,7 @@ small.text-muted {
     overflow-y: auto;
 }
 
-.users-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 0.5rem;
-    padding: 0.5rem;
-}
+
 
 
 
@@ -2733,12 +2741,7 @@ small.text-muted {
     overflow-y: auto;
 }
 
-.chains-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 0.5rem;
-    padding: 0.5rem;
-}
+
 
 
 
@@ -3056,15 +3059,7 @@ small.text-muted {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* 用户和区块链网格样式 - 进一步缩小版本 */
-.users-grid, .chains-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 0.25rem;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 0.5rem;
-}
+
 
 
 
@@ -4042,15 +4037,7 @@ small.text-muted {
     background: white;
 }
 
-/* 用户标签页样式 */
-#users-tab .users-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 0.75rem;
-    height: 100%;
-    overflow-y: auto;
-    padding: 0.5rem;
-}
+
 
 /* 删除了冲突的用户卡片样式 */
 
@@ -4074,15 +4061,7 @@ small.text-muted {
     font-weight: 500;
 }
 
-/* 区块链标签页样式 */
-#chains-tab .chains-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.75rem;
-    height: 100%;
-    overflow-y: auto;
-    padding: 0.5rem;
-}
+
 
 /* 删除了冲突的区块链卡片样式 */
 
@@ -4520,6 +4499,7 @@ small.text-muted {
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .node-details-container .text-muted {
@@ -4540,6 +4520,7 @@ small.text-muted {
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .user-details-container .text-muted {
@@ -4558,8 +4539,7 @@ small.text-muted {
 
 .chain-details-container {
     height: 100%;
-    display: flex;
-    flex-direction: column;
+    overflow-y: auto;
 }
 
 .chain-details-container .text-muted {
@@ -5086,19 +5066,20 @@ small.text-muted {
 
 /* 标签页上下分割布局 */
 .tab-section-upper {
-    flex: 3;
-    min-height: 0;
+    flex: 0 0 40%;
+    max-height: 40%;
+    min-height: 200px;
     padding: 1rem;
     border-bottom: 1px solid #e9ecef;
-    overflow: auto;
+    overflow-y: auto;
     background: #fafbfc;
 }
 
 .tab-section-lower {
-    flex: 2;
+    flex: 1;
     min-height: 0;
     padding: 1rem;
-    overflow: auto;
+    overflow-y: auto;
     background: white;
 }
 
@@ -5132,15 +5113,12 @@ small.text-muted {
 /* 节点详情容器样式 */
 .node-details-container {
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .node-details-container.has-content {
-    justify-content: flex-start;
-    align-items: stretch;
+    /* 内容存在时的样式 */
 }
 
 .node-details-content {
@@ -5219,15 +5197,12 @@ small.text-muted {
 
 .user-details-container {
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .user-details-container.has-content {
-    justify-content: flex-start;
-    align-items: stretch;
+    /* 内容存在时的样式 */
 }
 
 .user-details-content {
@@ -5245,15 +5220,12 @@ small.text-muted {
 
 .chain-details-container {
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .chain-details-container.has-content {
-    justify-content: flex-start;
-    align-items: stretch;
+    /* 内容存在时的样式 */
 }
 
 .chain-details-content {
@@ -5571,4 +5543,125 @@ small.text-muted {
         border-color: #4a5568;
         color: #e2e8f0;
     }
+}
+/* 用户卡
+片内容样式 */
+.user-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.user-key-preview {
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    color: #495057;
+    font-weight: 500;
+    line-height: 1;
+    word-break: break-all;
+}
+
+/* 用户卡片tooltip样式 */
+.user-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #212529;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    display: none;
+    margin-bottom: 5px;
+}
+
+.user-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #212529;
+}
+
+.user-card:hover .user-tooltip {
+    display: block;
+}
+
+/* 详情容器滚动条样式 - 确保滚动条在整个详情区域 */
+.user-details-container,
+.node-details-container,
+.chain-details-container {
+    height: 100% !important;
+    overflow-y: auto !important;
+    display: block !important;
+    max-height: 100% !important;
+}
+
+/* 区块链详情容器特殊处理 - 强制滚动条 */
+#chain-details-container {
+    height: 100% !important;
+    overflow-y: scroll !important;
+    display: block !important;
+    max-height: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+}
+
+/* 确保区块链详情内容不会撑破容器 */
+#chain-details-container .chain-details {
+    padding: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 详情内容样式 */
+.user-details,
+.node-details,
+.chain-details {
+    padding: 1rem;
+    min-height: 100%;
+}
+
+/* 当有内容时，确保滚动条正确工作 */
+.user-details-container.has-content,
+.node-details-container.has-content,
+.chain-details-container.has-content {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+/* 标签页区域布局样式 */
+.tab-section-upper {
+    flex: 0 0 auto;
+    min-height: 200px;
+    max-height: 50%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-section-lower {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 确保详情容器在tab-section-lower中正确显示滚动条 */
+.tab-section-lower .chain-details-container,
+.tab-section-lower .user-details-container,
+.tab-section-lower .node-details-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    height: 100%;
 }
