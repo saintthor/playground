@@ -14,6 +14,7 @@ class CtrlPanel {
             failureRate: 0.1,
             paymentRate: 0.05,
             tickInterval: 1000,
+            DefStr: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS。\n其中，H 为本文件 sha256 值的 Base64 格式；S 是序列号，与钞票面值的对应关系如下：",
             chainDefinition: `1-100 1
 101-200 5
 201-300 10
@@ -101,7 +102,8 @@ class CtrlPanel {
     renderChainDefinition(container) {
         container.innerHTML = `
             <div class="form-group">
-                <label class="form-label">区块链定义</label>
+                <!--label class="form-label">区块链定义</label-->
+                <div style="font-size: smaller;">${this.currentConfig.DefStr.replace( '\n', '<br>' )}</div>
                 <textarea class="form-control" id="chain-definition" rows="6">${this.currentConfig.chainDefinition}</textarea>
                 <small class="text-muted">格式: 起始序列号-结束序列号 面值</small>
             </div>
@@ -296,7 +298,7 @@ class CtrlPanel {
             let definitionHash;
             try {
                 // 使用Crypto服务计算SHA256哈希
-                const hexHash = await Crypto.sha256(definition);
+                const hexHash = await Crypto.sha256(this.currentConfig.DefStr + definition);
                 // 将十六进制哈希转换为base64格式
                 const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
                 definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
@@ -360,7 +362,7 @@ class CtrlPanel {
         
         resultContainer.innerHTML = `
             <div class="alert alert-success">
-                <strong>验证成功!</strong><br>
+                <strong>定义格式正确!</strong><br>
                 共定义 ${result.ranges.length} 个范围，总计 ${result.totalCount} 个区块链<br>
                 <strong>定义文件哈希:</strong> <code class="definition-hash base64-data" data-type="hash" data-full-value="${definitionHash}">${definitionHash}</code><br>
                 <small class="text-muted">此哈希值将加入每条区块链的根区块</small>
@@ -560,7 +562,7 @@ class CtrlPanel {
     generateVerifyCode(value, type) {
         if (type === 'hash') {
             return `// 验证 SHA256 哈希值
-const originalData = \`${this.currentConfig.chainDefinition}\`;
+const originalData = \`${this.currentConfig.DefStr.replace( '\\n', '\\\\n' ).replace( '\n', '\\n' ) + this.currentConfig.chainDefinition}\`;
 const expectedHash = "${value}";
 
 // 计算哈希值 (异步函数)
@@ -714,7 +716,7 @@ console.log('解码结果:', decoded);`;
         try {
             if (dataType === 'hash') {
                 // 验证哈希值
-                const originalData = this.currentConfig.chainDefinition;
+                const originalData = this.currentConfig.DefStr + this.currentConfig.chainDefinition;
                 const expectedHash = fullValue;
                 
                 const hexHash = await Crypto.sha256(originalData);
