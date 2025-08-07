@@ -11,6 +11,7 @@ class CtrlPanel {
             nodeCount: 30,
             userCount: 30,
             maxConnections: 5,
+            userNodeNum: 3,
             failureRate: 0.1,
             paymentRate: 0.05,
             tickInterval: 1000,
@@ -76,13 +77,18 @@ class CtrlPanel {
             </div>
             
             <div class="form-group">
-                <label class="form-label">虚拟用户数量</label>
+                <label class="form-label">用户数量</label>
                 <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
             </div>
             
             <div class="form-group">
-                <label class="form-label">最大连接数</label>
+                <label class="form-label">节点最大连接数</label>
                 <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">用户关联节点数</label>
+                <input type="number" class="form-control" id="userNodeNum" value="${this.currentConfig.userNodeNum}" min="1" max="5">
             </div>
             
             <div class="form-group">
@@ -91,11 +97,11 @@ class CtrlPanel {
                 <small class="text-muted">当前: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
             </div>
             
-            <div class="form-group">
+            <!--div class="form-group">
                 <label class="form-label">支付速率 (%)</label>
                 <input type="range" class="form-control" id="payment-rate" value="${this.currentConfig.paymentRate * 100}" min="0" max="20">
                 <small class="text-muted">当前: ${(this.currentConfig.paymentRate * 100).toFixed(1)}%</small>
-            </div>
+            </div-->
         `;
     }
     
@@ -150,12 +156,14 @@ class CtrlPanel {
         const nodeCount = document.getElementById('node-count');
         const userCount = document.getElementById('user-count');
         const maxConnections = document.getElementById('max-connections');
+        const userNodeNum = document.getElementById('userNodeNum');
         const failureRate = document.getElementById('failure-rate');
         const paymentRate = document.getElementById('payment-rate');
         
         if (nodeCount) nodeCount.addEventListener('change', (e) => this.updateConfig('nodeCount', parseInt(e.target.value)));
         if (userCount) userCount.addEventListener('change', (e) => this.updateConfig('userCount', parseInt(e.target.value)));
         if (maxConnections) maxConnections.addEventListener('change', (e) => this.updateConfig('maxConnections', parseInt(e.target.value)));
+        if (userNodeNum) userNodeNum.addEventListener('change', (e) => this.updateConfig('userNodeNum', parseInt(e.target.value)));
         if (failureRate) failureRate.addEventListener('input', (e) => this.updateFailureRate(e.target.value));
         if (paymentRate) paymentRate.addEventListener('input', (e) => this.updatePaymentRate(e.target.value));
         
