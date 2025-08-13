@@ -55,9 +55,15 @@ class MainPanel {
         panelContent.innerHTML = `
             <div class="main-panel-tabs">
                 <div class="tab-header">
-                    <button class="tab-button active" data-tab="network">网络</button>
-                    <button class="tab-button" data-tab="users">用户</button>
-                    <button class="tab-button" data-tab="chains">区块链</button>
+                    <div class="tab-actions">
+                        <button class="btn btn-primary btn-sm" id="send-btn">发送</button>
+                        <button class="btn btn-danger btn-sm" id="attack-btn">攻击</button>
+                    </div>
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="network">网络</button>
+                        <button class="tab-button" data-tab="users">用户</button>
+                        <button class="tab-button" data-tab="chains">区块链</button>
+                    </div>
                 </div>
                 
                 <div class="tab-content">

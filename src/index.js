@@ -180,7 +180,7 @@ class App {
         }
         
         // 启动自动转账模拟
-        this.startAutoTransfer();
+        //this.startAutoTransfer();
         
         // 启动滴答计数器
         this.startTickCounter();
@@ -418,11 +418,12 @@ class App {
             
             // 为每个用户分配3个节点
             const nodeCount = config.nodeCount || 5;
+            const userNodeNum = config.userNodeNum || 3;
             const userNodes = [];
             const availableNodes = Array.from({length: nodeCount}, (_, i) => i);
             
             // 随机选择3个不同的节点
-            for (let j = 0; j < Math.min(3, nodeCount); j++) {
+            for (let j = 0; j < Math.min( userNodeNum, nodeCount ); j++) {
                 const randomIndex = Math.floor(Math.random() * availableNodes.length);
                 userNodes.push(availableNodes.splice(randomIndex, 1)[0]);
             }
@@ -450,7 +451,7 @@ class App {
         for (const range of chainDefinition.ranges) {
             for (let serial = range.start; serial <= range.end; serial++) {
                 // 随机选择一个用户作为拥有者
-                const randomUser = users[Math.floor(Math.random() * users.length)];
+                const targetUser = users[Math.floor(Math.random() * users.length)];
                 
                 // 生成定义文件哈希
                 const definitionHash = this.generateBase64Hash('chain_definition');
@@ -460,12 +461,12 @@ class App {
                     type: 'root',
                     creator: 'system',
                     tick: this.currentTick - Math.floor(Math.random() * 1000),
-                    data: `${definitionHash}\n${serial}`, // 简化格式：第一行是定义哈希，第二行是序列号
+                    data: `0\n${definitionHash}\n${serial}`, // 三行：区块序号、定义文件哈希，序列号
                     previousHash: ''
                 };
                 
                 // 计算根区块哈希（base64格式）
-                const rootBlockHash = this.generateBase64Hash(JSON.stringify(rootBlockData));
+                const rootBlockHash = this.generateBase64Hash( rootBlockData.data );
                 rootBlockData.hash = rootBlockHash;
                 
                 // 区块链ID就是根区块的哈希值
@@ -474,19 +475,20 @@ class App {
                 // 创建所有权区块 - 精简数据
                 const ownerBlockData = {
                     type: 'ownership',
-                    creator: randomUser.publicKey,
+                    creator: targetUser.publicKey,
                     tick: this.currentTick - Math.floor(Math.random() * 500),
-                    data: randomUser.publicKey, // 简化：只包含拥有者公钥
+                    data: `1\n${rootBlockHash}\n${this.currentTick}\n${targetUser.publicKey}`, // 四行：区块序号、前区块 ID、滴答、目标用户公钥
+                    //data: targetUser.publicKey, // 简化：只包含拥有者公钥
                     previousHash: rootBlockHash
                 };
                 
                 // 计算所有权区块哈希
-                const ownerBlockHash = this.generateBase64Hash(JSON.stringify(ownerBlockData));
+                const ownerBlockHash = this.generateBase64Hash( ownerBlockData.data );
                 ownerBlockData.hash = ownerBlockHash;
 
                 const chainData = {
                     displayNumber: chainCounter++, // 用于显示的编号，不是ID
-                    ownerId: randomUser.publicKey,
+                    ownerId: targetUser.publicKey,
                     value: range.value,
                     serialNumber: serial.toString(),
                     isTransferring: false,
@@ -497,7 +499,7 @@ class App {
                 this.mockChains.set(chainId, chainData);
 
                 // 更新用户的拥有区块链列表
-                randomUser.ownedChains.push({
+                targetUser.ownedChains.push({
                     chainId: chainId,
                     serialNumber: serial.toString(),
                     value: range.value
@@ -778,7 +780,7 @@ class App {
         
         // 更新转账状态 - 随机改变一些用户和区块链的转账状态
         if (this.currentTick % 10 === 0) { // 每10个滴答更新一次状态
-            for (const [publicKey, user] of this.mockUsers) {
+        /*    for (const [publicKey, user] of this.mockUsers) {
                 // 如果用户当前正在转账，有50%概率结束转账
                 if (user.isTransferring && Math.random() < 0.5) {
                     user.isTransferring = false;
@@ -802,7 +804,7 @@ class App {
                     chain.isTransferring = true;
                     chain.lastTransferTick = this.currentTick;
                 }
-            }
+            }*/
         }
     }
 }

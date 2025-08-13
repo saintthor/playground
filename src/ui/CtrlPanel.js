@@ -71,22 +71,22 @@ class CtrlPanel {
     
     renderNetworkSettings(container) {
         container.innerHTML = `
-            <div class="form-group">
+            <div class="form-group inline-input">
                 <label class="form-label">节点数量</label>
                 <input type="number" class="form-control" id="node-count" value="${this.currentConfig.nodeCount}" min="1" max="100">
             </div>
             
-            <div class="form-group">
+            <div class="form-group inline-input">
                 <label class="form-label">用户数量</label>
                 <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
             </div>
             
-            <div class="form-group">
+            <div class="form-group inline-input">
                 <label class="form-label">节点最大连接数</label>
                 <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
             </div>
             
-            <div class="form-group">
+            <div class="form-group inline-input">
                 <label class="form-label">用户关联节点数</label>
                 <input type="number" class="form-control" id="userNodeNum" value="${this.currentConfig.userNodeNum}" min="1" max="5">
             </div>
