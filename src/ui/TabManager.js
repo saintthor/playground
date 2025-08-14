@@ -8,6 +8,10 @@ class TabManager {
         this.mainPanel = mainPanel;
         this.activeTab = 'network'; // 默认激活网络标签页
         this.tabStates = {
+            help: {
+                isLoaded: false,
+                isVisible: false
+            },
             network: { 
                 selectedNode: null,
                 networkGraphConfig: null,
@@ -42,6 +46,7 @@ class TabManager {
         this.eventListeners = new Map();
         
         // 标签页内容组件
+        this.helpTabContent = null;
         this.networkTabContent = null;
         this.usersTabContent = null;
         this.chainsTabContent = null;
@@ -93,9 +98,6 @@ class TabManager {
             
             // 保存当前标签页状态
             this.saveCurrentTabState();
-            
-            // 隐藏当前标签页内容
-            this.hideTabContent(this.activeTab);
             
             // 更新激活标签页
             const previousTab = this.activeTab;
@@ -181,6 +183,9 @@ class TabManager {
             
             // 根据标签页类型加载内容
             switch (tabName) {
+                case 'help':
+                    await this.loadHelpTabContent();
+                    break;
                 case 'network':
                     await this.loadNetworkTabContent();
                     break;
@@ -199,6 +204,20 @@ class TabManager {
             console.error(`延迟加载标签页内容失败 (${tabName}):`, error);
             this.showErrorFeedback(`加载${this.getTabDisplayName(tabName)}内容失败`);
         }
+    }
+    
+    /**
+     * 加载帮助标签页内容
+     */
+    async loadHelpTabContent() {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (this.helpTabContent) {
+                    this.helpTabContent.renderHelpContent();
+                }
+                resolve();
+            }, 10);
+        });
     }
     
     /**
@@ -260,7 +279,7 @@ class TabManager {
     hideTabContent(tabName) {
         const tabPane = document.getElementById(`${tabName}-tab`);
         if (tabPane) {
-            tabPane.style.display = 'none';
+            tabPane.classList.remove('active');
         }
     }
     
@@ -271,7 +290,7 @@ class TabManager {
     showTabContent(tabName) {
         const tabPane = document.getElementById(`${tabName}-tab`);
         if (tabPane) {
-            tabPane.style.display = 'block';
+            tabPane.classList.add('active');
         }
     }
     
@@ -342,6 +361,7 @@ class TabManager {
      */
     getTabDisplayName(tabName) {
         const names = {
+            help: '帮助',
             network: '网络',
             users: '用户',
             chains: '区块链'
@@ -425,6 +445,8 @@ class TabManager {
     getCurrentTabState() {
         try {
             switch (this.activeTab) {
+                case 'help':
+                    return { }; // 帮助页面无需保存状态
                 case 'network':
                     return this.getNetworkTabState();
                 case 'users':
@@ -503,6 +525,9 @@ class TabManager {
     applyTabState(tabName, state) {
         try {
             switch (tabName) {
+                case 'help':
+                    // 帮助页面无需恢复状态
+                    break;
                 case 'network':
                     this.applyNetworkTabState(state);
                     break;
@@ -900,7 +925,7 @@ class TabManager {
      * @returns {boolean} - 是否有效
      */
     isValidTabName(tabName) {
-        return ['network', 'users', 'chains'].includes(tabName);
+        return ['help', 'network', 'users', 'chains'].includes(tabName);
     }
     
     /**
@@ -1049,6 +1074,9 @@ class TabManager {
      */
     initTabContentComponents() {
         try {
+            // 初始化帮助标签页内容组件
+            this.helpTabContent = new HelpTabContent(this);
+            
             // 初始化网络标签页内容组件
             this.networkTabContent = new NetworkTabContent(this);
             
@@ -1072,6 +1100,9 @@ class TabManager {
         try {
             // 更新UI显示以反映恢复的激活标签页
             this.updateTabDisplay();
+            
+            // 立即加载当前激活标签页的内容
+            this.lazyLoadTabContent(this.activeTab);
             
             // 恢复当前激活标签页的状态
             this.restoreTabState(this.activeTab);
@@ -1136,6 +1167,9 @@ class TabManager {
             
             // 根据激活的标签页类型进行增量更新
             switch (this.activeTab) {
+                case 'help':
+                    // 帮助页面无需数据更新
+                    break;
                 case 'network':
                     this.updateNetworkDataIncremental(newData.networkData, previousData?.networkData);
                     break;
@@ -1546,4 +1580,9 @@ class TabManager {
 // 导出 TabManager 类
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = TabManager;
+}
+
+// ES6 导出
+if (typeof window !== 'undefined') {
+    window.TabManager = TabManager;
 }

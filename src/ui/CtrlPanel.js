@@ -63,6 +63,10 @@ class CtrlPanel {
     
     renderSystemControls(container) {
         container.innerHTML = `
+            <div class="system-controls-header">
+                <span>系统控制</span>
+                <button class="help-icon" data-help="system-controls" title="查看帮助">?</button>
+            </div>
             <button class="btn btn-success" id="start-btn">开始</button>
             <button class="btn btn-warning" id="pause-btn" disabled>暂停</button>
             <button class="btn btn-danger" id="stop-btn" disabled>停止</button>
@@ -72,43 +76,55 @@ class CtrlPanel {
     renderNetworkSettings(container) {
         container.innerHTML = `
             <div class="form-group inline-input">
-                <label class="form-label">节点数量</label>
+                <label class="form-label">
+                    节点数量
+                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                </label>
                 <input type="number" class="form-control" id="node-count" value="${this.currentConfig.nodeCount}" min="1" max="100">
             </div>
             
             <div class="form-group inline-input">
-                <label class="form-label">用户数量</label>
+                <label class="form-label">
+                    用户数量
+                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                </label>
                 <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
             </div>
             
             <div class="form-group inline-input">
-                <label class="form-label">节点最大连接数</label>
+                <label class="form-label">
+                    节点最大连接数
+                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                </label>
                 <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
             </div>
             
             <div class="form-group inline-input">
-                <label class="form-label">用户关联节点数</label>
+                <label class="form-label">
+                    用户关联节点数
+                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                </label>
                 <input type="number" class="form-control" id="userNodeNum" value="${this.currentConfig.userNodeNum}" min="1" max="5">
             </div>
             
             <div class="form-group">
-                <label class="form-label">连接故障率 (%)</label>
+                <label class="form-label">
+                    连接故障率 (%)
+                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                </label>
                 <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
                 <small class="text-muted">当前: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
             </div>
-            
-            <!--div class="form-group">
-                <label class="form-label">支付速率 (%)</label>
-                <input type="range" class="form-control" id="payment-rate" value="${this.currentConfig.paymentRate * 100}" min="0" max="20">
-                <small class="text-muted">当前: ${(this.currentConfig.paymentRate * 100).toFixed(1)}%</small>
-            </div-->
         `;
     }
     
     renderChainDefinition(container) {
         container.innerHTML = `
             <div class="form-group">
-                <!--label class="form-label">区块链定义</label-->
+                <label class="form-label">
+                    区块链定义
+                    <button class="help-icon" data-help="blockchain-definition" title="查看帮助">?</button>
+                </label>
                 <div style="font-size: smaller;">${this.currentConfig.DefStr.replace( '\n', '<br>' )}</div>
                 <textarea class="form-control" id="chain-definition" rows="6">${this.currentConfig.chainDefinition}</textarea>
                 <small class="text-muted">格式: 起始序列号-结束序列号 面值</small>
@@ -128,13 +144,19 @@ class CtrlPanel {
         
         container.innerHTML = `
             <div class="form-group">
-                <label class="form-label">滴答时间间隔</label>
+                <label class="form-label">
+                    滴答时间间隔
+                    <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
+                </label>
                 <input type="range" class="form-control" id="tick-interval" value="${defaultLogValue}" min="0" max="100" step="1">
                 <small class="text-muted">当前: 1.0秒</small>
             </div>
             
             <div class="form-group">
-                <label class="form-label">分叉攻击测试</label>
+                <label class="form-label">
+                    分叉攻击测试
+                    <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
+                </label>
                 <div class="d-flex gap-2">
                     <select class="form-control" id="attack-user">
                         <option value="">选择用户</option>
@@ -183,6 +205,16 @@ class CtrlPanel {
         
         if (tickInterval) tickInterval.addEventListener('input', (e) => this.updateTickInterval(e.target.value));
         if (triggerAttack) triggerAttack.addEventListener('click', () => this.triggerAttack());
+        
+        // 帮助图标事件
+        const helpIcons = document.querySelectorAll('.help-icon');
+        helpIcons.forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.preventDefault();
+                const helpSection = icon.getAttribute('data-help');
+                this.showHelp(helpSection);
+            });
+        });
     }
     
     handleStart() {
@@ -275,6 +307,29 @@ class CtrlPanel {
         const small = document.querySelector('#payment-rate + small');
         if (small) {
             small.textContent = `当前: ${value}%`;
+        }
+    }
+    
+    /**
+     * 显示帮助信息
+     * @param {string} section - 帮助章节ID
+     */
+    showHelp(section) {
+        try {
+            // 通过UIManager获取TabManager
+            if (this.app && this.app.uiManager && this.app.uiManager.panels && 
+                this.app.uiManager.panels.main && this.app.uiManager.panels.main.tabManager &&
+                this.app.uiManager.panels.main.tabManager.helpTabContent) {
+                
+                const helpTabContent = this.app.uiManager.panels.main.tabManager.helpTabContent;
+                helpTabContent.showHelpSection(section);
+                
+                console.log('显示帮助章节:', section);
+            } else {
+                console.warn('无法访问帮助系统');
+            }
+        } catch (error) {
+            console.error('显示帮助失败:', error);
         }
     }
     

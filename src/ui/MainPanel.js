@@ -60,6 +60,7 @@ class MainPanel {
                         <button class="btn btn-danger btn-sm" id="attack-btn">攻击</button>
                     </div>
                     <div class="tab-buttons">
+                        <button class="tab-button" data-tab="help">帮助</button>
                         <button class="tab-button active" data-tab="network">网络</button>
                         <button class="tab-button" data-tab="users">用户</button>
                         <button class="tab-button" data-tab="chains">区块链</button>
@@ -67,7 +68,13 @@ class MainPanel {
                 </div>
                 
                 <div class="tab-content">
-                    <div class="tab-pane active" id="network-tab">
+                    <div class="tab-pane active" id="help-tab">
+                        <div class="help-content" id="help-content">
+                            <div class="help-loading">正在加载帮助内容...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="network-tab">
                         <div class="tab-section-upper">
                             <div class="network-layout">
                                 <div class="network-stats-panel">
