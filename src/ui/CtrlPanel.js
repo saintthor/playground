@@ -200,6 +200,9 @@ class CtrlPanel {
         if (pauseBtn) pauseBtn.disabled = false;
         if (stopBtn) stopBtn.disabled = false;
         
+        // 隐藏网络设置和区块链定义部分
+        this.hideConfigurationSections();
+        
         // 自动隐藏控制面板
         this.minimizeControlPanel();
     }
@@ -245,6 +248,9 @@ class CtrlPanel {
         if (startBtn) startBtn.disabled = false;
         if (pauseBtn) pauseBtn.disabled = true;
         if (stopBtn) stopBtn.disabled = true;
+        
+        // 显示网络设置和区块链定义部分
+        this.showConfigurationSections();
     }
     
     updateConfig(key, value) {
@@ -270,6 +276,42 @@ class CtrlPanel {
         if (small) {
             small.textContent = `当前: ${value}%`;
         }
+    }
+    
+    /**
+     * 隐藏配置部分（网络设置和区块链定义）
+     */
+    hideConfigurationSections() {
+        const networkSettings = document.getElementById('network-settings');
+        const chainDefinition = document.getElementById('chain-definition');
+        
+        if (networkSettings) {
+            networkSettings.style.display = 'none';
+        }
+        
+        if (chainDefinition) {
+            chainDefinition.style.display = 'none';
+        }
+        
+        console.log('配置部分已隐藏');
+    }
+    
+    /**
+     * 显示配置部分（网络设置和区块链定义）
+     */
+    showConfigurationSections() {
+        const networkSettings = document.getElementById('network-settings');
+        const chainDefinition = document.getElementById('chain-definition');
+        
+        if (networkSettings) {
+            networkSettings.style.display = 'block';
+        }
+        
+        if (chainDefinition) {
+            chainDefinition.style.display = 'block';
+        }
+        
+        console.log('配置部分已显示');
     }
     
     /**
