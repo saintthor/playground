@@ -89,6 +89,14 @@ class ChainsTabContent {
         });
         
         console.log(`区块链网格渲染完成: ${chainData.size} 个区块链`);
+        
+        // 触发ResizeManager重新应用比例，确保高度设置正确
+        if (this.tabManager && this.tabManager.resizeManager) {
+            // 使用setTimeout确保DOM更新完成后再应用比例
+            setTimeout(() => {
+                this.tabManager.resizeManager.applyRatio('chains', this.tabManager.resizeManager.getTabRatio('chains'));
+            }, 0);
+        }
     }
     
     /**

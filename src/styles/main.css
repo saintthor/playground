@@ -641,6 +641,26 @@ body {
     padding: 10px;
 }
 
+/* 区块链容器样式 - 添加固定高度和滚动 */
+.chains-container {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* 标签页上方区域通用样式 */
+.tab-section-upper {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-section-upper > * {
+    flex: 1;
+    min-height: 0;
+}
+
 .chains-grid .chain-card {
     background: white !important;
     border: 1px solid #e9ecef !important;
