@@ -24,14 +24,21 @@ class NetworkTabContent {
      * @param {Object} networkData - 网络数据
      */
     renderNetworkGraph(networkData) {
-        const container = document.getElementById('network-graph');
-        if (!container) {
+        const statsContainer = document.getElementById('network-stats');
+        const visualContainer = document.getElementById('d3-network-container');
+        
+        if (!statsContainer || !visualContainer) {
             console.error('网络图容器未找到');
             return;
         }
         
         if (!networkData) {
-            container.innerHTML = '<p class="text-muted">暂无网络数据</p>';
+            statsContainer.innerHTML = `
+                <span class="network-stat">节点: 0</span>
+                <span class="network-stat">连接: 0</span>
+                <span class="network-stat">故障: 0</span>
+            `;
+            visualContainer.innerHTML = '<p class="text-muted">暂无网络数据</p>';
             this.networkGraphInitialized = false;
             return;
         }
@@ -39,9 +46,16 @@ class NetworkTabContent {
         const nodeCount = networkData.nodeCount || 0;
         const failedConnections = Math.floor((networkData.totalConnections || 0) * (networkData.failureRate || 0));
         
+        // 更新统计信息
+        statsContainer.innerHTML = `
+            <span class="network-stat">节点: ${nodeCount}</span>
+            <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
+            <span class="network-stat">故障: ${failedConnections}</span>
+        `;
+        
         // 如果节点数为0，显示系统未启动状态
         if (nodeCount === 0) {
-            container.innerHTML = '<p class="text-muted">系统未启动</p>';
+            visualContainer.innerHTML = '<p class="text-muted">系统未启动</p>';
             this.networkGraphInitialized = false;
             return;
         }
@@ -58,45 +72,14 @@ class NetworkTabContent {
             this.lastNetworkConfig.maxConnections !== currentConfig.maxConnections ||
             this.lastNetworkConfig.failureRate !== currentConfig.failureRate;
         
-        // 如果网络图还未初始化，创建完整的HTML结构
-        if (!this.networkGraphInitialized) {
-            const html = `
-                <div class="network-graph-display">
-                    <div class="network-stats">
-                        <span class="network-stat">节点: ${nodeCount}</span>
-                        <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
-                        <span class="network-stat">故障: ${failedConnections}</span>
-                    </div>
-                    <div class="network-visual">
-                        <div id="d3-network-container" style="width: 100%; height: 100%;"></div>
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
+        // 如果网络图还未初始化或配置发生变化，重新渲染网络图
+        if (!this.networkGraphInitialized || configChanged) {
             this.networkGraphInitialized = true;
             
-            // 首次渲染网络图
+            // 渲染网络图
             setTimeout(() => {
                 this.renderD3NetworkGraph(nodeCount, networkData);
             }, 100);
-        } else {
-            // 更新统计信息
-            const statsContainer = container.querySelector('.network-stats');
-            if (statsContainer) {
-                statsContainer.innerHTML = `
-                    <span class="network-stat">节点: ${nodeCount}</span>
-                    <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
-                    <span class="network-stat">故障: ${failedConnections}</span>
-                `;
-            }
-            
-            // 只有在配置发生变化时才重新渲染网络图
-            if (configChanged) {
-                setTimeout(() => {
-                    this.renderD3NetworkGraph(nodeCount, networkData);
-                }, 100);
-            }
         }
         
         // 保存当前配置
@@ -575,9 +558,19 @@ class NetworkTabContent {
         this.lastNetworkConfig = null;
         this.clearSelection();
         
-        const container = document.getElementById('network-graph');
-        if (container) {
-            container.innerHTML = '<p class="text-muted">系统未启动</p>';
+        const statsContainer = document.getElementById('network-stats');
+        const visualContainer = document.getElementById('d3-network-container');
+        
+        if (statsContainer) {
+            statsContainer.innerHTML = `
+                <span class="network-stat">节点: 0</span>
+                <span class="network-stat">连接: 0</span>
+                <span class="network-stat">故障: 0</span>
+            `;
+        }
+        
+        if (visualContainer) {
+            visualContainer.innerHTML = '<p class="text-muted">系统未启动</p>';
         }
     }
     

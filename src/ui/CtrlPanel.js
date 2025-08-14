@@ -123,10 +123,13 @@ class CtrlPanel {
     }
     
     renderRuntimeControls(container) {
+        // 计算默认值的对数位置 (1000ms = 1.0s)
+        const defaultLogValue = this.timeToLogScale(1000);
+        
         container.innerHTML = `
             <div class="form-group">
                 <label class="form-label">滴答时间间隔</label>
-                <input type="range" class="form-control" id="tick-interval" value="1000" min="100" max="3000">
+                <input type="range" class="form-control" id="tick-interval" value="${defaultLogValue}" min="0" max="100" step="1">
                 <small class="text-muted">当前: 1.0秒</small>
             </div>
             
@@ -269,12 +272,55 @@ class CtrlPanel {
         }
     }
     
-    updateTickInterval(value) {
-        this.currentConfig.tickInterval = parseInt(value);
+    /**
+     * 将对数刻度值转换为实际时间（毫秒）
+     * @param {number} logValue - 对数刻度值 (0-100)
+     * @returns {number} - 实际时间（毫秒）
+     */
+    logScaleToTime(logValue) {
+        // 对数范围：0.01s (10ms) 到 3s (3000ms)
+        const minTime = 10;   // 0.01s
+        const maxTime = 3000; // 3s
+        
+        // 使用对数插值：time = minTime * (maxTime/minTime)^(logValue/100)
+        const ratio = Math.pow(maxTime / minTime, logValue / 100);
+        return Math.round(minTime * ratio);
+    }
+    
+    /**
+     * 将实际时间（毫秒）转换为对数刻度值
+     * @param {number} timeMs - 实际时间（毫秒）
+     * @returns {number} - 对数刻度值 (0-100)
+     */
+    timeToLogScale(timeMs) {
+        const minTime = 10;   // 0.01s
+        const maxTime = 3000; // 3s
+        
+        // 限制范围
+        const clampedTime = Math.max(minTime, Math.min(maxTime, timeMs));
+        
+        // 反向对数计算：logValue = 100 * log(time/minTime) / log(maxTime/minTime)
+        const logValue = 100 * Math.log(clampedTime / minTime) / Math.log(maxTime / minTime);
+        return Math.round(logValue);
+    }
+    
+    updateTickInterval(logValue) {
+        // 将对数刻度值转换为实际时间
+        const actualTime = this.logScaleToTime(parseInt(logValue));
+        this.currentConfig.tickInterval = actualTime;
         
         const small = document.querySelector('#tick-interval + small');
         if (small) {
-            small.textContent = `当前: ${(value / 1000).toFixed(1)}秒`;
+            if (actualTime < 1000) {
+                small.textContent = `当前: ${actualTime}毫秒`;
+            } else {
+                small.textContent = `当前: ${(actualTime / 1000).toFixed(2)}秒`;
+            }
+        }
+        
+        // 如果系统正在运行，更新定时器间隔
+        if (this.app && this.app.updateTickInterval) {
+            this.app.updateTickInterval(actualTime);
         }
     }
     

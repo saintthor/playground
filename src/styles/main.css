@@ -516,50 +516,86 @@ body {
     margin-bottom: 0.75rem;
 }
 
-/* 网络图容器样式 */
-.network-graph-container {
-    width: 100%;
-    margin-bottom: 1rem;
+/* 网络页面布局样式 */
+.network-layout {
+    display: flex;
+    height: 100%;
+    gap: 1rem;
+}
+
+.network-stats-panel {
+    width: 120px;
+    flex-shrink: 0;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.network-graph-panel {
+    flex: 1;
+    background: white;
     border: 1px solid #e9ecef;
     border-radius: 6px;
     overflow: hidden;
-}
-
-.network-graph {
-    width: 100%;
-    min-height: 350px;
-    background: #f8f9fa;
-}
-
-.network-graph-display {
-    width: 100%;
-    height: 100%;
+    min-height: 0;
 }
 
 .network-stats {
     display: flex;
-    justify-content: center;
-    gap: 2rem;
-    padding: 0.75rem;
-    background: white;
-    border-bottom: 1px solid #e9ecef;
+    flex-direction: column;
+    gap: 1rem;
     font-size: 0.9rem;
 }
 
 .network-stat {
     color: #495057;
     font-weight: 500;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid #dee2e6;
 }
 
 .network-visual {
     width: 100%;
-    height: 300px;
+    height: 100%;
     position: relative;
+    background: #f8f9fa;
 }
 
 #d3-network-container {
     width: 100% !important;
-    height: 300px !important;
+    height: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .network-layout {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .network-stats-panel {
+        width: 100%;
+        height: auto;
+    }
+    
+    .network-stats {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .network-graph-panel {
+        min-height: 300px;
+    }
 }
 
 /* 信息区域样式 */

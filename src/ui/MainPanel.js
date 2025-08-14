@@ -69,8 +69,21 @@ class MainPanel {
                 <div class="tab-content">
                     <div class="tab-pane active" id="network-tab">
                         <div class="tab-section-upper">
-                            <div class="network-graph" id="network-graph">
-                                <p class="text-muted">系统未启动</p>
+                            <div class="network-layout">
+                                <div class="network-stats-panel">
+                                    <div class="network-stats" id="network-stats">
+                                        <span class="network-stat">节点: 0</span>
+                                        <span class="network-stat">连接: 0</span>
+                                        <span class="network-stat">故障: 0</span>
+                                    </div>
+                                </div>
+                                <div class="network-graph-panel">
+                                    <div class="network-visual" id="network-visual">
+                                        <div id="d3-network-container" style="width: 100%; height: 100%;">
+                                            <p class="text-muted">系统未启动</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="tab-section-lower">
