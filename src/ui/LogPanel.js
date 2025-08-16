@@ -8,12 +8,23 @@ class LogPanel {
         this.app = uiManager.app;
         this.isInitialized = false;
         this.logs = [];
+        this.maxLogs = 1000;
+        this.currentTab = 'all';
+        this.pendingLogs = [];
     }
     
     init() {
         try {
             this.render();
+            this.bindEvents();
             this.isInitialized = true;
+            
+            // 处理待处理的日志
+            this.pendingLogs.forEach(log => {
+                this.addLog(log.message, log.level, log.category);
+            });
+            this.pendingLogs = [];
+            
             console.log('LogPanel 初始化完成');
         } catch (error) {
             console.error('LogPanel 初始化失败:', error);
@@ -21,93 +32,323 @@ class LogPanel {
     }
     
     render() {
-        const logPanel = document.getElementById('log-panel');
-        if (!logPanel) return;
+        const container = document.getElementById('log-panel');
+        if (!container) {
+            console.error('日志面板容器未找到');
+            return;
+        }
         
-        const panelContent = logPanel.querySelector('.panel-content');
-        if (!panelContent) return;
-        
-        panelContent.innerHTML = `
-            <div class="log-controls">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div class="log-filters">
-                        <select class="form-control" id="log-filter" style="width: auto; display: inline-block;">
-                            <option value="all">所有日志</option>
-                            <option value="block">区块操作</option>
-                            <option value="network">网络事件</option>
-                            <option value="security">安全事件</option>
-                        </select>
-                    </div>
-                    <div class="log-pagination">
-                        <button class="btn btn-secondary btn-sm" id="log-prev" disabled>上一页</button>
-                        <span class="text-muted" id="log-page-info">第 1 页</span>
-                        <button class="btn btn-secondary btn-sm" id="log-next" disabled>下一页</button>
-                    </div>
+        container.innerHTML = `
+            <div class="log-header">
+                <h3>系统日志</h3>
+                <div class="log-controls">
+                    <button class="btn btn-sm btn-secondary" id="clear-logs">清空日志</button>
+                    <button class="btn btn-sm btn-info" id="export-logs">导出日志</button>
                 </div>
             </div>
-            
-            <div class="log-display" id="log-entries">
-                <p class="text-muted text-center">暂无日志记录</p>
+            <div class="log-tabs">
+                <ul class="nav nav-tabs" id="log-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-logs-tab" data-tab="all" type="button" role="tab">
+                            所有日志
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="node-logs-tab" data-tab="node" type="button" role="tab">
+                            节点日志
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="user-logs-tab" data-tab="user" type="button" role="tab">
+                            用户日志
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="blockchain-logs-tab" data-tab="blockchain" type="button" role="tab">
+                            区块链日志
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="log-content">
+                <div class="tab-content" id="log-tab-content">
+                    <div class="tab-pane active" id="all-logs-content">
+                        <div class="log-list" id="all-logs-list">
+                            <div class="log-placeholder">暂无日志信息</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="node-logs-content">
+                        <div class="log-list" id="node-logs-list">
+                            <div class="log-placeholder">暂无节点日志</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="user-logs-content">
+                        <div class="log-list" id="user-logs-list">
+                            <div class="log-placeholder">暂无用户日志</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="blockchain-logs-content">
+                        <div class="log-list" id="blockchain-logs-list">
+                            <div class="log-placeholder">暂无区块链日志</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     }
     
-    addLog(type, message, relatedData = {}) {
-        const log = {
-            id: Date.now(),
-            type: type,
-            message: message,
-            timestamp: new Date().toLocaleTimeString(),
-            relatedData: relatedData
-        };
+    bindEvents() {
+        const clearBtn = document.getElementById('clear-logs');
+        const exportBtn = document.getElementById('export-logs');
         
-        // 新日志添加到末尾（底部）
-        this.logs.push(log);
-        if (this.logs.length > 100) {
-            this.logs = this.logs.slice(-100); // 保留最后100条
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => this.clearLogs());
         }
         
-        this.updateDisplay();
-    }
-    
-    updateDisplay() {
-        const logEntries = document.getElementById('log-entries');
-        if (!logEntries) return;
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportLogs());
+        }
         
-        if (this.logs.length === 0) {
-            logEntries.innerHTML = '<p class="text-muted text-center">暂无日志记录</p>';
+        // 绑定标签页切换事件
+        const tabButtons = document.querySelectorAll('#log-tabs .nav-link');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = button.getAttribute('data-tab');
+                this.switchTab(tabName);
+            });
+        });
+    }
+
+    addLog(message, level = 'info', category = 'system') {
+        if (!this.isInitialized) {
+            this.pendingLogs.push({ message, level, category, timestamp: new Date() });
             return;
         }
         
-        // 显示最后10条日志（最新的在底部）
-        const recentLogs = this.logs.slice(-10);
-        const logsHtml = recentLogs.map(log => `
-            <div class="log-entry log-type-${log.type}">
-                <span class="log-timestamp">${log.timestamp}</span>
-                <span class="log-message">${this.formatLogMessage(log.message)}</span>
-            </div>
-        `).join('');
+        const logEntry = {
+            id: Date.now() + Math.random(),
+            message,
+            level,
+            category,
+            timestamp: new Date()
+        };
         
-        logEntries.innerHTML = logsHtml;
+        this.logs.push(logEntry);
         
-        // 自动滚动到底部显示最新日志
-        logEntries.scrollTop = logEntries.scrollHeight;
+        // 限制日志数量
+        if (this.logs.length > this.maxLogs) {
+            this.logs.shift();
+        }
+        
+        this.renderLogEntry(logEntry);
+        this.scrollToBottom();
     }
     
-    handleLogClick(logId, event) {
-        console.log('日志点击:', logId);
+    /**
+     * 切换日志标签页
+     * @param {string} tabName - 标签页名称 (all, node, user, blockchain)
+     */
+    switchTab(tabName) {
+        // 更新标签页按钮状态
+        const tabButtons = document.querySelectorAll('#log-tabs .nav-link');
+        tabButtons.forEach(button => {
+            button.classList.remove('active');
+            if (button.getAttribute('data-tab') === tabName) {
+                button.classList.add('active');
+            }
+        });
+        
+        // 更新标签页内容显示
+        const tabPanes = document.querySelectorAll('#log-tab-content .tab-pane');
+        tabPanes.forEach(pane => {
+            pane.classList.remove('active');
+        });
+        
+        const activePane = document.getElementById(`${tabName}-logs-content`);
+        if (activePane) {
+            activePane.classList.add('active');
+        }
+        
+        this.currentTab = tabName;
+        this.refreshCurrentTab();
     }
     
-    filterLogsByUser(userId) {
-        console.log('按用户过滤日志:', userId);
+    /**
+     * 刷新当前标签页的日志显示
+     */
+    refreshCurrentTab() {
+        const currentTab = this.currentTab || 'all';
+        const logList = document.getElementById(`${currentTab}-logs-list`);
+        
+        if (!logList) return;
+        
+        // 清空当前显示
+        logList.innerHTML = '';
+        
+        // 根据标签页过滤日志
+        let filteredLogs = this.logs;
+        if (currentTab !== 'all') {
+            filteredLogs = this.logs.filter(log => this.getLogCategory(log) === currentTab);
+        }
+        
+        if (filteredLogs.length === 0) {
+            const placeholder = this.getPlaceholderText(currentTab);
+            logList.innerHTML = `<div class="log-placeholder">${placeholder}</div>`;
+        } else {
+            filteredLogs.forEach(log => {
+                const logElement = this.createLogElement(log);
+                logList.appendChild(logElement);
+            });
+        }
+        
+        this.scrollToBottom();
     }
     
-    filterLogsByChain(chainId) {
-        console.log('按区块链过滤日志:', chainId);
+    /**
+     * 获取日志的分类
+     * @param {Object} log - 日志条目
+     * @returns {string} 日志分类
+     */
+    getLogCategory(log) {
+        // 根据日志内容和类别判断分类
+        if (log.category) {
+            if (log.category.includes('node') || log.category.includes('network')) {
+                return 'node';
+            }
+            if (log.category.includes('user') || log.category.includes('payment')) {
+                return 'user';
+            }
+            if (log.category.includes('blockchain') || log.category.includes('chain') || log.category.includes('block')) {
+                return 'blockchain';
+            }
+        }
+        
+        // 根据消息内容判断
+        const message = log.message.toLowerCase();
+        if (message.includes('节点') || message.includes('node') || message.includes('连接') || message.includes('网络')) {
+            return 'node';
+        }
+        if (message.includes('用户') || message.includes('user') || message.includes('支付') || message.includes('转账')) {
+            return 'user';
+        }
+        if (message.includes('区块链') || message.includes('blockchain') || message.includes('区块') || message.includes('block')) {
+            return 'blockchain';
+        }
+        
+        return 'all';
     }
     
-    clearAllFilters() {
-        console.log('清除所有过滤器');
+    /**
+     * 获取占位符文本
+     * @param {string} tabName - 标签页名称
+     * @returns {string} 占位符文本
+     */
+    getPlaceholderText(tabName) {
+        const placeholders = {
+            all: '暂无日志信息',
+            node: '暂无节点日志',
+            user: '暂无用户日志',
+            blockchain: '暂无区块链日志'
+        };
+        return placeholders[tabName] || '暂无日志信息';
+    }
+    
+    /**
+     * 切换到指定的日志标签页（供外部调用）
+     * @param {string} category - 日志分类 (node, user, blockchain)
+     */
+    switchToCategory(category) {
+        if (['node', 'user', 'blockchain'].includes(category)) {
+            this.switchTab(category);
+        }
+    }
+
+    renderLogEntry(logEntry) {
+        // 添加到所有日志标签页
+        this.addToLogList('all-logs-list', logEntry);
+        
+        // 根据日志分类添加到对应标签页
+        const category = this.getLogCategory(logEntry);
+        if (category !== 'all') {
+            this.addToLogList(`${category}-logs-list`, logEntry);
+        }
+    }
+    
+    /**
+     * 添加日志到指定的日志列表
+     * @param {string} listId - 日志列表ID
+     * @param {Object} logEntry - 日志条目
+     */
+    addToLogList(listId, logEntry) {
+        const logList = document.getElementById(listId);
+        if (!logList) return;
+        
+        // 移除占位符
+        const placeholder = logList.querySelector('.log-placeholder');
+        if (placeholder) {
+            placeholder.remove();
+        }
+        
+        const logElement = this.createLogElement(logEntry);
+        logList.appendChild(logElement);
+    }
+
+    createLogElement(logEntry) {
+        const logElement = document.createElement('div');
+        logElement.className = `log-entry ${logEntry.level}`;
+        logElement.innerHTML = `
+            <span class="log-timestamp">${logEntry.timestamp.toLocaleTimeString()}</span>
+            <span class="log-message">${this.formatLogMessage(logEntry.message)}</span>
+        `;
+        return logElement;
+    }
+
+    clearLogs() {
+        this.logs = [];
+        
+        // 清空所有标签页的日志列表
+        const logLists = ['all-logs-list', 'node-logs-list', 'user-logs-list', 'blockchain-logs-list'];
+        logLists.forEach(listId => {
+            const logList = document.getElementById(listId);
+            if (logList) {
+                const tabName = listId.replace('-logs-list', '');
+                const placeholder = this.getPlaceholderText(tabName);
+                logList.innerHTML = `<div class="log-placeholder">${placeholder}</div>`;
+            }
+        });
+    }
+
+    exportLogs() {
+        const currentTab = this.currentTab || 'all';
+        let logsToExport = this.logs;
+        
+        if (currentTab !== 'all') {
+            logsToExport = this.logs.filter(log => this.getLogCategory(log) === currentTab);
+        }
+        
+        const logText = logsToExport.map(log => 
+            `${log.timestamp.toLocaleString()} [${log.level.toUpperCase()}] ${log.message}`
+        ).join('\n');
+        
+        const blob = new Blob([logText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `logs-${currentTab}-${new Date().toISOString().slice(0, 10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    scrollToBottom() {
+        // 滚动当前活动的标签页到底部
+        const currentTab = this.currentTab || 'all';
+        const logList = document.getElementById(`${currentTab}-logs-list`);
+        if (logList) {
+            logList.scrollTop = logList.scrollHeight;
+        }
     }
     
     /**

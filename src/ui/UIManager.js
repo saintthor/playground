@@ -98,6 +98,9 @@ class UIManager {
         // 初始化日志面板
         this.panels.log = new LogPanel(this);
         this.panels.log.init();
+        
+        // 设置应用程序级别的日志面板引用
+        this.app.logPanel = this.panels.log;
 
         console.log('面板结构初始化完成');
     }
@@ -196,29 +199,9 @@ class UIManager {
      * @private
      */
     _setupLogPanelStructure(contentElement) {
-        contentElement.innerHTML = `
-            <div class="log-controls">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div class="log-filters">
-                        <select class="form-control" id="log-filter" style="width: auto; display: inline-block;">
-                            <option value="all">所有日志</option>
-                            <option value="block">区块操作</option>
-                            <option value="network">网络事件</option>
-                            <option value="security">安全事件</option>
-                        </select>
-                    </div>
-                    <div class="log-pagination">
-                        <button class="btn btn-secondary btn-sm" id="log-prev" disabled>上一页</button>
-                        <span class="text-muted" id="log-page-info">第 1 页</span>
-                        <button class="btn btn-secondary btn-sm" id="log-next" disabled>下一页</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="log-display" id="log-entries">
-                <p class="text-muted text-center">暂无日志记录</p>
-            </div>
-        `;
+        // LogPanel now handles its own structure rendering
+        // Just ensure the container is ready
+        contentElement.innerHTML = '';
     }
 
     /**

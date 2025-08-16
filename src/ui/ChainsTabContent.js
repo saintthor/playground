@@ -111,6 +111,11 @@ class ChainsTabContent {
             // 显示区块链详情
             this.showChainDetails(chainId);
             
+            // 切换日志面板到区块链日志
+            if (this.app && this.app.logPanel) {
+                this.app.logPanel.switchToCategory('blockchain');
+            }
+            
             // 保存选中状态到标签页管理器
             this.tabManager.handleStateChange('chains', {
                 selectedChain: chainId
@@ -169,11 +174,8 @@ class ChainsTabContent {
             // 获取区块链拥有者信息
             const ownerData = this.getChainOwnerData(chainData.ownerId);
             
-            // 获取与区块链相关的日志
-            const chainLogs = this.getChainRelatedLogs(chainId);
-            
             // 生成区块链详情HTML
-            const detailsHTML = this.generateChainDetailsHTML(chainId, chainData, ownerData, chainLogs);
+            const detailsHTML = this.generateChainDetailsHTML(chainId, chainData, ownerData);
             detailsContainer.innerHTML = detailsHTML;
             
             // 添加has-content类以启用滚动条
@@ -242,41 +244,13 @@ class ChainsTabContent {
     }
     
     /**
-     * 获取与区块链相关的日志
-     * @param {string} chainId - 区块链ID
-     * @returns {Array} - 相关日志数组
-     */
-    getChainRelatedLogs(chainId) {
-        try {
-            // 从应用的日志系统获取与区块链相关的日志
-            if (this.app && this.app.uiManager && this.app.uiManager.panels && 
-                this.app.uiManager.panels.log && this.app.uiManager.panels.log.logs) {
-                return this.app.uiManager.panels.log.logs.filter(log => 
-                    log.message.includes(chainId) || 
-                    (log.relatedData && (
-                        log.relatedData.chainId === chainId || 
-                        log.relatedData.fromChain === chainId || 
-                        log.relatedData.toChain === chainId
-                    ))
-                );
-            }
-            return [];
-            
-        } catch (error) {
-            console.error('获取区块链相关日志失败:', error);
-            return [];
-        }
-    }
-    
-    /**
      * 生成区块链详情HTML
      * @param {string} chainId - 区块链ID
      * @param {Object} chainData - 区块链数据
      * @param {Object} ownerData - 拥有者数据
-     * @param {Array} chainLogs - 区块链相关日志
      * @returns {string} - 区块链详情HTML
      */
-    generateChainDetailsHTML(chainId, chainData, ownerData, chainLogs) {
+    generateChainDetailsHTML(chainId, chainData, ownerData) {
         const rootBlock = chainData.blocks && chainData.blocks[0] ? chainData.blocks[0] : null;
         
         return `
@@ -378,19 +352,6 @@ class ChainsTabContent {
                                 </div>
                             </div>
                         `).join('') : '<p class="text-muted">暂无区块数据</p>'}
-                    </div>
-                </div>
-                
-                <div class="chain-logs-section">
-                    <h6>相关日志 (${chainLogs.length})</h6>
-                    <div class="logs-list">
-                        ${chainLogs.length > 0 ? chainLogs.slice(0, 10).map(log => `
-                            <div class="log-item log-type-${log.type || 'info'}">
-                                <span class="log-timestamp">滴答 ${log.tick || log.timestamp}</span>
-                                <span class="log-message">${log.message}</span>
-                            </div>
-                        `).join('') : '<p class="text-muted">暂无相关日志</p>'}
-                        ${chainLogs.length > 10 ? `<p class="text-muted">显示最近 10 条，共 ${chainLogs.length} 条日志</p>` : ''}
                     </div>
                 </div>
             </div>

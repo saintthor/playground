@@ -266,6 +266,11 @@ class NetworkTabContent {
             // 显示节点详情
             this.showNodeDetails(nodeId);
             
+            // 切换日志面板到节点日志
+            if (this.app && this.app.logPanel) {
+                this.app.logPanel.switchToCategory('node');
+            }
+            
             // 保存选中状态到标签页管理器
             this.tabManager.handleStateChange('network', {
                 selectedNode: nodeId

@@ -102,6 +102,11 @@ class UsersTabContent {
             // 显示用户详情
             this.showUserDetails(userId);
             
+            // 切换日志面板到用户日志
+            if (this.app && this.app.logPanel) {
+                this.app.logPanel.switchToCategory('user');
+            }
+            
             // 保存选中状态到标签页管理器
             this.tabManager.handleStateChange('users', {
                 selectedUser: userId
@@ -160,11 +165,8 @@ class UsersTabContent {
             // 获取用户拥有的区块链
             const userChains = this.getUserChains(userId, userData);
             
-            // 获取与用户相关的日志
-            const userLogs = this.getUserRelatedLogs(userId);
-            
             // 生成用户详情HTML
-            const detailsHTML = this.generateUserDetailsHTML(userId, userData, userChains, userLogs);
+            const detailsHTML = this.generateUserDetailsHTML(userId, userData, userChains);
             detailsContainer.innerHTML = detailsHTML;
             
             // 添加has-content类以启用滚动条
@@ -236,41 +238,13 @@ class UsersTabContent {
     }
     
     /**
-     * 获取与用户相关的日志
-     * @param {string} userId - 用户ID
-     * @returns {Array} - 相关日志数组
-     */
-    getUserRelatedLogs(userId) {
-        try {
-            // 从应用的日志系统获取与用户相关的日志
-            if (this.app && this.app.uiManager && this.app.uiManager.panels && 
-                this.app.uiManager.panels.log && this.app.uiManager.panels.log.logs) {
-                return this.app.uiManager.panels.log.logs.filter(log => 
-                    log.message.includes(userId) || 
-                    (log.relatedData && (
-                        log.relatedData.userId === userId || 
-                        log.relatedData.fromUser === userId || 
-                        log.relatedData.toUser === userId
-                    ))
-                );
-            }
-            return [];
-            
-        } catch (error) {
-            console.error('获取用户相关日志失败:', error);
-            return [];
-        }
-    }
-    
-    /**
      * 生成用户详情HTML
      * @param {string} userId - 用户ID
      * @param {Object} userData - 用户数据
      * @param {Array} userChains - 用户拥有的区块链
-     * @param {Array} userLogs - 用户相关日志
      * @returns {string} - 用户详情HTML
      */
-    generateUserDetailsHTML(userId, userData, userChains, userLogs) {
+    generateUserDetailsHTML(userId, userData, userChains) {
         return `
             <div class="user-details">
                 <div class="user-details-header">
@@ -310,19 +284,6 @@ class UsersTabContent {
                                 <span class="chain-status ${chain.isTransferring ? 'transferring' : ''}">${chain.isTransferring ? '转移中' : '正常'}</span>
                             </div>
                         `).join('') : '<p class="text-muted">暂无区块链</p>'}
-                    </div>
-                </div>
-                
-                <div class="user-logs-section">
-                    <h6>相关日志 (${userLogs.length})</h6>
-                    <div class="logs-list">
-                        ${userLogs.length > 0 ? userLogs.slice(0, 10).map(log => `
-                            <div class="log-item log-type-${log.type || 'info'}">
-                                <span class="log-timestamp">滴答 ${log.tick || log.timestamp}</span>
-                                <span class="log-message">${log.message}</span>
-                            </div>
-                        `).join('') : '<p class="text-muted">暂无相关日志</p>'}
-                        ${userLogs.length > 10 ? `<p class="text-muted">显示最近 10 条，共 ${userLogs.length} 条日志</p>` : ''}
                     </div>
                 </div>
             </div>
