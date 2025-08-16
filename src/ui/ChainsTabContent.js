@@ -393,10 +393,20 @@ class ChainsTabContent {
     /**
      * 设置选中的区块链
      * @param {string|null} chainId - 区块链ID
+     * @param {boolean} triggerLogSwitch - 是否触发日志面板切换，默认为true
      */
-    setSelectedChain(chainId) {
+    setSelectedChain(chainId, triggerLogSwitch = true) {
         if (chainId !== null) {
-            this.handleChainClick(chainId);
+            if (triggerLogSwitch) {
+                this.handleChainClick(chainId);
+            } else {
+                // 只更新选中状态和显示详情，不触发日志面板切换
+                this.updateChainSelection(chainId);
+                this.showChainDetails(chainId);
+                this.tabManager.handleStateChange('chains', {
+                    selectedChain: chainId
+                });
+            }
         } else {
             this.clearSelection();
         }

@@ -556,10 +556,10 @@ class TabManager {
             networkTab.scrollTop = state.scrollPosition;
         }
         
-        // 恢复选中的节点
+        // 恢复选中的节点（不触发日志面板切换）
         if (state.selectedNode !== null && this.networkTabContent) {
             setTimeout(() => {
-                this.networkTabContent.setSelectedNode(state.selectedNode);
+                this.networkTabContent.setSelectedNode(state.selectedNode, false);
             }, 100);
         }
     }
@@ -577,10 +577,10 @@ class TabManager {
             usersTab.scrollTop = state.scrollPosition;
         }
         
-        // 恢复选中的用户
+        // 恢复选中的用户（不触发日志面板切换）
         if (state.selectedUser && this.usersTabContent) {
             setTimeout(() => {
-                this.usersTabContent.setSelectedUser(state.selectedUser);
+                this.usersTabContent.setSelectedUser(state.selectedUser, false);
             }, 100);
         }
     }
@@ -598,10 +598,10 @@ class TabManager {
             chainsTab.scrollTop = state.scrollPosition;
         }
         
-        // 恢复选中的区块链
+        // 恢复选中的区块链（不触发日志面板切换）
         if (state.selectedChain && this.chainsTabContent) {
             setTimeout(() => {
-                this.chainsTabContent.setSelectedChain(state.selectedChain);
+                this.chainsTabContent.setSelectedChain(state.selectedChain, false);
             }, 100);
         }
     }

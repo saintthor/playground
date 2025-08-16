@@ -325,10 +325,20 @@ class UsersTabContent {
     /**
      * 设置选中的用户
      * @param {string|null} userId - 用户ID
+     * @param {boolean} triggerLogSwitch - 是否触发日志面板切换，默认为true
      */
-    setSelectedUser(userId) {
+    setSelectedUser(userId, triggerLogSwitch = true) {
         if (userId !== null) {
-            this.handleUserClick(userId);
+            if (triggerLogSwitch) {
+                this.handleUserClick(userId);
+            } else {
+                // 只更新选中状态和显示详情，不触发日志面板切换
+                this.updateUserSelection(userId);
+                this.showUserDetails(userId);
+                this.tabManager.handleStateChange('users', {
+                    selectedUser: userId
+                });
+            }
         } else {
             this.clearSelection();
         }

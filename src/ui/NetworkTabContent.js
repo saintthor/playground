@@ -544,10 +544,20 @@ class NetworkTabContent {
     /**
      * 设置选中的节点
      * @param {number|null} nodeId - 节点ID
+     * @param {boolean} triggerLogSwitch - 是否触发日志面板切换，默认为true
      */
-    setSelectedNode(nodeId) {
+    setSelectedNode(nodeId, triggerLogSwitch = true) {
         if (nodeId !== null) {
-            this.handleNodeClick(nodeId);
+            if (triggerLogSwitch) {
+                this.handleNodeClick(nodeId);
+            } else {
+                // 只更新选中状态和显示详情，不触发日志面板切换
+                this.updateNodeSelection(nodeId);
+                this.showNodeDetails(nodeId);
+                this.tabManager.handleStateChange('network', {
+                    selectedNode: nodeId
+                });
+            }
         } else {
             this.clearSelection();
         }
