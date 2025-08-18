@@ -15,7 +15,7 @@ class CtrlPanel {
             failureRate: 0.1,
             paymentRate: 0.05,
             tickInterval: 1000,
-            DefStr: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS。\n其中，H 为本文件 sha256 值的 Base64 格式；S 是序列号，与钞票面值的对应关系如下：",
+            DefStr: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS\\nK。其中：\nH 为本文件 sha256 值（Base64）；K 是初始持有人的公钥（Base64），固定为 " + "" + "；S 是序列号，与钞票面值的对应关系如下：",
             chainDefinition: `1-100 1
 101-200 5
 201-300 10

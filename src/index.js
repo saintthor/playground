@@ -73,6 +73,8 @@ class App {
 
         /** @type {Map<string, Object>} 模拟用户数据存储 */
         this.mockUsers = new Map();
+        this.AllUsers = User.All;
+        this.AllPeers = Peer.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
         this.mockChains = new Map();
@@ -164,10 +166,10 @@ class App {
         this.generateMockData(config);
 
         // 更新用户列表（使用真实的用户数据）
-        const mockUsers = Array.from(this.mockUsers.entries()).map(([publicKey, userData]) => ({
+        const mockUsers = Array.from(this.AllUsers.entries()).map(([publicKey, userData]) => ({
             id: publicKey, // 用户ID就是公钥
             publicKey: publicKey,
-            totalAssets: userData.totalAssets
+            totalAssets: 0
         }));
 
         if (this.uiManager.panels.control) {
@@ -242,7 +244,8 @@ class App {
         this.stopTickCounter();
 
         // 清空模拟数据
-        this.mockUsers.clear();
+        this.AllUsers.clear();
+        this.AllPeers.clear();
         this.mockChains.clear();
         this.selectedUser = null;
         this.selectedChain = null;
@@ -401,12 +404,15 @@ class App {
      * @param {string} config.chainDefinition - 区块链定义字符串
      * @returns {void}
      */
-    generateMockData(config) {
+    async generateMockData(config) {
         this.mockUsers.clear();
         this.mockChains.clear();
         this.currentTick = 0; // 初始化滴答计数器
 
         // 生成模拟用户数据 - 用户ID就是公钥
+        
+        await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
+
         const users = [];
         for (let i = 1; i <= config.userCount; i++) {
             // 生成真实格式的公钥（32字节随机数据）并转换为base64
@@ -417,7 +423,7 @@ class App {
             const publicKeyBase64 = btoa(String.fromCharCode.apply(null, keyBytes));
             
             // 为每个用户分配3个节点
-            const nodeCount = config.nodeCount || 5;
+            const nodeCount = config.nodeCount || 10;
             const userNodeNum = config.userNodeNum || 3;
             const userNodes = [];
             const availableNodes = Array.from({length: nodeCount}, (_, i) => i);
@@ -428,22 +434,22 @@ class App {
                 userNodes.push(availableNodes.splice(randomIndex, 1)[0]);
             }
             
-            const userData = {
-                displayNumber: i, // 用于显示的编号，不是ID
-                publicKey: publicKeyBase64, // 用户ID就是公钥
-                nodeId: userNodes[0], // 主节点（保持兼容性）
-                nodeIds: userNodes, // 所有分配的节点
-                totalAssets: 0,
-                chainCount: 0,
-                ownedChains: [],
-                isTransferring: false, // 初始状态为false，后续会动态更新
-                lastTransferTick: 0
-            };
+            //const userData = {
+                //displayNumber: i, // 用于显示的编号，不是ID
+                //publicKey: publicKeyBase64, // 用户ID就是公钥
+                //nodeId: userNodes[0], // 主节点（保持兼容性）
+                //nodeIds: userNodes, // 所有分配的节点
+                //totalAssets: 0,
+                //chainCount: 0,
+                //ownedChains: [],
+                //isTransferring: false, // 初始状态为false，后续会动态更新
+                //lastTransferTick: 0
+            //};
             
-            users.push(userData);
-            this.mockUsers.set(publicKeyBase64, userData);
+            //users.push(userData);
+            //this.mockUsers.set(publicKeyBase64, userData);
         }
-
+        return;
         // 生成模拟区块链数据
         const chainDefinition = this.parseChainDefinition(config.chainDefinition);
         let chainCounter = 1;
@@ -508,12 +514,12 @@ class App {
         }
 
         // 重新计算用户资产和区块链数量
-        for (const [publicKey, user] of this.mockUsers) {
-            user.totalAssets = user.ownedChains.reduce((total, chain) => total + chain.value, 0);
+        for (const [publicKey, user] of this.AllUsers) {
+            user.totalAssets = 0; //user.ownedChains.reduce((total, chain) => total + chain.value, 0);
             user.chainCount = user.ownedChains.length;
         }
         
-        console.log(`生成了 ${this.mockUsers.size} 个用户和 ${this.mockChains.size} 条区块链`);
+        console.log(`生成了 ${this.AllUsers.size} 个用户和 ${this.mockChains.size} 条区块链`);
     }
 
     /**
@@ -567,10 +573,10 @@ class App {
             Math.floor(this.config.nodeCount * this.config.maxConnections * (1 - this.config.failureRate)) : 0;
 
         return {
-            userData: new Map(this.mockUsers),
+            userData: new Map(this.AllUsers),
             chainData: new Map(this.mockChains),
             networkData: {
-                totalUsers: this.mockUsers.size,
+                totalUsers: this.AllUsers.size,
                 totalChains: totalChains,
                 totalValue: totalValue,
                 activeConnections: activeConnections,
@@ -633,19 +639,19 @@ class App {
      * 模拟转账操作
      */
     simulateTransfer() {
-        const users = Array.from(this.mockUsers.keys());
+        const users = Array.from(this.AllUsers.keys());
         if (users.length < 2) return;
 
         // 随机选择发送者
         const senderUserId = users[Math.floor(Math.random() * users.length)];
-        const sender = this.mockUsers.get(senderUserId);
+        const sender = this.AllUsers.get(senderUserId);
         
         if (!sender || sender.ownedChains.length === 0) return;
 
         // 随机选择接收者（不能是自己）
         const receivers = users.filter(id => id !== senderUserId);
         const receiverUserId = receivers[Math.floor(Math.random() * receivers.length)];
-        const receiver = this.mockUsers.get(receiverUserId);
+        const receiver = this.AllUsers.get(receiverUserId);
 
         if (!receiver) return;
 
@@ -677,8 +683,8 @@ class App {
      * 完成转账操作
      */
     completeTransfer(senderUserId, receiverUserId, chainId) {
-        const sender = this.mockUsers.get(senderUserId);
-        const receiver = this.mockUsers.get(receiverUserId);
+        const sender = this.AllUsers.get(senderUserId);
+        const receiver = this.AllUsers.get(receiverUserId);
         const chain = this.mockChains.get(chainId);
 
         if (!sender || !receiver || !chain) return;
@@ -777,9 +783,10 @@ class App {
      */
     updateTick() {
         this.currentTick++;
+        Peer.Update( this.currentTick );
         
         // 更新转账状态 - 随机改变一些用户和区块链的转账状态
-        if (this.currentTick % 10 === 0) { // 每10个滴答更新一次状态
+        if (this.currentTick % 10 === 50) { // 每10个滴答更新一次状态
         /*    for (const [publicKey, user] of this.mockUsers) {
                 // 如果用户当前正在转账，有50%概率结束转账
                 if (user.isTransferring && Math.random() < 0.5) {
