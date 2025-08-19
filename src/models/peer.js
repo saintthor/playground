@@ -44,9 +44,9 @@ class Peer
         }
     };
     
-    static Update( currTick )
+    static Update( currTick, connNum )
     {
-        console.log( 'Peer.Update', currTick );
+        console.log( 'Peer.Update', currTick, connNum );
         this.All.values().forEach( p =>
         {
             p.Messages.values().forEach( m =>
@@ -54,7 +54,7 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    p.Receive( [msg, neighborId] );
+                    p.Receive( msg, neighborId );
                     delete p.Messages[msg.Id];
                 }
             } );
@@ -64,12 +64,25 @@ class Peer
                 const key = [...p.Connections.keys()][Math.floor( Math.random() * p.Connections.size )];
                 p.BreakConn( key );
             }
+            
+            for( let i = connNum - p.Connections.size; i > 0; )
+            {
+                const peer = [...p.constructor.All.values()][Math.floor( Math.random() * p.constructor.All.size )];
+                if( p.Id != peer.Id )
+                {
+                    console.log( 'Connect', p.Id, peer.Id );
+                    const Tick = Math.floor( Math.random() * 5 + 1 );
+                    p.Connect( peer, Tick );
+                    peer.Connect( p, Tick );
+                    i--;
+                }
+            }
         } );
     };
     
     BreakConn( k )
     {
-        console.log( 'Peer.BreakConn', this.Id, k );
+        //console.log( 'Peer.BreakConn', this.Id, k );
         if( this.Connections.has( k ))
         {
             const Remote = this.Connections.get( k )[0];
@@ -83,8 +96,12 @@ class Peer
         this.Connections.forEach(( n, t ) => n.AddMessage( msg, n.Id, currTick + t ));
     };
 
-    Receive( message )
+    Receive( message, neighborId )
     {
+        if( !this.Connections.has( neighborId ))
+        {
+            return;
+        }
         if( message.type === 'NewBlock' )
         {
         }
