@@ -70,17 +70,18 @@ class User
             this.PubKey = key.publicKey;
             this.PriKey = key.privateKey;
             this.PubKeyStr = ABuff2Base64( raw );
-            User.All.set( this.PubKeyStr, this );
+            this.constructor.All.set( this.PubKeyStr, this );
             return this;
         } )();
     };
 
     get Id() { return this.PubKeyStr; };
     
-    AddPeer( node )
+    AddPeer( peer )
     {
         const l = this.Peers.size;
-        this.Peers.set( node.Id, node );
+        this.Peers.set( peer.Id, peer );
+        peer.AddUser( this );
         return this.Peers.size - l;
     };
 

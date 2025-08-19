@@ -411,107 +411,140 @@ class App {
 
         // 生成模拟用户数据 - 用户ID就是公钥
         
-        await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
-
-        const users = [];
-        for (let i = 1; i <= config.userCount; i++) {
-            // 生成真实格式的公钥（32字节随机数据）并转换为base64
-            const keyBytes = new Uint8Array(32);
-            for (let j = 0; j < 32; j++) {
-                keyBytes[j] = Math.floor(Math.random() * 256);
-            }
-            const publicKeyBase64 = btoa(String.fromCharCode.apply(null, keyBytes));
-            
-            // 为每个用户分配3个节点
-            const nodeCount = config.nodeCount || 10;
-            const userNodeNum = config.userNodeNum || 3;
-            const userNodes = [];
-            const availableNodes = Array.from({length: nodeCount}, (_, i) => i);
-            
-            // 随机选择3个不同的节点
-            for (let j = 0; j < Math.min( userNodeNum, nodeCount ); j++) {
-                const randomIndex = Math.floor(Math.random() * availableNodes.length);
-                userNodes.push(availableNodes.splice(randomIndex, 1)[0]);
-            }
-            
-            //const userData = {
-                //displayNumber: i, // 用于显示的编号，不是ID
-                //publicKey: publicKeyBase64, // 用户ID就是公钥
-                //nodeId: userNodes[0], // 主节点（保持兼容性）
-                //nodeIds: userNodes, // 所有分配的节点
-                //totalAssets: 0,
-                //chainCount: 0,
-                //ownedChains: [],
-                //isTransferring: false, // 初始状态为false，后续会动态更新
-                //lastTransferTick: 0
-            //};
-            
-            //users.push(userData);
-            //this.mockUsers.set(publicKeyBase64, userData);
+        for( let n = config.nodeCount; n > 0; n-- )
+        {
+            new Peer( n );
         }
+        await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
+        
+        const Peers = [...this.AllPeers.values()];
+        const PeerNum = Peers.length;
+        
+        Peers.forEach( p =>         // connect with other peers
+        {
+            for( let n = config.maxConnections; n > 0; )
+            {
+                const Tick = Math.floor( Math.random() * 5 + 1 );
+                const OtherPeer = Peers[Math.floor( Math.random() * PeerNum )];
+//console.log( OtherPeer, p );
+                if( p.Id != OtherPeer.Id )
+                {
+                    p.Connect( OtherPeer, Tick );
+                    OtherPeer.Connect( p, Tick );
+                    n--;
+                }
+            }
+        } );
+        
+        this.AllUsers.values().forEach( u =>  // live in peers
+        {
+            for( let n = config.userNodeNum; n > 0; )
+            {
+                const idx = Math.floor( Math.random() * PeerNum );
+                n -= u.AddPeer( Peers[idx] );
+            }
+        } );
+
+return;
+        //const users = [];
+        //for (let i = 1; i <= config.userCount; i++) {
+            //// 生成真实格式的公钥（32字节随机数据）并转换为base64
+            //const keyBytes = new Uint8Array(32);
+            //for (let j = 0; j < 32; j++) {
+                //keyBytes[j] = Math.floor(Math.random() * 256);
+            //}
+            //const publicKeyBase64 = btoa(String.fromCharCode.apply(null, keyBytes));
+            
+            //// 为每个用户分配3个节点
+            //const nodeCount = config.nodeCount || 10;
+            //const userNodeNum = config.userNodeNum || 3;
+            //const userNodes = [];
+            //const availableNodes = Array.from({length: nodeCount}, (_, i) => i);
+            
+            //// 随机选择3个不同的节点
+            //for (let j = 0; j < Math.min( userNodeNum, nodeCount ); j++) {
+                //const randomIndex = Math.floor(Math.random() * availableNodes.length);
+                //userNodes.push(availableNodes.splice(randomIndex, 1)[0]);
+            //}
+            
+            ////const userData = {
+                ////displayNumber: i, // 用于显示的编号，不是ID
+                ////publicKey: publicKeyBase64, // 用户ID就是公钥
+                ////nodeId: userNodes[0], // 主节点（保持兼容性）
+                ////nodeIds: userNodes, // 所有分配的节点
+                ////totalAssets: 0,
+                ////chainCount: 0,
+                ////ownedChains: [],
+                ////isTransferring: false, // 初始状态为false，后续会动态更新
+                ////lastTransferTick: 0
+            ////};
+            
+            ////users.push(userData);
+            ////this.mockUsers.set(publicKeyBase64, userData);
+        //}
         return;
         // 生成模拟区块链数据
         const chainDefinition = this.parseChainDefinition(config.chainDefinition);
         let chainCounter = 1;
         
-        for (const range of chainDefinition.ranges) {
-            for (let serial = range.start; serial <= range.end; serial++) {
-                // 随机选择一个用户作为拥有者
-                const targetUser = users[Math.floor(Math.random() * users.length)];
+        //for (const range of chainDefinition.ranges) {
+            //for (let serial = range.start; serial <= range.end; serial++) {
+                //// 随机选择一个用户作为拥有者
+                //const targetUser = users[Math.floor(Math.random() * users.length)];
                 
-                // 生成定义文件哈希
-                const definitionHash = this.generateBase64Hash('chain_definition');
+                //// 生成定义文件哈希
+                //const definitionHash = this.generateBase64Hash('chain_definition');
                 
-                // 创建根区块数据 - 只包含定义哈希和序列号
-                const rootBlockData = {
-                    type: 'root',
-                    creator: 'system',
-                    tick: this.currentTick - Math.floor(Math.random() * 1000),
-                    data: `0\n${definitionHash}\n${serial}`, // 三行：区块序号、定义文件哈希，序列号
-                    previousHash: ''
-                };
+                //// 创建根区块数据 - 只包含定义哈希和序列号
+                //const rootBlockData = {
+                    //type: 'root',
+                    //creator: 'system',
+                    //tick: this.currentTick - Math.floor(Math.random() * 1000),
+                    //data: `0\n${definitionHash}\n${serial}`, // 三行：区块序号、定义文件哈希，序列号
+                    //previousHash: ''
+                //};
                 
-                // 计算根区块哈希（base64格式）
-                const rootBlockHash = this.generateBase64Hash( rootBlockData.data );
-                rootBlockData.hash = rootBlockHash;
+                //// 计算根区块哈希（base64格式）
+                //const rootBlockHash = this.generateBase64Hash( rootBlockData.data );
+                //rootBlockData.hash = rootBlockHash;
                 
-                // 区块链ID就是根区块的哈希值
-                const chainId = rootBlockHash;
+                //// 区块链ID就是根区块的哈希值
+                //const chainId = rootBlockHash;
                 
-                // 创建所有权区块 - 精简数据
-                const ownerBlockData = {
-                    type: 'ownership',
-                    creator: targetUser.publicKey,
-                    tick: this.currentTick - Math.floor(Math.random() * 500),
-                    data: `1\n${rootBlockHash}\n${this.currentTick}\n${targetUser.publicKey}`, // 四行：区块序号、前区块 ID、滴答、目标用户公钥
-                    //data: targetUser.publicKey, // 简化：只包含拥有者公钥
-                    previousHash: rootBlockHash
-                };
+                //// 创建所有权区块 - 精简数据
+                //const ownerBlockData = {
+                    //type: 'ownership',
+                    //creator: targetUser.publicKey,
+                    //tick: this.currentTick - Math.floor(Math.random() * 500),
+                    //data: `1\n${rootBlockHash}\n${this.currentTick}\n${targetUser.publicKey}`, // 四行：区块序号、前区块 ID、滴答、目标用户公钥
+                    ////data: targetUser.publicKey, // 简化：只包含拥有者公钥
+                    //previousHash: rootBlockHash
+                //};
                 
-                // 计算所有权区块哈希
-                const ownerBlockHash = this.generateBase64Hash( ownerBlockData.data );
-                ownerBlockData.hash = ownerBlockHash;
+                //// 计算所有权区块哈希
+                //const ownerBlockHash = this.generateBase64Hash( ownerBlockData.data );
+                //ownerBlockData.hash = ownerBlockHash;
 
-                const chainData = {
-                    displayNumber: chainCounter++, // 用于显示的编号，不是ID
-                    ownerId: targetUser.publicKey,
-                    value: range.value,
-                    serialNumber: serial.toString(),
-                    isTransferring: false,
-                    lastTransferTick: 0,
-                    blocks: [rootBlockData, ownerBlockData]
-                };
+                //const chainData = {
+                    //displayNumber: chainCounter++, // 用于显示的编号，不是ID
+                    //ownerId: targetUser.publicKey,
+                    //value: range.value,
+                    //serialNumber: serial.toString(),
+                    //isTransferring: false,
+                    //lastTransferTick: 0,
+                    //blocks: [rootBlockData, ownerBlockData]
+                //};
 
-                this.mockChains.set(chainId, chainData);
+                //this.mockChains.set(chainId, chainData);
 
-                // 更新用户的拥有区块链列表
-                targetUser.ownedChains.push({
-                    chainId: chainId,
-                    serialNumber: serial.toString(),
-                    value: range.value
-                });
-            }
-        }
+                //// 更新用户的拥有区块链列表
+                //targetUser.ownedChains.push({
+                    //chainId: chainId,
+                    //serialNumber: serial.toString(),
+                    //value: range.value
+                //});
+            //}
+        //}
 
         // 重新计算用户资产和区块链数量
         for (const [publicKey, user] of this.AllUsers) {

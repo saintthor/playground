@@ -5,18 +5,16 @@ class Peer
     constructor( id )
     {
         this.Id = id;
-        //this.LocalBlocks = new Map();
         this.Users = new Map();
         this.LocalBlocks = new Map();
         this.Connections = new Map();
         this.Messages = new Map();      //on the way
-        this.All.set( this.Id, this );
+        this.constructor.All.set( this.Id, this );
     };
 
     AddUser( u )
     {
         this.Users.set( u.Id, u );
-        u.Peers.set( this.Id, this );
     };
 
     DelUser( userId )
@@ -36,7 +34,6 @@ class Peer
     Connect( neighbor, tick )
     {
         this.Connections.set( neighbor.Id, [neighbor, tick] );
-        neighbor.Connect( [this, tick] );
     };
     
     AddMessage( msg, neighborId, tick )
@@ -64,9 +61,7 @@ class Peer
             
             if( Math.random() < 0.01 )
             {
-                console.log( 'Peer.Update break', p.Id );
-                const idx = Math.random() * p.Connections.size;
-                const key = p.Connections.keys()[Math.floor( idx )];
+                const key = [...p.Connections.keys()][Math.floor( Math.random() * p.Connections.size )];
                 p.BreakConn( key );
             }
         } );
@@ -77,9 +72,9 @@ class Peer
         console.log( 'Peer.BreakConn', this.Id, k );
         if( this.Connections.has( k ))
         {
-            const Remote = this.Connections[k][0];
+            const Remote = this.Connections.get( k )[0];
+            this.Connections.delete( k );
             Remote.BreakConn( this.Id );
-            delete this.Connections[k];
         }
     }
 
@@ -208,5 +203,6 @@ class Peer
     ChkTail( block )
     {
         return ![...this.LocalBlocks.values()].find( b => b.PrevId == block.Id );
-    };}
+    };
+}
 
