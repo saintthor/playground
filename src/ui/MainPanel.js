@@ -574,6 +574,7 @@ class MainPanel {
     requestDataUpdate() {
         if (this.app && this.app.getMainPanelData) {
             const data = this.app.getMainPanelData();
+            console.log( 'requestDataUpdate', data );
             this.updateAllData(data);
         }
     }

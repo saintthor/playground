@@ -584,6 +584,8 @@ return;
     getMainPanelData() {
         if (!this.isRunning) {
             return {
+                AllPeers: this.AllPeers,
+                AllUsers: this.AllUsers,
                 userData: new Map(),
                 chainData: new Map(),
                 networkData: {
@@ -606,6 +608,8 @@ return;
             Math.floor(this.config.nodeCount * this.config.maxConnections * (1 - this.config.failureRate)) : 0;
 
         return {
+                AllPeers: this.AllPeers,
+                AllUsers: this.AllUsers,
             userData: new Map(this.AllUsers),
             chainData: new Map(this.mockChains),
             networkData: {

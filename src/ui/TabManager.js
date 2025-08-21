@@ -230,7 +230,7 @@ class TabManager {
                 if (this.networkTabContent && this.mainPanel.app) {
                     const data = this.mainPanel.app.getMainPanelData();
                     if (data && data.networkData) {
-                        this.networkTabContent.renderNetworkGraph(data.networkData);
+                        this.networkTabContent.renderNetworkGraph( data.AllPeers );
                     }
                 }
                 resolve();
@@ -1171,7 +1171,7 @@ class TabManager {
                     // 帮助页面无需数据更新
                     break;
                 case 'network':
-                    this.updateNetworkDataIncremental(newData.networkData, previousData?.networkData);
+                    this.updateNetworkDataIncremental(newData.AllPeers, previousData?.networkData);
                     break;
                 case 'users':
                     this.updateUsersDataIncremental(newData.userData, previousData?.userData);
@@ -1241,13 +1241,13 @@ class TabManager {
             return;
         }
         
-        try {
+        //try {
             // 直接进行完整渲染，确保数据能正确显示
             this.networkTabContent.renderNetworkGraph(newNetworkData);
             
-        } catch (error) {
-            console.error('增量更新网络数据失败:', error);
-        }
+        //} catch (error) {
+            //console.error('增量更新网络数据失败:', error);
+        //}
     }
     
     /**

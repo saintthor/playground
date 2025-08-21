@@ -46,7 +46,7 @@ class Peer
     
     static Update( currTick, connNum )
     {
-        console.log( 'Peer.Update', currTick, connNum );
+        //console.log( 'Peer.Update', currTick, connNum );
         this.All.values().forEach( p =>
         {
             p.Messages.values().forEach( m =>

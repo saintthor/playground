@@ -23,7 +23,13 @@ class NetworkTabContent {
      * 渲染网络图
      * @param {Object} networkData - 网络数据
      */
-    renderNetworkGraph(networkData) {
+    renderNetworkGraph( allPeers ) {
+        console.log( 'renderNetworkGraph', allPeers );
+        //if( !allPeers.values )
+        //{
+            //allPeers = allPeers.AllPeers;
+        //}
+        //return;
         const statsContainer = document.getElementById('network-stats');
         const visualContainer = document.getElementById('d3-network-container');
         
@@ -32,7 +38,7 @@ class NetworkTabContent {
             return;
         }
         
-        if (!networkData) {
+        if( !allPeers ) {
             statsContainer.innerHTML = `
                 <span class="network-stat">节点: 0</span>
                 <span class="network-stat">连接: 0</span>
@@ -43,14 +49,15 @@ class NetworkTabContent {
             return;
         }
         
-        const nodeCount = networkData.nodeCount || 0;
-        const failedConnections = Math.floor((networkData.totalConnections || 0) * (networkData.failureRate || 0));
+        const nodeCount = allPeers.size || 0;
+        //const failedConnections = Math.floor((networkData.totalConnections || 0) * (networkData.failureRate || 0));
         
         // 更新统计信息
+        const ConnNum = [...allPeers.values()].map( p => p.Connections.size ).reduce(( a, b ) => a + b ) / 2;
         statsContainer.innerHTML = `
-            <span class="network-stat">节点: ${nodeCount}</span>
-            <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
-            <span class="network-stat">故障: ${failedConnections}</span>
+            <span class="network-stat">节点: ${ nodeCount }</span>
+            <span class="network-stat">连接: ${ ConnNum || 0 }</span>
+            <span class="network-stat">故障: </span>
         `;
         
         // 如果节点数为0，显示系统未启动状态
@@ -63,8 +70,8 @@ class NetworkTabContent {
         // 检查网络配置是否发生变化
         const currentConfig = {
             nodeCount: nodeCount,
-            maxConnections: networkData.maxConnections || 3,
-            failureRate: networkData.failureRate || 0
+            maxConnections: allPeers.maxConnections || 3,
+            failureRate: allPeers.failureRate || 0
         };
         
         const configChanged = !this.lastNetworkConfig || 
@@ -78,7 +85,7 @@ class NetworkTabContent {
             
             // 渲染网络图
             setTimeout(() => {
-                this.renderD3NetworkGraph(nodeCount, networkData);
+                this.renderD3NetworkGraph( allPeers );
             }, 100);
         }
         
@@ -91,8 +98,9 @@ class NetworkTabContent {
      * @param {number} nodeCount - 节点数量
      * @param {Object} networkData - 网络数据
      */
-    renderD3NetworkGraph(nodeCount, networkData) {
-        const container = document.getElementById('d3-network-container');
+    renderD3NetworkGraph( allPeers )
+    {
+        const container = document.getElementById( 'd3-network-container' );
         if (!container) {
             console.error('D3网络图容器未找到');
             return;
@@ -106,66 +114,67 @@ class NetworkTabContent {
         }
         
         // 清除之前的内容
-        d3.select(container).selectAll("*").remove();
+        d3.select( container ).selectAll( "*" ).remove();
         
-        const width = container.clientWidth || 400;
+        const width = container.clientWidth || 600;
         const height = container.clientHeight || 500;
         
         // 创建SVG
-        const svg = d3.select(container)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+        const svg = d3.select( container ).append( "svg" ).attr( "width", width ).attr( "height", height );
         
         // 生成节点数据
-        const nodes = [];
-        for (let i = 0; i < nodeCount; i++) {
-            nodes.push({
-                id: i,
-                name: `Node ${i + 1}`
-            });
-        }
+        const nodes = [...allPeers.values()].map( p => ( { id: p.Id, name: `Peer ${p.Id}` } ));
+        //for (let i = 0; i < nodeCount; i++) {
+            //nodes.push({
+                //id: i,
+                //name: `Node ${i + 1}`
+            //});
+        //}
         
         // 生成连接数据 - 确保每个节点都达到最大连接数
-        const links = [];
-        const maxConnections = networkData.maxConnections || 3;
-        const failureRate = networkData.failureRate || 0;
+        //const links = [];
+        const maxConnections = allPeers.maxConnections || 3;
+        const failureRate = allPeers.failureRate || 0;
         
         // 为每个节点创建连接，确保达到最大连接数
-        for (let i = 0; i < nodeCount; i++) {
-            const connectedNodes = new Set();
+        //for (let i = 0; i < nodeCount; i++) {
+            //const connectedNodes = new Set();
             
-            // 尝试为当前节点创建最大连接数的连接
-            while (connectedNodes.size < maxConnections && connectedNodes.size < nodeCount - 1) {
-                const targetId = Math.floor(Math.random() * nodeCount);
-                if (targetId !== i) {
-                    connectedNodes.add(targetId);
-                }
-            }
+            //// 尝试为当前节点创建最大连接数的连接
+            //while (connectedNodes.size < maxConnections && connectedNodes.size < nodeCount - 1) {
+                //const targetId = Math.floor(Math.random() * nodeCount);
+                //if (targetId !== i) {
+                    //connectedNodes.add(targetId);
+                //}
+            //}
             
-            // 创建连接（避免重复）
-            connectedNodes.forEach(targetId => {
-                // 检查是否已存在此连接（双向检查）
-                const existingLink = links.find(link => 
-                    (link.source === i && link.target === targetId) || 
-                    (link.source === targetId && link.target === i)
-                );
+            //// 创建连接（避免重复）
+            //connectedNodes.forEach(targetId => {
+                //// 检查是否已存在此连接（双向检查）
+                //const existingLink = links.find(link => 
+                    //(link.source === i && link.target === targetId) || 
+                    //(link.source === targetId && link.target === i)
+                //);
                 
-                if (!existingLink) {
-                    links.push({
-                        source: i,
-                        target: targetId,
-                        active: Math.random() > failureRate
-                    });
-                }
-            });
-        }
+                //if (!existingLink) {
+                    //links.push({
+                        //source: i,
+                        //target: targetId,
+                        //active: Math.random() > failureRate
+                    //});
+                //}
+            //});
+        //}
         
+        let links = [...allPeers.values()].map( p => [...p.Connections.values()].map( c => [p.Id, c[0].Id, c[1]] ))
+                                .reduce(( cs, cs2 ) => [...cs, ...cs2] ).filter(( [Id, Id2, t] ) => Id < Id2 )
+                                .map( l => ( { source: l[0], target: l[1], distance: l[2] * 10 } ));
         const finalLinks = links;
         
+console.log( 'nodes:', nodes );
         // 创建力导向仿真
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(finalLinks).id(d => d.id).distance(50))
+            .force("link", d3.forceLink(finalLinks).id(d => d.id))
             .force("charge", d3.forceManyBody().strength(-100))
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collision", d3.forceCollide().radius(15));
@@ -251,7 +260,7 @@ class NetworkTabContent {
         this.networkLinks = finalLinks;
         this.networkSimulation = simulation;
         
-        console.log(`网络图渲染完成: ${nodeCount} 个节点, ${finalLinks.length} 个连接`);
+        console.log(`网络图渲染完成: ${nodes.length} 个节点, ${finalLinks.length} 个连接`);
     }
     
     /**
