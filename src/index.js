@@ -28,6 +28,19 @@
  * 
  * @class App
  */
+const getColor = ( function()
+{
+  let r = 0, g = 0, b = 0; // 闭包中的 RGB 变量
+  return function()
+  {
+    r = ( r + 37 ) % 255;
+    g = ( g + 97 ) % 255;
+    b = ( b + 157 ) % 255;
+    // 转换为两位十六进制并拼接
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+} )();
+
 class App {
     /**
      * 创建应用程序实例
@@ -610,7 +623,7 @@ return;
         return {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
-            userData: new Map(this.AllUsers),
+            userData: this.AllUsers,
             chainData: new Map(this.mockChains),
             networkData: {
                 totalUsers: this.AllUsers.size,
@@ -820,7 +833,7 @@ return;
      */
     updateTick() {
         this.currentTick++;
-        Peer.Update( this.currentTick, this.config.maxConnections );
+        Peer.Update( this.currentTick, this.config.maxConnections, this.config.failureRate );
         
         // 更新转账状态 - 随机改变一些用户和区块链的转账状态
         if (this.currentTick % 10 === 50) { // 每10个滴答更新一次状态

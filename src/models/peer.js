@@ -1,6 +1,7 @@
 class Peer
 {
     static All = new Map();
+    static Trans = new Map();
     
     constructor( id )
     {
@@ -44,9 +45,9 @@ class Peer
         }
     };
     
-    static Update( currTick, connNum )
+    static Update( currTick, minConnNum, breakRate = 0.1 )
     {
-        //console.log( 'Peer.Update', currTick, connNum );
+        //console.log( 'Peer.Update', currTick, minConnNum );
         this.All.values().forEach( p =>
         {
             p.Messages.values().forEach( m =>
@@ -59,13 +60,14 @@ class Peer
                 }
             } );
             
-            if( Math.random() < 0.01 )
+            const ConnNum = p.Connections.size
+            if( Math.random() < 0.002 * breakRate * ConnNum )
             {
-                const key = [...p.Connections.keys()][Math.floor( Math.random() * p.Connections.size )];
+                const key = [...p.Connections.keys()][Math.floor( Math.random() * ConnNum )];
                 p.BreakConn( key );
             }
             
-            for( let i = connNum - p.Connections.size; i > 0; )
+            for( let i = minConnNum - p.Connections.size; i > 0; )
             {
                 const peer = [...p.constructor.All.values()][Math.floor( Math.random() * p.constructor.All.size )];
                 if( p.Id != peer.Id )
