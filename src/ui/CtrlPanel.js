@@ -15,7 +15,7 @@ class CtrlPanel {
             failureRate: 0.1,
             paymentRate: 0.05,
             tickInterval: 1000,
-            DefStr: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS\\nK。其中：\nH 为本文件 sha256 值（Base64）；K 是初始持有人的公钥（Base64），固定为 " + "" + "；S 是序列号，与钞票面值的对应关系如下：",
+            DefStr: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS\\nK。其中：\nH 为本文件 sha256 值（Base64）；K 是初始持有人的公钥（Base64），固定为 " + this.app.SysUser.Id + "；S 是序列号，与钞票面值的对应关系如下：",
             chainDefinition: `1-100 1
 101-200 5
 201-300 10
@@ -445,21 +445,23 @@ class CtrlPanel {
             const definition = this.currentConfig.chainDefinition;
             const result = this.parseChainDefinition(definition);
             
+            this.app.BlockChainNum = result.totalCount;
+            
             // 计算定义文件的SHA256哈希值并转换为base64格式
             let definitionHash;
-            try {
+            //try {
                 // 使用Crypto服务计算SHA256哈希
                 const hexHash = await Crypto.sha256(this.currentConfig.DefStr + definition);
                 // 将十六进制哈希转换为base64格式
                 const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
                 definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
-            } catch (cryptoError) {
-                console.error('哈希计算失败:', cryptoError);
-                // 使用模拟SHA256哈希并转换为base64
-                const hexHash = Crypto.mockSha256(definition);
-                const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-                definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
-            }
+            //} catch (cryptoError) {
+                //console.error('哈希计算失败:', cryptoError);
+                //// 使用模拟SHA256哈希并转换为base64
+                //const hexHash = Crypto.mockSha256(definition);
+                //const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                //definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
+            //}
             
             this.updateValidationResult(result, definitionHash);
         } catch (error) {
@@ -510,7 +512,7 @@ class CtrlPanel {
     updateValidationResult(result, definitionHash) {
         const resultContainer = document.getElementById('def-validation-result');
         if (!resultContainer) return;
-        
+        this.app.DefHash = definitionHash;
         resultContainer.innerHTML = `
             <div class="alert alert-success">
                 <strong>定义格式正确!</strong><br>

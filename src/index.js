@@ -88,6 +88,8 @@ class App {
         this.mockUsers = new Map();
         this.AllUsers = User.All;
         this.AllPeers = Peer.All;
+        this.BlockChainNum = 0;
+        this.AllBlockchains = BlockChain.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
         this.mockChains = new Map();
@@ -115,6 +117,7 @@ class App {
      */
     async init() {
         console.log('初始化 P2P 区块链 Playground');
+        this.SysUser = await new User();
 
         // 初始化性能优化器
         await this.initPerformanceOptimizer();
@@ -424,18 +427,37 @@ class App {
 
         // 生成模拟用户数据 - 用户ID就是公钥
         
-        for( let n = config.nodeCount; n > 0; n-- )
-        {
-            new Peer( n );
-        }
+        //for( let n = config.nodeCount; n > 0; n-- )
+        //{
+            //new Peer( n );
+        //}
+        Array.from( new Array( config.nodeCount )).map(( _, i ) => new Peer( i + 1 ));
         await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
+        await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => new BlockChain( this.DefHash, i, this.SysUser.Id )));
         
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;
         
+        const Users = [...this.AllUsers.values()];
+        Users.forEach( u =>  // live in peers
+        {
+            for( let n = config.userNodeNum; n > 0; )
+            {
+                const idx = Math.floor( Math.random() * PeerNum );
+                n -= u.AddPeer( Peers[idx] );
+            }
+        } );
+        
+        const Blockchains = [...this.AllBlockchains.values()];
+        const TransBlocks = Blockchains.map( c =>
+        {
+            const idx = Math.floor( Math.random() * config.userCount );
+            return c.Root.TransferTo( Users[idx], 0, this.SysUser );
+        } );
+
         Peers.forEach( p =>         // connect with other peers
         {
-            for( let n = config.maxConnections; n > 0; )
+            for( let n = config.maxConnections - p.Connections.size; n > 0; )
             {
                 const Tick = Math.floor( Math.random() * 5 + 1 );
                 const OtherPeer = Peers[Math.floor( Math.random() * PeerNum )];
@@ -447,18 +469,11 @@ class App {
                     n--;
                 }
             }
+            
+            Blockchains.forEach( c => p.Receive( { type: "NewBlock", block: c.Root } ));
+            TransBlocks.forEach( b => p.Receive( { type: "NewBlock", block: b } ));
         } );
         
-        this.AllUsers.values().forEach( u =>  // live in peers
-        {
-            for( let n = config.userNodeNum; n > 0; )
-            {
-                const idx = Math.floor( Math.random() * PeerNum );
-                n -= u.AddPeer( Peers[idx] );
-            }
-        } );
-
-return;
         //const users = [];
         //for (let i = 1; i <= config.userCount; i++) {
             //// 生成真实格式的公钥（32字节随机数据）并转换为base64
@@ -495,7 +510,7 @@ return;
             ////users.push(userData);
             ////this.mockUsers.set(publicKeyBase64, userData);
         //}
-        return;
+        
         // 生成模拟区块链数据
         const chainDefinition = this.parseChainDefinition(config.chainDefinition);
         let chainCounter = 1;
@@ -562,10 +577,10 @@ return;
         // 重新计算用户资产和区块链数量
         for (const [publicKey, user] of this.AllUsers) {
             user.totalAssets = 0; //user.ownedChains.reduce((total, chain) => total + chain.value, 0);
-            user.chainCount = user.ownedChains.length;
+            user.chainCount = user.OwnChains.length;
         }
         
-        console.log(`生成了 ${this.AllUsers.size} 个用户和 ${this.mockChains.size} 条区块链`);
+        console.log(`生成了 ${this.AllUsers.size} 个用户和 ${this.AllBlockchains.size} 条区块链`);
     }
 
     /**
@@ -809,24 +824,24 @@ return;
      * 生成base64格式的哈希值
      * 使用简单的哈希算法生成模拟哈希值并转换为base64格式
      */
-    generateBase64Hash(data) {
-        let hash = 0;
-        for (let i = 0; i < data.length; i++) {
-            const char = data.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // 转换为32位整数
-        }
+    //generateBase64Hash(data) {
+        //let hash = 0;
+        //for (let i = 0; i < data.length; i++) {
+            //const char = data.charCodeAt(i);
+            //hash = ((hash << 5) - hash) + char;
+            //hash = hash & hash; // 转换为32位整数
+        //}
         
-        // 生成32字节的哈希数据
-        const hashBytes = new Uint8Array(32);
-        const hashValue = Math.abs(hash);
-        for (let i = 0; i < 32; i++) {
-            hashBytes[i] = (hashValue + i * 7) % 256;
-        }
+        //// 生成32字节的哈希数据
+        //const hashBytes = new Uint8Array(32);
+        //const hashValue = Math.abs(hash);
+        //for (let i = 0; i < 32; i++) {
+            //hashBytes[i] = (hashValue + i * 7) % 256;
+        //}
         
-        // 转换为base64
-        return btoa(String.fromCharCode.apply(null, hashBytes));
-    }
+        //// 转换为base64
+        //return btoa(String.fromCharCode.apply(null, hashBytes));
+    //}
 
     /**
      * 更新滴答计数器

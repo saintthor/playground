@@ -55,7 +55,10 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    p.Receive( msg, neighborId );
+                    if( p.Receive( msg, neighborId ))
+                    {
+                        p.Broadcast( msg, currTick, neighborId );
+                    }
                     delete p.Messages[msg.Id];
                 }
             } );
@@ -93,20 +96,29 @@ class Peer
         }
     }
 
-    Broadcast( msg, currTick )  //inner & outer
+    Broadcast( msg, currTick, srcUserId )  //inner & outer
     {
-        this.Connections.forEach(( n, t ) => n.AddMessage( msg, n.Id, currTick + t ));
+        [...this.Connections.values()].filter( c => c[0].Id != srcUserId ).forEach(( n, t ) =>
+        {
+            n.AddMessage( msg, this.Id, currTick + t );
+        } );
     };
 
     Receive( message, neighborId )
     {
-        if( !this.Connections.has( neighborId ))
+        if( neighborId && !this.Connections.has( neighborId ))
         {
-            return;
+            return false;
         }
         if( message.type === 'NewBlock' )
         {
+            //veriry
+            if( this.Users.has( message.block.TargetId ))
+            {
+                this.Users[message.block.TargetId].RecvBlockchain( message.block );
+            }
         }
+        return true;
     };
 
     GetBlock( blockId )

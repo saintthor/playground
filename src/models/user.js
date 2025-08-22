@@ -84,6 +84,12 @@ class User
         peer.AddUser( this );
         return this.Peers.size - l;
     };
+    
+    RecvBlockchain( block )
+    {
+        const Chain = block.GetBlockChain();
+        this.OwnChains.set( Chain[0], Chain );
+    };
 
     async Sign( s, pswd )
     {
@@ -125,9 +131,9 @@ class User
         return ABuff2Base64( await crypto.subtle.encrypt( { name: 'AES-CBC', iv: h512.slice( 48, 64 ) }, CBCKey, Buffer ));
     };
 
-    async CreateBlock( prevIdx, data, prevId )
+    async CreateBlock( prevIdx, dida, data, prevId )
     {
-        let block = await new Block( prevIdx + 1, data, prevId );
+        let block = await new Block( prevIdx + 1, dida, data, prevId );
         block.Id = await this.Sign( block.Hash );
         return block;
     };
