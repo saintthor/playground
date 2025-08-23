@@ -427,13 +427,10 @@ class App {
 
         // 生成模拟用户数据 - 用户ID就是公钥
         
-        //for( let n = config.nodeCount; n > 0; n-- )
-        //{
-            //new Peer( n );
-        //}
+        console.log( this.BlockChainNum, 'zzzz' );
         Array.from( new Array( config.nodeCount )).map(( _, i ) => new Peer( i + 1 ));
         await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
-        await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => new BlockChain( this.DefHash, i, this.SysUser.Id )));
+        await Promise.all( Array.from( new Array( 3 )).map(( _, i ) => new BlockChain( this.DefHash, i, this.SysUser.Id )));
         
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;

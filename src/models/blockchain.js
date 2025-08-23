@@ -1,30 +1,6 @@
 
-class Block
+class BaseBlock
 {
-    constructor( index, dida, data, prevId, id, content )
-    {
-        this.Index = index;
-        if( id )    // for rebuild
-        {
-            this.id = id;
-            this.Content = content;
-            return this;
-        }
-        let TimeStr = new Date().Format();
-        this.id = '';
-        this.Content = [index, dida, data, prevId || ''].join( '\n' );
-        return ( async () =>
-        {
-            let hash = await Hash( this.Content, 'SHA-1' )
-            this.Hash = ABuff2Base64( hash );
-            if( this.Index === 0 )
-            {
-                this.id = this.Hash;
-            }
-            return this;
-        } )();
-    };
-
     Copy()
     {
         return { Id: this.Id, Content: this.Content, Index: this.Index };
@@ -88,15 +64,46 @@ class Block
     };
 }
 
-class RootBlock extends Block
+class RootBlock extends BaseBlock
 {
     constructor( content )
     {
+        super();
         this.Index = 0;
+        this.Content = content;
         return ( async () =>
         {
             let hash = await Hash( content, 'SHA-1' )
+            this.id = this.Hash = ABuff2Base64( hash );
+            console.log( 'RootBlock', this.Hash, content, hash );
+            return this;
+        } )();
+    };
+}
+
+class Block extends BaseBlock
+{
+    constructor( index, dida, data, prevId, id, content )
+    {
+        super();
+        this.Index = index;
+        if( id )    // for rebuild
+        {
+            this.id = id;
+            this.Content = content;
+            return this;
+        }
+        
+        this.id = '';
+        this.Content = [index, dida, data, prevId || ''].join( '\n' );
+        return ( async () =>
+        {
+            let hash = await Hash( this.Content, 'SHA-1' )
             this.Hash = ABuff2Base64( hash );
+            if( this.Index === 0 )
+            {
+                this.id = this.Hash;
+            }
             return this;
         } )();
     };
@@ -108,9 +115,11 @@ class BlockChain
     
     constructor( defHash, serial, firstOwner )
     {
+        console.log( 'BlockChain constructor', defHash, serial, firstOwner );
         return ( async () =>
         {
             this.Root = await new RootBlock( [defHash, serial, firstOwner].join( '\n' ));
+            console.log( 'Root', serial, this.Root.Hash );
             this.constructor.All.set( this.Root.Id, this );
             return this;
         } )();
