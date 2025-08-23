@@ -4781,7 +4781,7 @@ small.text-muted {
     height: 100%;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .node-details-container .text-muted {
@@ -4802,7 +4802,7 @@ small.text-muted {
     height: 100%;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .user-details-container .text-muted {
@@ -4821,7 +4821,7 @@ small.text-muted {
 
 .chain-details-container {
     height: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .chain-details-container .text-muted {
@@ -5104,6 +5104,9 @@ small.text-muted {
 .node-users-section,
 .node-connections-section {
     margin-bottom: 1.5rem;
+    width: 46%;
+    display: inline-block;
+    margin-left: 20px;
 }
 
 .node-users-section h6,
@@ -5395,7 +5398,7 @@ small.text-muted {
 /* 节点详情容器样式 */
 .node-details-container {
     height: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
     max-height: 100%;
 }
 
@@ -5479,7 +5482,7 @@ small.text-muted {
 
 .user-details-container {
     height: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
     max-height: 100%;
 }
 
@@ -5502,7 +5505,7 @@ small.text-muted {
 
 .chain-details-container {
     height: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
     max-height: 100%;
 }
 
@@ -5882,7 +5885,7 @@ small.text-muted {
 .node-details-container,
 .chain-details-container {
     height: 100% !important;
-    overflow-y: auto !important;
+    overflow-y: scroll !important;
     display: block !important;
     max-height: 100% !important;
 }

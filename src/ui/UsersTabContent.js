@@ -155,18 +155,18 @@ class UsersTabContent {
         
         try {
             // 获取用户数据
-            const userData = this.getUserData(userId);
+            const user = this.app.CurrUser = this.getUserData(userId);
             
-            if (!userData) {
+            if (!user) {
                 detailsContainer.innerHTML = '<p class="text-muted">用户数据未找到</p>';
                 return;
             }
             
             // 获取用户拥有的区块链
-            const userChains = this.getUserChains(userId, userData);
+            const userChains = user.OwnChains;
             
             // 生成用户详情HTML
-            const detailsHTML = this.generateUserDetailsHTML(userId, userData, userChains);
+            const detailsHTML = this.generateUserDetailsHTML(userId, user, userChains);
             detailsContainer.innerHTML = detailsHTML;
             
             // 添加has-content类以启用滚动条
@@ -188,12 +188,12 @@ class UsersTabContent {
     getUserData(userId) {
         try {
             // 从应用中获取用户数据
-            if (!this.app || !this.app.mockUsers) {
-                console.warn('应用或用户数据未找到');
-                return null;
-            }
+            //if (!this.app || !this.app.mockUsers) {
+                //console.warn('应用或用户数据未找到');
+                //return null;
+            //}
             
-            const userData = this.app.mockUsers.get(userId);
+            const userData = this.app.AllUsers.get(userId);
             if (!userData) {
                 console.warn('用户数据未找到:', userId);
                 return null;
@@ -213,29 +213,29 @@ class UsersTabContent {
      * @param {Object} userData - 用户数据
      * @returns {Array} - 用户拥有的区块链数组
      */
-    getUserChains(userId, userData) {
-        try {
-            if (!userData.ownedChains || !this.app.mockChains) {
-                return [];
-            }
+    //getUserChains(userId, userData) {
+        //try {
+            //if (!userData.ownedChains || !this.app.mockChains) {
+                //return [];
+            //}
             
-            // 获取用户拥有的区块链（直接从用户数据中获取）
-            const userChains = userData.ownedChains.map(ownedChain => {
-                const chainData = this.app.mockChains.get(ownedChain.chainId);
-                return {
-                    id: ownedChain.chainId,
-                    ...chainData,
-                    ...ownedChain
-                };
-            });
+            //// 获取用户拥有的区块链（直接从用户数据中获取）
+            //const userChains = userData.ownedChains.map(ownedChain => {
+                //const chainData = this.app.mockChains.get(ownedChain.chainId);
+                //return {
+                    //id: ownedChain.chainId,
+                    //...chainData,
+                    //...ownedChain
+                //};
+            //});
             
-            return userChains;
+            //return userChains;
             
-        } catch (error) {
-            console.error('获取用户区块链失败:', error);
-            return [];
-        }
-    }
+        //} catch (error) {
+            //console.error('获取用户区块链失败:', error);
+            //return [];
+        //}
+    //}
     
     /**
      * 生成用户详情HTML
@@ -248,8 +248,7 @@ class UsersTabContent {
         return `
             <div class="user-details">
                 <div class="user-details-header">
-                    <h5>用户详情 - 用户${userData.displayNumber || '?'}</h5>
-                    <span class="user-id">ID: ${this.truncateKey(userId)}</span>
+                    <h5>用户详情 - ID: ${this.truncateKey(userId)}</h5>
                 </div>
                 
                 <div class="user-basic-info">
@@ -265,21 +264,21 @@ class UsersTabContent {
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">拥有区块链数:</span>
-                            <span class="detail-info-value">${userData.chainCount || 0}</span>
+                            <span class="detail-info-value">${userChains.size || 0}</span>
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">所在节点:</span>
-                            <span class="detail-info-value">${userData.nodeIds ? userData.nodeIds.map(nodeId => `Node ${nodeId + 1}`).join(', ') : `Node ${(userData.nodeId || 0) + 1}`}</span>
+                            <span class="detail-info-value">${[...userData.Peers.values()].map(p => `Peer-${p.Id}`).join(', ')}</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="user-chains-section">
-                    <h6>拥有的区块链 (${userChains.length})</h6>
+                    <h6>拥有的区块链 (${userChains.size})</h6>
                     <div class="chains-list">
-                        ${userChains.length > 0 ? userChains.map(chain => `
+                        ${userChains.size > 0 ? [...userChains.values()].map(chain => `
                             <div class="chain-item" onclick="window.mainPanel.tabManager.switchTab('chains'); setTimeout(() => window.mainPanel.showChainDetails('${chain.id}'), 100);">
-                                <span class="chain-id crypto-hash" title="${chain.id}">${this.truncateHash(chain.id)}</span>
+                                <span class="chain-id crypto-hash" title="${chain.Id}">${this.truncateHash(chain.Id)}</span>
                                 <span class="chain-value">${chain.value}</span>
                                 <span class="chain-status ${chain.isTransferring ? 'transferring' : ''}">${chain.isTransferring ? '转移中' : '正常'}</span>
                             </div>

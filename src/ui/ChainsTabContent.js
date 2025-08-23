@@ -181,12 +181,8 @@ class ChainsTabContent {
             // 添加has-content类以启用滚动条
             detailsContainer.classList.add('has-content');
             
-            // 强制设置滚动条样式
-            detailsContainer.style.height = '100%';
-            detailsContainer.style.overflowY = 'auto';
-            detailsContainer.style.display = 'block';
-            detailsContainer.style.maxHeight = '100%';
-            detailsContainer.style.boxSizing = 'border-box';
+            // 强制重新计算布局以确保滚动条正确显示
+            this.forceLayoutRecalculation();
             
             console.log('区块链详情显示完成:', chainId);
             
@@ -196,6 +192,42 @@ class ChainsTabContent {
         }
     }
     
+    /**
+     * 强制重新计算布局，确保滚动条正确显示
+     */
+    forceLayoutRecalculation()
+    {
+        try
+        {
+            const chainsTab = document.getElementById( 'chains-tab' );
+            if( !chainsTab ) return;
+            
+            const upperSection = chainsTab.querySelector( '.tab-section-upper' );
+            const lowerSection = chainsTab.querySelector( '.tab-section-lower' );
+            
+            if( upperSection && lowerSection )
+            {
+                // 触发重新计算布局
+                upperSection.offsetHeight;
+                lowerSection.offsetHeight;
+                
+                // 如果有ResizeManager，使用当前比例重新应用布局
+                if( window.resizeManager && window.resizeManager.tabRatios )
+                {
+                    const currentRatio = window.resizeManager.tabRatios.chains || 0.6;
+                    setTimeout( () =>
+                    {
+                        window.resizeManager.applyRatio( 'chains', currentRatio );
+                    }, 0 );
+                }
+            }
+        }
+        catch( error )
+        {
+            console.error( '强制布局重新计算失败:', error );
+        }
+    }
+
     /**
      * 获取区块链数据
      * @param {string} chainId - 区块链ID
