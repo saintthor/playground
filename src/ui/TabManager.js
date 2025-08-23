@@ -118,7 +118,7 @@ class TabManager {
             this.hideLoadingState(tabName);
             
             // 持久化新的激活标签页状态
-            this.persistTabStates();
+            //this.persistTabStates();
             
             // 触发标签页切换事件
             this.triggerTabSwitchEvent(previousTab, tabName);
@@ -403,7 +403,7 @@ class TabManager {
             };
             
             // 持久化状态到本地存储
-            this.persistTabStates();
+            //this.persistTabStates();
             
             console.log(`标签页状态已保存: ${tabName}`, state);
             
@@ -706,60 +706,60 @@ class TabManager {
     /**
      * 持久化标签页状态到本地存储
      */
-    persistTabStates() {
-        try {
-            const stateData = {
-                activeTab: this.activeTab,
-                tabStates: this.tabStates,
-                timestamp: Date.now()
-            };
+    //persistTabStates() {
+        //try {
+            //const stateData = {
+                //activeTab: this.activeTab,
+                //tabStates: this.tabStates,
+                //timestamp: Date.now()
+            //};
             
-            localStorage.setItem('mainPanelTabStates', JSON.stringify(stateData));
+            //localStorage.setItem('mainPanelTabStates', JSON.stringify(stateData));
             
-        } catch (error) {
-            console.error('持久化标签页状态失败:', error);
-        }
-    }
+        //} catch (error) {
+            //console.error('持久化标签页状态失败:', error);
+        //}
+    //}
     
     /**
      * 从本地存储恢复标签页状态
      */
-    restorePersistedStates() {
-        try {
-            const stateData = localStorage.getItem('mainPanelTabStates');
-            if (!stateData) {
-                console.log('本地存储中没有找到标签页状态数据');
-                return;
-            }
+    //restorePersistedStates() {
+        //try {
+            //const stateData = localStorage.getItem('mainPanelTabStates');
+            //if (!stateData) {
+                //console.log('本地存储中没有找到标签页状态数据');
+                //return;
+            //}
             
-            const parsedData = JSON.parse(stateData);
+            //const parsedData = JSON.parse(stateData);
             
-            // 验证数据完整性
-            if (!this.validateStateData(parsedData)) {
-                console.warn('本地存储的状态数据格式无效，使用默认状态');
-                this.resetToDefaultStates();
-                return;
-            }
+            //// 验证数据完整性
+            //if (!this.validateStateData(parsedData)) {
+                //console.warn('本地存储的状态数据格式无效，使用默认状态');
+                //this.resetToDefaultStates();
+                //return;
+            //}
             
-            // 恢复标签页状态，使用安全合并
-            if (parsedData.tabStates) {
-                this.tabStates = this.mergeTabStates(this.tabStates, parsedData.tabStates);
-            }
+            //// 恢复标签页状态，使用安全合并
+            //if (parsedData.tabStates) {
+                //this.tabStates = this.mergeTabStates(this.tabStates, parsedData.tabStates);
+            //}
             
-            // 恢复激活标签页
-            if (parsedData.activeTab && this.isValidTabName(parsedData.activeTab)) {
-                this.activeTab = parsedData.activeTab;
-            }
+            //// 恢复激活标签页
+            //if (parsedData.activeTab && this.isValidTabName(parsedData.activeTab)) {
+                //this.activeTab = parsedData.activeTab;
+            //}
             
-            console.log('标签页状态已从本地存储恢复');
+            //console.log('标签页状态已从本地存储恢复');
             
-        } catch (error) {
-            console.error('从本地存储恢复标签页状态失败:', error);
-            // 清除损坏的数据并使用默认状态
-            this.clearCorruptedState();
-            this.resetToDefaultStates();
-        }
-    }
+        //} catch (error) {
+            //console.error('从本地存储恢复标签页状态失败:', error);
+            //// 清除损坏的数据并使用默认状态
+            //this.clearCorruptedState();
+            //this.resetToDefaultStates();
+        //}
+    //}
     
     /**
      * 验证状态数据的完整性
@@ -1033,7 +1033,7 @@ class TabManager {
             this.initResizeManager();
             
             // 从本地存储恢复状态
-            this.restorePersistedStates();
+            //this.restorePersistedStates();
             
             // 绑定事件监听器
             this.bindEventListeners();
@@ -1131,14 +1131,14 @@ class TabManager {
         // 绑定页面卸载事件，保存状态
         window.addEventListener('beforeunload', () => {
             this.saveCurrentTabState();
-            this.persistTabStates();
+            //this.persistTabStates();
         });
         
         // 绑定页面可见性变化事件，在页面隐藏时保存状态
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.saveCurrentTabState();
-                this.persistTabStates();
+                //this.persistTabStates();
             }
         });
     }
@@ -1550,7 +1550,7 @@ class TabManager {
         try {
             // 保存当前状态
             this.saveCurrentTabState();
-            this.persistTabStates();
+            //this.persistTabStates();
             
             // 清理性能优化相关资源
             this.cleanupPerformanceResources();

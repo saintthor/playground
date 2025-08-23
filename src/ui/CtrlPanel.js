@@ -28,11 +28,19 @@ class CtrlPanel {
         try {
             this.render();
             this.setupEventListeners();
+            this.InitDefHash();
             this.isInitialized = true;
             console.log('CtrlPanel 初始化完成');
         } catch (error) {
             console.error('CtrlPanel 初始化失败:', error);
         }
+    }
+    
+    async InitDefHash()
+    {
+        const hexHash = await Crypto.sha256( this.currentConfig.DefStr + this.currentConfig.chainDefinition );
+        const hashBytes = new Uint8Array( hexHash.match( /.{1,2}/g ).map( byte => parseInt( byte, 16 )));
+        this.app.DefHash = btoa( String.fromCharCode.apply( null, hashBytes ));
     }
     
     render() {

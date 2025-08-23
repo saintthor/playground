@@ -93,7 +93,7 @@ class User
 
     async Sign( s, pswd )
     {
-        let ua8 = Base642ABuff( s );
+        let ua8 = s instanceof String ? Base642ABuff( s ) : s;
         return ABuff2Base64( await crypto.subtle.sign( { name: "ECDSA", hash: { name: "SHA-1" }, }, this.PriKey, ua8 ));
     };
 
@@ -103,32 +103,6 @@ class User
         let pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),
                                 { name: "ECDSA", namedCurve: "P-256", }, false, ["verify"] )
         return crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), data );
-    };
-
-    static async Import( pswd, encrypted )    //import a key pair to create a user.
-    {
-        let h512 = await Hash( pswd, 'SHA-512', HASH_TIMES );
-        let CBCKey = await crypto.subtle.importKey( 'raw', h512.slice( 0, 32 ), { name: 'PBKDF2' }, false, ['deriveBits', 'deriveKey'] )
-                        .then( k => crypto.subtle.deriveKey( { "name": 'PBKDF2', "salt": h512.slice( 32, 48 ),
-                                    "iterations": CBC_ITERATIONS, "hash": 'SHA-256' }, k,
-                                    { "name": 'AES-CBC', "length": 256 }, true, ["encrypt", "decrypt"] ))
-        let Buffer = await crypto.subtle.decrypt( { name: 'AES-CBC', iv: h512.slice( 48, 64 ) }, CBCKey, Base642ABuff( encrypted ));
-        let Keys = JSON.parse( UA2Str( new Uint8Array( Buffer )));
-
-        return await new User( Keys );
-    };
-
-    async Export( pswd )    //export the key pair.
-    {
-        let h512 = await Hash( pswd, 'SHA-512', HASH_TIMES );
-        let CBCKey = await crypto.subtle.importKey( 'raw', h512.slice( 0, 32 ), { name: 'PBKDF2' }, false, ['deriveBits', 'deriveKey'] )
-                        .then( k => crypto.subtle.deriveKey( { "name": 'PBKDF2', "salt": h512.slice( 32, 48 ),
-                                    "iterations": CBC_ITERATIONS, "hash": 'SHA-256' }, k,
-                                    { "name": 'AES-CBC', "length": 256 }, true, ["encrypt", "decrypt"] ))
-        let ExPrivKey = await crypto.subtle.exportKey( "jwk", this.PriKey );
-        let Buffer = new TextEncoder( 'utf8' ).encode( JSON.stringify( { 'private': ExPrivKey, 'public': this.PubKeyStr } ));
-
-        return ABuff2Base64( await crypto.subtle.encrypt( { name: 'AES-CBC', iv: h512.slice( 48, 64 ) }, CBCKey, Buffer ));
     };
 
     async CreateBlock( prevIdx, dida, data, prevId )

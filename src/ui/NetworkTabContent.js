@@ -49,7 +49,7 @@ class NetworkTabContent {
         //const failedConnections = Math.floor((networkData.totalConnections || 0) * (networkData.failureRate || 0));
         
         // 更新统计信息
-        const ConnNum = [...allPeers.values()].map( p => p.Connections.size ).reduce(( a, b ) => a + b ) / 2;
+        const ConnNum = nodeCount > 0 ? [...allPeers.values()].map( p => p.Connections.size ).reduce(( a, b ) => a + b ) / 2 : 0;
         statsContainer.innerHTML = `
             <span class="network-stat">节点: ${ nodeCount }</span>
             <span class="network-stat">连接: ${ ConnNum || 0 }</span>
@@ -302,7 +302,7 @@ class NetworkTabContent {
             const nodeData = this.getNodeData(nodeId);
             
             if (!nodeData) {
-                detailsContainer.innerHTML = '<p class="text-muted">节点数据未找到</p>';
+                detailsContainer.innerHTML = '<p class="text-muted">未选择节点</p>';
                 return;
             }
             
@@ -329,49 +329,51 @@ class NetworkTabContent {
     getNodeData(nodeId) {
         try {
             // 检查应用和配置是否存在
-            if (!this.app || !this.app.config) {
-                console.warn('应用或配置未找到');
-                return null;
-            }
+            //if (!this.app || !this.app.config) {
+                //console.warn('应用或配置未找到');
+                //return null;
+            //}
             
-            // 检查节点ID是否有效
-            const nodeCount = this.app.config.nodeCount || 0;
-            if (nodeId < 0 || nodeId >= nodeCount) {
-                console.warn('无效的节点ID:', nodeId, '节点总数:', nodeCount);
-                return null;
-            }
+            //// 检查节点ID是否有效
+            //const nodeCount = this.app.config.nodeCount || 0;
+            //if (nodeId < 0 || nodeId >= nodeCount) {
+                //console.warn('无效的节点ID:', nodeId, '节点总数:', nodeCount);
+                //return null;
+            //}
             
             // 获取节点上的用户列表
-            const nodeUsers = [];
-            if (this.app.mockUsers) {
-                for (const [userId, userData] of this.app.mockUsers) {
-                    // 检查用户是否分配到这个节点（支持多节点分配）
-                    const isOnNode = userData.nodeIds ? 
-                        userData.nodeIds.includes(nodeId) : 
-                        userData.nodeId === nodeId;
+            const CurrPeer = this.app.AllPeers.get( nodeId );
+            
+            //const nodeUsers = [];
+            //if (this.app.mockUsers) {
+                //for (const [userId, userData] of this.app.mockUsers) {
+                    //// 检查用户是否分配到这个节点（支持多节点分配）
+                    //const isOnNode = userData.nodeIds ? 
+                        //userData.nodeIds.includes(nodeId) : 
+                        //userData.nodeId === nodeId;
                     
-                    if (isOnNode) {
-                        nodeUsers.push({
-                            userId: userId,
-                            displayNumber: userData.displayNumber,
-                            totalAssets: userData.totalAssets
-                        });
-                    }
-                }
-            }
+                    //if (isOnNode) {
+                        //nodeUsers.push({
+                            //userId: userId,
+                            //displayNumber: userData.displayNumber,
+                            //totalAssets: userData.totalAssets
+                        //});
+                    //}
+                //}
+            //}
             
             // 获取节点连接信息
-            const connections = this.getNodeConnections(nodeId);
+            //const connections = this.getNodeConnections(nodeId);
             
             return {
                 nodeId: nodeId,
                 nodeName: `Node ${nodeId + 1}`,
-                users: nodeUsers,
-                connections: connections,
+                users: [...CurrPeer.Users.values()],
+                connections: [...CurrPeer.Connections.values()],
                 stats: {
-                    totalUsers: nodeUsers.length,
-                    totalConnections: connections.length,
-                    activeConnections: connections.filter(conn => conn.isActive).length
+                    totalUsers: CurrPeer.Users.size,
+                    totalConnections: CurrPeer.Connections.size,
+                    activeConnections: 0
                 }
             };
             
@@ -386,8 +388,8 @@ class NetworkTabContent {
      * @param {number} nodeId - 节点ID
      * @returns {Array} - 连接信息数组
      */
-    getNodeConnections(nodeId) {
-        const connections = [];
+    //getNodeConnections(nodeId) {
+        //const connections = [];
         
         // 遍历网络连接，找到与当前节点相关的连接
         //this.networkLinks.forEach(link => {
@@ -413,8 +415,8 @@ class NetworkTabContent {
             //}
         //});
         
-        return connections;
-    }
+        //return connections;
+    //}
     
     /**
      * 生成节点详情HTML
@@ -430,7 +432,7 @@ class NetworkTabContent {
                     <span class="node-id">ID: ${nodeId}</span>
                 </div>
                 
-                <div class="node-stats">
+                <!--div class="node-stats">
                     <div class="stat-item">
                         <span class="stat-label">用户数:</span>
                         <span class="stat-value">${nodeData.stats.totalUsers}</span>
@@ -443,14 +445,14 @@ class NetworkTabContent {
                         <span class="stat-label">活跃连接:</span>
                         <span class="stat-value">${nodeData.stats.activeConnections}</span>
                     </div>
-                </div>
+                </div-->
                 
                 <div class="node-users-section">
                     <h6>节点用户 (${nodeData.users.length})</h6>
                     <div class="users-list">
                         ${nodeData.users.length > 0 ? nodeData.users.map(user => `
-                            <div class="user-item" onclick="window.mainPanel.showUserDetails('${user.userId}')">
-                                <span class="user-display">用户${user.displayNumber}</span>
+                            <div class="user-item" onclick="window.mainPanel.showUserDetails('${user.Id}')">
+                                <span class="user-display">用户&emsp;<span style="font-size: smaller;">${user.Id.slice( 0, 17 ) + '...'}</span></span>
                                 <span class="user-assets">${user.totalAssets} 资产</span>
                             </div>
                         `).join('') : '<p class="text-muted">该节点暂无用户</p>'}
@@ -461,12 +463,12 @@ class NetworkTabContent {
                     <h6>节点连接 (${nodeData.connections.length})</h6>
                     <div class="connections-list">
                         ${nodeData.connections.length > 0 ? nodeData.connections.map(conn => `
-                            <div class="connection-item ${conn.isActive ? 'active' : 'inactive'}">
-                                <span class="connection-target">${conn.targetNodeName}</span>
-                                <span class="connection-latency">${conn.latency} 滴答</span>
-                                <span class="connection-status ${conn.isActive ? 'status-active' : 'status-inactive'}">
+                            <div class="connection-item active">
+                                <span class="connection-target">邻接节点&ensp;${conn[0].Id}</span>
+                                <span class="connection-latency">${conn[1]} 滴答</span>
+                                <!--span class="connection-status ${conn.isActive ? 'status-active' : 'status-inactive'}">
                                     ${conn.isActive ? '正常' : '故障'}
-                                </span>
+                                </span-->
                             </div>
                         `).join('') : '<p class="text-muted">该节点暂无连接</p>'}
                     </div>

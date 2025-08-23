@@ -54,7 +54,7 @@ class App {
     constructor() {
         /** @type {UIManager} 用户界面管理器 */
         this.uiManager = new UIManager(this);
-
+        this.DefHash = '';
         /** @type {boolean} 系统运行状态 */
         this.isRunning = false;
 
@@ -88,7 +88,7 @@ class App {
         this.mockUsers = new Map();
         this.AllUsers = User.All;
         this.AllPeers = Peer.All;
-        this.BlockChainNum = 0;
+        this.BlockChainNum = 500;
         this.AllBlockchains = BlockChain.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
@@ -430,7 +430,7 @@ class App {
         console.log( this.BlockChainNum, 'zzzz' );
         Array.from( new Array( config.nodeCount )).map(( _, i ) => new Peer( i + 1 ));
         await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
-        await Promise.all( Array.from( new Array( 3 )).map(( _, i ) => new BlockChain( this.DefHash, i, this.SysUser.Id )));
+        await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => new BlockChain( this.DefHash, i, this.SysUser.Id )));
         
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;

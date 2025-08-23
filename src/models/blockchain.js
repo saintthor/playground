@@ -1,6 +1,8 @@
 
 class BaseBlock
 {
+    static All = new Map();
+    
     Copy()
     {
         return { Id: this.Id, Content: this.Content, Index: this.Index };
@@ -60,7 +62,8 @@ class BaseBlock
     TransferTo( targetUser, dida, sender )
     {
         sender = sender || User.All.get( this.OwnerId );
-        return sender.CreateBlock( 0, dida, targetUser.Id, this.Id )  //CreateBlock( prevIdx, dida, data, prevId )
+        return new Block( 1, 0, targetUser.Id, this.Id, sender );
+        //return sender.CreateBlock( 0, dida, targetUser.Id, this.Id )  //CreateBlock( prevIdx, dida, data, prevId )
     };
 }
 
@@ -75,7 +78,8 @@ class RootBlock extends BaseBlock
         {
             let hash = await Hash( content, 'SHA-1' )
             this.id = this.Hash = ABuff2Base64( hash );
-            console.log( 'RootBlock', this.Hash, content, hash );
+            this.constructor.All.set( this.id, this );
+            //console.log( 'RootBlock', this.Hash, content, hash );
             return this;
         } )();
     };
@@ -83,30 +87,32 @@ class RootBlock extends BaseBlock
 
 class Block extends BaseBlock
 {
-    constructor( index, dida, data, prevId, id, content )
+    constructor( index, dida, data, prevId, owner )
     {
         super();
         this.Index = index;
-        if( id )    // for rebuild
-        {
-            this.id = id;
-            this.Content = content;
-            return this;
-        }
-        
         this.id = '';
         this.Content = [index, dida, data, prevId || ''].join( '\n' );
         return ( async () =>
         {
-            let hash = await Hash( this.Content, 'SHA-1' )
-            this.Hash = ABuff2Base64( hash );
-            if( this.Index === 0 )
-            {
-                this.id = this.Hash;
-            }
+            let hash = await Hash( this.Content, 'SHA-1' );
+            this.id = this.Hash = await owner.Sign( hash );
+            this.constructor.All.set( this.id, this );
             return this;
         } )();
     };
+}
+
+class RebuildBlock extends BaseBlock
+{
+    constructor( index, id, content )
+    {
+        super();
+        this.Index = index;
+        this.id = id;
+        this.Content = content;
+        return this
+    }
 }
 
 class BlockChain
@@ -119,7 +125,6 @@ class BlockChain
         return ( async () =>
         {
             this.Root = await new RootBlock( [defHash, serial, firstOwner].join( '\n' ));
-            console.log( 'Root', serial, this.Root.Hash );
             this.constructor.All.set( this.Root.Id, this );
             return this;
         } )();
