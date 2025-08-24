@@ -88,7 +88,7 @@ class App {
         this.mockUsers = new Map();
         this.AllUsers = User.All;
         this.AllPeers = Peer.All;
-        this.BlockChainNum = 50;
+        this.BlockChainNum = 1;
         this.AllBlockchains = BlockChain.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
@@ -468,8 +468,9 @@ class App {
                 }
             }
             
-            Blockchains.forEach( c => p.Receive( { type: "NewBlock", block: c.Root.TransData() } ));
-            TransBlocks.forEach( b => p.Receive( { type: "NewBlock", block: b.TransData() } ));
+            Blockchains.forEach( async function ( c ) { await p.Receive( { type: "NewBlock", block: c.Root.TransData() } ) } );
+            setTimeout(() =>
+            TransBlocks.forEach( async function ( b ) { await p.Receive( { type: "NewBlock", block: b.TransData() } ) } ), 200 );
         } );
         
         //const users = [];

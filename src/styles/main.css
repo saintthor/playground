@@ -3189,7 +3189,6 @@ small.text-muted {
 }
 
 .detail-info-grid {
-    display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.5rem 1rem;
     align-items: center;
@@ -3810,6 +3809,8 @@ small.text-muted {
     border: 1px solid #e9ecef;
     border-radius: 6px;
     padding: 1rem;
+    width: 48%;
+    display: inline-block;
 }
 
 .user-basic-info h5,
@@ -3823,7 +3824,6 @@ small.text-muted {
 }
 
 .detail-info-grid {
-    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
 }

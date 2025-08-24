@@ -64,10 +64,10 @@ class BaseBlock
         return { Id: this.Id, Content: this.Content };
     }
     
-    TransferTo( targetUser, dida, sender )
+    TransferTo( targetUser, dida, sender )  // only for the second block
     {
         sender = sender || User.All.get( this.OwnerId );
-        return new Block( 1, 0, targetUser.Id, this.Id, sender );
+        return new Block( 1, dida, targetUser.Id, this.Id, sender );
         //return sender.CreateBlock( 0, dida, targetUser.Id, this.Id )  //CreateBlock( prevIdx, dida, data, prevId )
     };
 }

@@ -59,9 +59,7 @@ class User
     
     constructor()
     {
-        this.OwnChains = new Map();
-        this.LocalBlocks = new Map();       //move to Peer?
-        this.BlackList = [];
+        this.OwnChains = new Set();
         this.Peers = new Map();
         return ( async () =>
         {
@@ -85,12 +83,24 @@ class User
         return this.Peers.size - l;
     };
     
-    RecvBlockchain( block )
+    SetOwnChains( rootId, isAdd )
     {
-        const ChainIds = block.GetBlockChain(); //[root, block...]
-        //console.log( 'RecvBlockchain', ChainIds, block.Id );
-        this.OwnChains.set( ChainIds[0], ChainIds );
+        isAdd ? this.OwnChains.add( rootId ) : this.OwnChains.delete( rootId );
     };
+    
+    SendBlockchain( prevBlock, rootId, dida, targetUId )
+    {
+        const NewBlockPrms = new Block( prevBlock.Index + 1, dida, targetUId, prevBlock.Id, this );
+        this.SetOwnChains( rootId, false );
+        return NewBlockPrms;
+    };
+    
+    //RecvBlockchain( block )
+    //{
+        //const ChainIds = block.GetBlockChain(); //[root, block...]
+        ////console.log( 'RecvBlockchain', ChainIds, block.Id );
+        //this.OwnChains.set( ChainIds[0], ChainIds );
+    //};
 
     async Sign( s, pswd )
     {
@@ -109,7 +119,8 @@ class User
     GetAssets()
     {
         let Asset = 0;
-        [...this.OwnChains.keys()].forEach( rootId => Asset += BlockChain.All.get( rootId ).FaceVal );
+        console.log( this.OwnChains );
+        [...this.OwnChains].forEach( rootId => Asset += BlockChain.All.get( rootId ).FaceVal );
         return Asset;
     };
 
