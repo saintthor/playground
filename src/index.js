@@ -88,7 +88,7 @@ class App {
         this.mockUsers = new Map();
         this.AllUsers = User.All;
         this.AllPeers = Peer.All;
-        this.BlockChainNum = 500;
+        this.BlockChainNum = 50;
         this.AllBlockchains = BlockChain.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
@@ -427,10 +427,11 @@ class App {
 
         // 生成模拟用户数据 - 用户ID就是公钥
         
-        console.log( this.BlockChainNum, 'zzzz' );
+        BlockChain.InitValueDef( this.uiManager.panels.control.currentConfig.chainDefinition );
         Array.from( new Array( config.nodeCount )).map(( _, i ) => new Peer( i + 1 ));
         await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
-        await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => new BlockChain( this.DefHash, i, this.SysUser.Id )));
+        await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => 
+                                        new BlockChain( this.DefHash, i + 1, this.SysUser.Id )));
         
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;
@@ -446,12 +447,12 @@ class App {
         } );
         
         const Blockchains = [...this.AllBlockchains.values()];
-        const TransBlocks = Blockchains.map( c =>
+        const TransBlocks = await Promise.all( Blockchains.map( c =>
         {
             const idx = Math.floor( Math.random() * config.userCount );
             return c.Root.TransferTo( Users[idx], 0, this.SysUser );
-        } );
-
+        } ));
+        
         Peers.forEach( p =>         // connect with other peers
         {
             for( let n = config.maxConnections - p.Connections.size; n > 0; )
@@ -467,8 +468,8 @@ class App {
                 }
             }
             
-            Blockchains.forEach( c => p.Receive( { type: "NewBlock", block: c.Root } ));
-            TransBlocks.forEach( b => p.Receive( { type: "NewBlock", block: b } ));
+            Blockchains.forEach( c => p.Receive( { type: "NewBlock", block: c.Root.TransData() } ));
+            TransBlocks.forEach( b => p.Receive( { type: "NewBlock", block: b.TransData() } ));
         } );
         
         //const users = [];

@@ -260,7 +260,7 @@ class UsersTabContent {
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">总资产:</span>
-                            <span class="detail-info-value">${userData.totalAssets || 0}</span>
+                            <span class="detail-info-value">${userData.GetAssets() || 0}</span>
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">拥有区块链数:</span>

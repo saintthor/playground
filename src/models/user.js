@@ -87,8 +87,9 @@ class User
     
     RecvBlockchain( block )
     {
-        const Chain = block.GetBlockChain();
-        this.OwnChains.set( Chain[0], Chain );
+        const ChainIds = block.GetBlockChain(); //[root, block...]
+        //console.log( 'RecvBlockchain', ChainIds, block.Id );
+        this.OwnChains.set( ChainIds[0], ChainIds );
     };
 
     async Sign( s, pswd )
@@ -103,6 +104,13 @@ class User
         let pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),
                                 { name: "ECDSA", namedCurve: "P-256", }, false, ["verify"] )
         return crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), data );
+    };
+    
+    GetAssets()
+    {
+        let Asset = 0;
+        [...this.OwnChains.keys()].forEach( rootId => Asset += BlockChain.All.get( rootId ).FaceVal );
+        return Asset;
     };
 
     async CreateBlock( prevIdx, dida, data, prevId )

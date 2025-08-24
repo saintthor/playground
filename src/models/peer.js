@@ -112,14 +112,24 @@ class Peer
         }
         if( message.type === 'NewBlock' )
         {
-            //veriry
-            if( this.Users.has( message.block.TargetId ))
+            const CurrBlock = new RebuildBlock( message.block.Id, message.block.Content );
+            if( !this.Verify( CurrBlock ))
             {
-                this.Users[message.block.TargetId].RecvBlockchain( message.block );
+                return false;
+            }
+            if( this.Users.has( CurrBlock.OwnerId ))
+            {
+                //console.log( 'Receive find owner', CurrBlock.OwnerId );
+                this.Users.get( CurrBlock.OwnerId ).RecvBlockchain( CurrBlock );
             }
         }
         return true;
     };
+    
+    Verify( block )
+    {
+        return true;
+    }
 
     GetBlock( blockId )
     {

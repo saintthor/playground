@@ -18,7 +18,7 @@ class BaseBlock
     {
         if( this.Index > 0 )
         {
-            return this.GetContentLns( 4 )[0];
+            return this.GetContentLns( 3 )[0];
         }
     };
 
@@ -27,10 +27,10 @@ class BaseBlock
         return this.GetContentLns( 2 )[0];
     };
 
-    get TargetId()
-    {
-        return this.GetContentLns( 4 )[0];
-    };
+    //get TargetId()
+    //{
+        //return this.GetContentLns( 4 )[0];
+    //};
 
     GetContentLns( ...idxes )
     {
@@ -58,6 +58,11 @@ class BaseBlock
     {
         this.id = this.id || id;
     };
+    
+    TransData() 
+    {
+        return { Id: this.Id, Content: this.Content };
+    }
     
     TransferTo( targetUser, dida, sender )
     {
@@ -105,12 +110,13 @@ class Block extends BaseBlock
 
 class RebuildBlock extends BaseBlock
 {
-    constructor( index, id, content )
+    constructor( id, content )
     {
         super();
-        this.Index = index;
         this.id = id;
         this.Content = content;
+        const FirstLine = this.GetContentLns( 0 );
+        this.Index = isNaN( FirstLine ) ? 0 : Number( FirstLine );
         return this
     }
 }
@@ -118,10 +124,12 @@ class RebuildBlock extends BaseBlock
 class BlockChain
 {
     static All = new Map();
+    static ValueDef = [];
     
     constructor( defHash, serial, firstOwner )
     {
-        console.log( 'BlockChain constructor', defHash, serial, firstOwner );
+        this.SetFaceVal( serial );
+        //console.log( 'BlockChain constructor', this.FaceVal, defHash, serial, firstOwner );
         return ( async () =>
         {
             this.Root = await new RootBlock( [defHash, serial, firstOwner].join( '\n' ));
@@ -129,6 +137,29 @@ class BlockChain
             return this;
         } )();
     };
+    
+    static InitValueDef( lines )
+    {
+        this.ValueDef = lines.split( '\n' ).map( ln =>
+        {
+            const [range, value] = ln.split( ' ' );
+            return [range.split( '-' ).map( Number ), Number( value )];
+        } );
+        //console.log( this.ValueDef );
+    };
+    
+    SetFaceVal( serial )
+    {
+        for( let [edges, value] of this.constructor.ValueDef )
+        {
+            if( serial >= edges[0] && serial <= edges[1] )
+            {
+                this.FaceVal = value;
+                return;
+            }
+        }
+        this.FaceVal = 0;
+    }
 
     get Id() { return this.Root.Id; }
     get Name() { return this.Root.GetContentLns( 2 )[0]; };
