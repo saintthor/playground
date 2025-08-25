@@ -128,7 +128,9 @@ class Peer
                 if( this.Users.has( CurrBlock.OwnerId ))
                 {
                     //console.log( 'Receive find owner', CurrBlock.OwnerId );
-                    this.Users.get( CurrBlock.OwnerId ).SetOwnChains( CurrBlock.RootId, true );
+                    const owner = this.Users.get( CurrBlock.OwnerId );
+                    owner.SetOwnChains( CurrBlock.RootId, true );
+                    BlockChain.All.get( CurrBlock.RootId ).Update( owner, CurrBlock );
                 }
             }
             catch( e )
@@ -195,74 +197,74 @@ class Peer
         }
     };
 
-    async RcvBlock( block )
-    {
-        //console.log( 'RcvBlock', this.Name, block );
-        if( this.LocalBlocks.has( block.Id ))
-        {
-            if( this.LocalBlocks.get( block.Id ).Content !== block.Content )
-            {
-                throw "bad block data.";
-            }
-            return;
-        }
+    //async RcvBlock( block )
+    //{
+        ////console.log( 'RcvBlock', this.Name, block );
+        //if( this.LocalBlocks.has( block.Id ))
+        //{
+            //if( this.LocalBlocks.get( block.Id ).Content !== block.Content )
+            //{
+                //throw "bad block data.";
+            //}
+            //return;
+        //}
 
-        let RecvBlock = new Block( block.Index, 0, 0, block.Id, block.Content );
-        if( block.Index == 0 )
-        {
-            if( !await RecvBlock.ChkRoot())
-            {
-                throw "verify failed.";
-            }
-        }
-        else
-        {
-            let Prev = this.LocalBlocks.get( RecvBlock.PrevId );
-            if( !Prev )
-            {
-                throw "previous block not found.";
-            }
-            if( !await RecvBlock.ChkFollow( Prev.OwnerId ))
-            {
-                throw "verify failed."
-            }
-        }
+        //let RecvBlock = new Block( block.Index, 0, 0, block.Id, block.Content );
+        //if( block.Index == 0 )
+        //{
+            //if( !await RecvBlock.ChkRoot())
+            //{
+                //throw "verify failed.";
+            //}
+        //}
+        //else
+        //{
+            //let Prev = this.LocalBlocks.get( RecvBlock.PrevId );
+            //if( !Prev )
+            //{
+                //throw "previous block not found.";
+            //}
+            //if( !await RecvBlock.ChkFollow( Prev.OwnerId ))
+            //{
+                //throw "verify failed."
+            //}
+        //}
 
-        if( block.Index > 0 )
-        {
-            let PrevBlock = this.LocalBlocks.get( RecvBlock.PrevId );
-            let PrevOwner = PrevBlock.OwnerId;
-            if( this.BlackList.some( uid => uid == PrevOwner ))
-            {
-                if( this.Id != PrevOwner )
-                {
-                    throw "sender in blacklist.";
-                }
-                return;
-            }
-            if( !this.ChkTail( PrevBlock ))
-            {
-                this.BlackList.push( PrevOwner );
-                if( this.Id != PrevOwner )
-                {
-                    throw "double spending."
-                }
-                return;
-            }
-        }
+        //if( block.Index > 0 )
+        //{
+            //let PrevBlock = this.LocalBlocks.get( RecvBlock.PrevId );
+            //let PrevOwner = PrevBlock.OwnerId;
+            //if( this.BlackList.some( uid => uid == PrevOwner ))
+            //{
+                //if( this.Id != PrevOwner )
+                //{
+                    //throw "sender in blacklist.";
+                //}
+                //return;
+            //}
+            //if( !this.ChkTail( PrevBlock ))
+            //{
+                //this.BlackList.push( PrevOwner );
+                //if( this.Id != PrevOwner )
+                //{
+                    //throw "double spending."
+                //}
+                //return;
+            //}
+        //}
 
-        this.LocalBlocks.set( block.Id, RecvBlock );
-        let Root = this.FindRoot( block.Id );
-        RecvBlock.ChainId = Root.Id;
-        if( RecvBlock.OwnerId === this.Id )
-        {
-            this.OwnChains.set( Root.Id, Root );
-        }
-        else
-        {
-            this.OwnChains.delete( Root.Id );
-        }
-    };
+        //this.LocalBlocks.set( block.Id, RecvBlock );
+        //let Root = this.FindRoot( block.Id );
+        //RecvBlock.ChainId = Root.Id;
+        //if( RecvBlock.OwnerId === this.Id )
+        //{
+            //this.OwnChains.set( Root.Id, Root );
+        //}
+        //else
+        //{
+            //this.OwnChains.delete( Root.Id );
+        //}
+    //};
 
     GetChainBranch( chainid )
     {

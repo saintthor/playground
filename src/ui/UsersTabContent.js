@@ -244,7 +244,8 @@ class UsersTabContent {
      * @param {Array} userChains - 用户拥有的区块链
      * @returns {string} - 用户详情HTML
      */
-    generateUserDetailsHTML(userId, userData, userChains) {
+    generateUserDetailsHTML(userId, userData, userChainIds) {
+        const userChains = [...userChainIds].map( cid => BlockChain.All.get( cid )).filter( c => c );
         return `
             <div class="user-details">
                 <div class="user-details-header">
@@ -264,7 +265,7 @@ class UsersTabContent {
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">拥有区块链数:</span>
-                            <span class="detail-info-value">${userChains.size || 0}</span>
+                            <span class="detail-info-value">${userChains.length || 0}</span>
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">所在节点:</span>
@@ -274,13 +275,13 @@ class UsersTabContent {
                 </div>
                 
                 <div class="user-chains-section">
-                    <h6>拥有的区块链 (${userChains.size})</h6>
+                    <h6>拥有的区块链: (${userChains.length})</h6>
                     <div class="chains-list">
-                        ${userChains.size > 0 ? [...userChains.values()].map(chain => `
-                            <div class="chain-item" onclick="window.mainPanel.tabManager.switchTab('chains'); setTimeout(() => window.mainPanel.showChainDetails('${chain.id}'), 100);">
+                        ${userChains.length > 0 ? userChains.map(chain => `
+                            <div class="chain-item" onclick="window.mainPanel.tabManager.switchTab('chains'); setTimeout(() => window.mainPanel.showChainDetails('${chain.Id}'), 100);">
                                 <span class="chain-id crypto-hash" title="${chain.Id}">${this.truncateHash(chain.Id)}</span>
-                                <span class="chain-value">${chain.value}</span>
-                                <span class="chain-status ${chain.isTransferring ? 'transferring' : ''}">${chain.isTransferring ? '转移中' : '正常'}</span>
+                                <span class="chain-value">${chain.FaceVal}</span>
+                                <!--span class="chain-status ${chain.isTransferring ? 'transferring' : ''}"></span-->
                             </div>
                         `).join('') : '<p class="text-muted">暂无区块链</p>'}
                     </div>

@@ -16,15 +16,17 @@ class BaseBlock
 
     get PrevId()
     {
-        if( this.Index > 0 )
-        {
-            return this.GetContentLns( 3 )[0];
-        }
+        return this.Index === 0 ? '' : this.GetContentLns( 3 )[0];
     };
 
     get OwnerId()
     {
         return this.GetContentLns( 2 )[0];
+    };
+
+    get Tick()
+    {
+        return this.Index === 0 ? 0 : this.GetContentLns( 1 )[0];
     };
 
     //get TargetId()
@@ -128,6 +130,9 @@ class BlockChain
     
     constructor( defHash, serial, firstOwner )
     {
+        this.owner = null;
+        this.BlockIds = new Set();
+        this.Forks = null;
         this.SetFaceVal( serial );
         //console.log( 'BlockChain constructor', this.FaceVal, defHash, serial, firstOwner );
         return ( async () =>
@@ -160,7 +165,22 @@ class BlockChain
         }
         this.FaceVal = 0;
     }
+    
+    Update( owner, block )
+    {
+        if( this.Owner )
+        {
+            this.Owner.SetOwnChains( this.Id, false );
+        }
+        this.owner = owner;
+        this.BlockIds.add( block.Id );
+    }
 
     get Id() { return this.Root.Id; }
-    get Name() { return this.Root.GetContentLns( 2 )[0]; };
+    
+    get Owner() { return this.owner; };
+    
+    get BlockNum() { return this.BlockIds.size; };
+    
+    get BlockList() { return [...this.BlockIds].map( id => BaseBlock.All.get( id )).sort( b => b.Index ); };
 }

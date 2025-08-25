@@ -88,7 +88,7 @@ class App {
         this.mockUsers = new Map();
         this.AllUsers = User.All;
         this.AllPeers = Peer.All;
-        this.BlockChainNum = 500;
+        this.BlockChainNum = 100;
         this.AllBlockchains = BlockChain.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
@@ -615,17 +615,7 @@ class App {
             return {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
-                userData: new Map(),
-                chainData: new Map(),
-                networkData: {
-                    totalUsers: 0,
-                    totalChains: 0,
-                    totalValue: 0,
-                    activeConnections: 0,
-                    nodeCount: 0,
-                    maxConnections: 3,
-                    failureRate: 0.1
-                }
+                chainData: this.AllBlockchains,
             };
         }
 
@@ -640,7 +630,7 @@ class App {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
             userData: this.AllUsers,
-            chainData: new Map(this.mockChains),
+            chainData: this.AllBlockchains,
             networkData: {
                 totalUsers: this.AllUsers.size,
                 totalChains: totalChains,

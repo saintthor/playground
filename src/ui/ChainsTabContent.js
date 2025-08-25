@@ -20,6 +20,7 @@ class ChainsTabContent {
      * @param {Map} chainData - 区块链数据
      */
     renderChainsGrid(chainData) {
+        //console.log( chainData.size, BlockChain.All.size );
         const container = document.getElementById('chains-container');
         if (!container) {
             console.error('区块链容器未找到');
@@ -32,6 +33,7 @@ class ChainsTabContent {
             return;
         }
         
+        this.AllChains = chainData;
         // 检查是否已经有区块链网格，如果没有则创建
         let chainsGrid = container.querySelector('.chains-grid');
         if (!chainsGrid) {
@@ -164,7 +166,7 @@ class ChainsTabContent {
         
         try {
             // 获取区块链数据
-            const chainData = this.getChainData(chainId);
+            const chainData = this.AllChains.get( chainId );
             
             if (!chainData) {
                 detailsContainer.innerHTML = '<p class="text-muted">区块链数据未找到</p>';
@@ -172,7 +174,7 @@ class ChainsTabContent {
             }
             
             // 获取区块链拥有者信息
-            const ownerData = this.getChainOwnerData(chainData.ownerId);
+            const ownerData = chainData.Owner;
             
             // 生成区块链详情HTML
             const detailsHTML = this.generateChainDetailsHTML(chainId, chainData, ownerData);
@@ -233,47 +235,42 @@ class ChainsTabContent {
      * @param {string} chainId - 区块链ID
      * @returns {Object} - 区块链数据
      */
-    getChainData(chainId) {
-        try {
-            // 从应用中获取区块链数据
-            if (!this.app || !this.app.mockChains) {
-                console.warn('应用或区块链数据未找到');
-                return null;
-            }
+    //getChainData(chainId) {
+        //try {
             
-            const chainData = this.app.mockChains.get(chainId);
-            if (!chainData) {
-                console.warn('区块链数据未找到:', chainId);
-                return null;
-            }
+            //const chainData = this.app.AllChains.get(chainId);
+            //if (!chainData) {
+                //console.warn('区块链数据未找到:', chainId);
+                //return null;
+            //}
             
-            return chainData;
+            //return chainData;
             
-        } catch (error) {
-            console.error('获取区块链数据失败:', error);
-            return null;
-        }
-    }
+        //} catch (error) {
+            //console.error('获取区块链数据失败:', error);
+            //return null;
+        //}
+    //}
     
     /**
      * 获取区块链拥有者数据
      * @param {string} ownerId - 拥有者ID
      * @returns {Object} - 拥有者数据
      */
-    getChainOwnerData(ownerId) {
-        try {
-            if (!ownerId || !this.app || !this.app.mockUsers) {
-                return null;
-            }
+    //getChainOwnerData(ownerId) {
+        //try {
+            //if (!ownerId || !this.app || !this.app.mockUsers) {
+                //return null;
+            //}
             
-            const ownerData = this.app.mockUsers.get(ownerId);
-            return ownerData;
+            //const ownerData = this.app.mockUsers.get(ownerId);
+            //return ownerData;
             
-        } catch (error) {
-            console.error('获取区块链拥有者数据失败:', error);
-            return null;
-        }
-    }
+        //} catch (error) {
+            //console.error('获取区块链拥有者数据失败:', error);
+            //return null;
+        //}
+    //}
     
     /**
      * 生成区块链详情HTML
@@ -283,13 +280,13 @@ class ChainsTabContent {
      * @returns {string} - 区块链详情HTML
      */
     generateChainDetailsHTML(chainId, chainData, ownerData) {
-        const rootBlock = chainData.blocks && chainData.blocks[0] ? chainData.blocks[0] : null;
+        //const rootBlock = chainData.blocks && chainData.blocks[0] ? chainData.blocks[0] : null;
         
         return `
             <div class="chain-details">
                 <div class="chain-details-header">
-                    <h5>区块链详情 - 链${chainData.displayNumber || '?'}</h5>
-                    <span class="chain-id">ID: ${this.truncateHash(chainId)}</span>
+                    <h5>区块链详情</h5>
+                    <span class="chain-id">ID: ${this.truncateHash( chainData.Id )}</span>
                 </div>
                 
                 <div class="chain-basic-info">
@@ -297,55 +294,55 @@ class ChainsTabContent {
                     <div class="detail-info-grid">
                         <div class="detail-info-item">
                             <span class="detail-info-label">区块链ID (根区块哈希):</span>
-                            <span class="detail-info-value crypto-hash" title="${chainId}">${this.truncateHash(chainId)}</span>
+                            <span class="detail-info-value crypto-hash" title="${chainId}">${this.truncateHash(chainData.Id)}</span>
                         </div>
-                        <div class="detail-info-item">
+                        <!--div class="detail-info-item">
                             <span class="detail-info-label">显示编号:</span>
                             <span class="detail-info-value">链${chainData.displayNumber || '?'}</span>
-                        </div>
+                        </div-->
                         <div class="detail-info-item">
                             <span class="detail-info-label">拥有者公钥:</span>
-                            <span class="detail-info-value crypto-key" title="${chainData.ownerId || '未知'}">${this.truncateKey(chainData.ownerId || '未知')}</span>
+                            <span class="detail-info-value crypto-key" title="${ownerData.Id || '未知'}">${this.truncateKey(ownerData.Id || '未知')}</span>
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">拥有者:</span>
                             <span class="detail-info-value">
-                                ${ownerData ? `用户${ownerData.displayNumber}` : '未知用户'}
-                                ${ownerData ? `<span class="owner-link" onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${chainData.ownerId}'), 100);">(查看详情)</span>` : ''}
+                                ${ownerData ? `用户${ ownerData.Id.slice( 0, 15 ) }` : '未知用户'}
+                                ${ownerData ? `<span class="owner-link" onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${ownerData.Id}'), 100);">(查看详情)</span>` : ''}
                             </span>
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">当前价值:</span>
-                            <span class="detail-info-value">${chainData.value || 0}</span>
+                            <span class="detail-info-value">${chainData.FaceVal || 0}</span>
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">区块数量:</span>
-                            <span class="detail-info-value">${chainData.blocks ? chainData.blocks.length : 0}</span>
+                            <span class="detail-info-value">${chainData.BlockNum }</span>
                         </div>
-                        <div class="detail-info-item">
+                        <!--div class="detail-info-item">
                             <span class="detail-info-label">状态:</span>
                             <span class="detail-info-value ${chainData.isTransferring ? 'transferring' : ''}">${chainData.isTransferring ? '转移中' : '正常'}</span>
-                        </div>
+                        </div-->
                     </div>
                 </div>
                 
-                ${rootBlock ? `
+                ${ true ? `
                 <div class="root-block-section">
                     <h6>根区块信息</h6>
                     <div class="block-info">
                         <div class="detail-info-grid">
-                            <div class="detail-info-item">
+                            <!--div class="detail-info-item">
                                 <span class="detail-info-label">滴答时间:</span>
-                                <span class="detail-info-value">滴答 ${rootBlock.tick || rootBlock.timestamp || '未知'}</span>
-                            </div>
+                                <span class="detail-info-value">滴答 ${chainData.Root.Tick || '未知'}</span>
+                            </div-->
                             <div class="detail-info-item">
                                 <span class="detail-info-label">哈希值 (区块链ID):</span>
-                                <span class="detail-info-value crypto-hash" title="${rootBlock.hash || '未知'}">${this.truncateHash(rootBlock.hash || '未知')}</span>
+                                <span class="detail-info-value crypto-hash" title="${chainData.Id || '未知'}">${this.truncateHash(chainData.Id || '未知')}</span>
                             </div>
                             <div class="detail-info-item">
                                 <span class="detail-info-label">根区块数据:</span>
                                 <span class="detail-info-value">
-                                    <pre style="font-size: 0.8rem; margin: 0; white-space: pre-wrap;">${rootBlock.data || '未知'}</pre>
+                                    <pre style="font-size: 0.8rem; margin: 0; white-space: pre-wrap;">${chainData.Root.Content || '未知'}</pre>
                                 </span>
                             </div>
                         </div>
@@ -354,31 +351,31 @@ class ChainsTabContent {
                 ` : ''}
                 
                 <div class="chain-blocks-section">
-                    <h6>所有区块 (${chainData.blocks ? chainData.blocks.length : 0})</h6>
+                    <h6>所有区块 (${chainData.BlockNum})</h6>
                     <div class="blocks-list">
-                        ${chainData.blocks && chainData.blocks.length > 0 ? chainData.blocks.map((block, index) => `
-                            <div class="block-item ${index === 0 ? 'root-block' : ''}">
+                        ${chainData.BlockNum ? chainData.BlockList.map( block => `
+                            <div class="block-item ${block.Index === 0 ? 'root-block' : ''}">
                                 <div class="block-header">
-                                    <span class="block-index">#${index}</span>
-                                    <span class="block-type">${index === 0 ? '根区块' : (block.type === 'ownership' ? '所有权区块' : '普通区块')}</span>
+                                    <span class="block-index">#${block.Index}</span>
+                                    <span class="block-type">${block.Index === 0 ? '根区块' : (block.Index === 1 ? '所有权区块' : '普通区块')}</span>
                                 </div>
                                 <div class="block-content">
-                                    <div class="block-field">
+                                    <!--div class="block-field">
                                         <span class="field-label">类型:</span>
                                         <span class="field-value">${block.type || '未知'}</span>
-                                    </div>
+                                    </div-->
                                     <div class="block-field">
                                         <span class="field-label">哈希:</span>
-                                        <span class="field-value crypto-hash" title="${block.hash || '未知'}">${this.truncateHash(block.hash || '未知')}</span>
+                                        <span class="field-value crypto-hash" title="${block.Id || '未知'}">${this.truncateHash(block.Id || '未知')}</span>
                                     </div>
                                     <div class="block-field">
                                         <span class="field-label">滴答时间:</span>
-                                        <span class="field-value">滴答 ${block.tick || block.timestamp || '未知'}</span>
+                                        <span class="field-value">滴答 ${block.Tick || '未知'}</span>
                                     </div>
                                     ${block.previousHash ? `
                                     <div class="block-field">
                                         <span class="field-label">前区块哈希:</span>
-                                        <span class="field-value crypto-hash" title="${block.previousHash}">${this.truncateHash(block.previousHash)}</span>
+                                        <span class="field-value crypto-hash" title="${block.PrevId}">${this.truncateHash(block.PrevId)}</span>
                                     </div>
                                     ` : ''}
                                 </div>

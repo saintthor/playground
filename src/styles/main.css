@@ -3811,6 +3811,7 @@ small.text-muted {
     padding: 1rem;
     width: 48%;
     display: inline-block;
+    vertical-align: top; 
 }
 
 .user-basic-info h5,
