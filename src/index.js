@@ -88,7 +88,7 @@ class App {
         this.mockUsers = new Map();
         this.AllUsers = User.All;
         this.AllPeers = Peer.All;
-        this.BlockChainNum = 1;
+        this.BlockChainNum = 500;
         this.AllBlockchains = BlockChain.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
@@ -453,7 +453,7 @@ class App {
             return c.Root.TransferTo( Users[idx], 0, this.SysUser );
         } ));
         
-        Peers.forEach( p =>         // connect with other peers
+        for( let p of Peers )         // connect with other peers
         {
             for( let n = config.maxConnections - p.Connections.size; n > 0; )
             {
@@ -468,10 +468,12 @@ class App {
                 }
             }
             
-            Blockchains.forEach( async function ( c ) { await p.Receive( { type: "NewBlock", block: c.Root.TransData() } ) } );
-            setTimeout(() =>
-            TransBlocks.forEach( async function ( b ) { await p.Receive( { type: "NewBlock", block: b.TransData() } ) } ), 200 );
-        } );
+            await Promise.all( Blockchains.map( c => p.Receive( { type: "NewBlock", block: c.Root.TransData() } )));
+            await Promise.all( TransBlocks.map( b => p.Receive( { type: "NewBlock", block: b.TransData() } )));
+            //Blockchains.forEach( async c => { await  } );
+            //setTimeout(() =>
+            //TransBlocks.forEach( async b => { await p.Receive( { type: "NewBlock", block: b.TransData() } ) } ), 2000 );
+        }
         
         //const users = [];
         //for (let i = 1; i <= config.userCount; i++) {

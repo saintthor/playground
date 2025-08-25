@@ -114,21 +114,27 @@ class Peer
         if( message.type === 'NewBlock' )
         {
             const CurrBlock = new RebuildBlock( message.block.Id, message.block.Content );
-            const v = await this.Verify( CurrBlock );
-            console.log( v, 'vvvvvvvv' );
-            if( this.LocalBlocks.has( CurrBlock.Id ) || !v )
+            if( this.LocalBlocks.has( CurrBlock.Id ))
             {
                 return false;
             }
-            
-            this.LocalBlocks.set( CurrBlock.Id, CurrBlock );
-            console.log( 'LocalBlocks', this.LocalBlocks );
-            CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
-            
-            if( this.Users.has( CurrBlock.OwnerId ))
+            try
             {
-                //console.log( 'Receive find owner', CurrBlock.OwnerId );
-                this.Users.get( CurrBlock.OwnerId ).SetOwnChains( CurrBlock.RootId, true );
+                await this.Verify( CurrBlock );
+            
+                this.LocalBlocks.set( CurrBlock.Id, CurrBlock );
+                CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
+            
+                if( this.Users.has( CurrBlock.OwnerId ))
+                {
+                    //console.log( 'Receive find owner', CurrBlock.OwnerId );
+                    this.Users.get( CurrBlock.OwnerId ).SetOwnChains( CurrBlock.RootId, true );
+                }
+            }
+            catch( e )
+            {
+                console.log( e );
+                return false;
             }
         }
         return true;
@@ -136,7 +142,7 @@ class Peer
     
     async Verify( block )
     {
-        console.log( this.LocalBlocks.has( block.Id ), block.Id );
+        //console.log( this.LocalBlocks.has( block.Id ), block.Id );
         if( block.Index == 0 )
         {
             if( !await block.ChkRoot())
@@ -146,7 +152,6 @@ class Peer
         }
         else
         {
-        console.log( [...this.LocalBlocks.keys()], block.Id, block.PrevId );
             const Prev = this.LocalBlocks.get( block.PrevId );
             if( !Prev )
             {
@@ -156,34 +161,20 @@ class Peer
             {
                 throw "verify failed."
             }
-
+            
             const PrevOwner = Prev.OwnerId;
-        console.log( this.LocalBlocks.has( block.Id ), block.Id, Prev.Id );
-            if( this.BlackList.has( PrevOwner ))
+            if( !this.IsTail( Prev ))
             {
                 if( this.Id != PrevOwner )
                 {
-                    throw "sender in blacklist.";
+                    throw "double spending."
                 }
-                return false;
             }
-            
-        console.log( this.LocalBlocks.has( block.Id ), block.Id );
-            if( !this.IsTail( Prev ))
+            if( this.BlackList.has( PrevOwner ))
             {
-                [...this.LocalBlocks.values()].forEach( b => 
-                {
-                    if( b.PrevId === Prev.Id ) console.log( b.Id, b.Content, block.Id, block.Content, [...this.LocalBlocks.keys()] );
-                } );
-                //this.BlackList.add( PrevOwner );
-                //if( this.Id != PrevOwner )
-                //{
-                    //throw "double spending."
-                //}
-                return false;
+                throw  "sender in blacklist.";
             }
         }
-        return true;
     }
 
     GetBlock( blockId )
@@ -298,7 +289,7 @@ class Peer
 
     IsTail( block )
     {
-        return -1 === [...this.LocalBlocks.values()].find( b => b.PrevId == block.Id );
+        return ![...this.LocalBlocks.values()].find( b => b.PrevId == block.Id );  // find not return an index.
     };
 }
 
