@@ -448,23 +448,13 @@ class App {
         } );
         
         const Blockchains = [...this.AllBlockchains.values()];
-        const AvgChainNum = Blockchains.length / config.userCount;
-        const Counts = {};
+        //const AvgChainNum = Blockchains.length / config.userCount;
         const TransBlocks = await Promise.all( Blockchains.map( c =>
         {
-            let idx = 0;
-            for( let i = 5; i--; )
-            {
-                idx = Math.floor( Math.random() * config.userCount );
-                Counts[idx] = ( Counts[idx] || 0 ) + 1;
-                if( Counts[idx] < 2 * AvgChainNum )
-                {
-                    break;
-                }
-            }
+            const idx = Math.floor( Math.random() * config.userCount );
             return c.Root.TransferTo( Users[idx], 0, this.SysUser );
         } ));
-        console.log( AvgChainNum, Counts );
+        
         for( let p of Peers )         // connect with other peers
         {
             for( let n = config.maxConnections - p.Connections.size; n > 0; )
@@ -482,9 +472,6 @@ class App {
             
             await Promise.all( Blockchains.map( c => p.Receive( { type: "NewBlock", block: c.Root.TransData() } )));
             await Promise.all( TransBlocks.map( b => p.Receive( { type: "NewBlock", block: b.TransData() } )));
-            //Blockchains.forEach( async c => { await  } );
-            //setTimeout(() =>
-            //TransBlocks.forEach( async b => { await p.Receive( { type: "NewBlock", block: b.TransData() } ) } ), 2000 );
         }
         
         

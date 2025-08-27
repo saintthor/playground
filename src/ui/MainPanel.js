@@ -586,7 +586,7 @@ class MainPanel {
         console.log('显示用户详情:', publicKey);
         
         // 获取用户数据（用户ID就是公钥）
-        const userData = this.app.mockUsers.get(publicKey);
+        const userData = this.app.AllUsers.get(publicKey);
         if (!userData) {
             alert('用户数据未找到');
             return;

@@ -451,9 +451,9 @@ class NetworkTabContent {
                     <h6>节点用户 (${nodeData.users.length})</h6>
                     <div class="users-list">
                         ${nodeData.users.length > 0 ? nodeData.users.map(user => `
-                            <div class="user-item" onclick="window.mainPanel.showUserDetails('${user.Id}')">
+                            <div class="user-item" onclick0="window.mainPanel.showUserDetails('${user.Id}')"  onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${user.Id}'), 100);">
                                 <span class="user-display">用户&emsp;<span style="font-size: smaller;">${user.Id.slice( 0, 17 ) + '...'}</span></span>
-                                <span class="user-assets">${user.totalAssets} 资产</span>
+                                <span class="user-assets">${user.GetAssets()} 资产</span>
                             </div>
                         `).join('') : '<p class="text-muted">该节点暂无用户</p>'}
                     </div>
@@ -464,7 +464,7 @@ class NetworkTabContent {
                     <div class="connections-list">
                         ${nodeData.connections.length > 0 ? nodeData.connections.map(conn => `
                             <div class="connection-item active">
-                                <span class="connection-target">邻接节点&ensp;${conn[0].Id}</span>
+                                <span class="connection-target">邻接节点&ensp;${conn[0].Id + 1}</span>
                                 <span class="connection-latency">${conn[1]} 滴答</span>
                                 <!--span class="connection-status ${conn.isActive ? 'status-active' : 'status-inactive'}">
                                     ${conn.isActive ? '正常' : '故障'}

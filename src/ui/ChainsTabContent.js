@@ -336,11 +336,11 @@ class ChainsTabContent {
                                 <span class="detail-info-value">滴答 ${chainData.Root.Tick || '未知'}</span>
                             </div-->
                             <div class="detail-info-item">
-                                <span class="detail-info-label">哈希值 (区块链ID):</span>
-                                <span class="detail-info-value crypto-hash" title="${chainData.Id || '未知'}">${this.truncateHash(chainData.Id || '未知')}</span>
+                                <span class="detail-info-label">区块链/根区块 ID:</span>
+                                <span class="detail-info-value crypto-hash" title="${chainData.Id || '未知'}">${chainData.Id || '未知'}</span>
                             </div>
                             <div class="detail-info-item">
-                                <span class="detail-info-label">根区块数据:</span>
+                                <!--span class="detail-info-label">数据</span-->
                                 <span class="detail-info-value">
                                     <pre style="font-size: 0.8rem; margin: 0; white-space: pre-wrap;">${chainData.Root.Content || '未知'}</pre>
                                 </span>
@@ -351,27 +351,29 @@ class ChainsTabContent {
                 ` : ''}
                 
                 <div class="chain-blocks-section">
-                    <h6>所有区块 (${chainData.BlockNum})</h6>
+                    <h6>后续区块 (${chainData.BlockNum})</h6>
                     <div class="blocks-list">
                         ${chainData.BlockNum ? chainData.BlockList.map( block => `
                             <div class="block-item ${block.Index === 0 ? 'root-block' : ''}">
                                 <div class="block-header">
                                     <span class="block-index">#${block.Index}</span>
-                                    <span class="block-type">${block.Index === 0 ? '根区块' : (block.Index === 1 ? '所有权区块' : '普通区块')}</span>
+                                    <span class="block-type">${block.Index === 0 ? '根区块' : '支付区块'}</span>
                                 </div>
                                 <div class="block-content">
                                     <!--div class="block-field">
                                         <span class="field-label">类型:</span>
+                                        <span class="field-label">时间:</span>
+                                        <span class="field-value">${block.Tick || '未知'} 滴答</span>
                                         <span class="field-value">${block.type || '未知'}</span>
                                     </div-->
                                     <div class="block-field">
-                                        <span class="field-label">哈希:</span>
-                                        <span class="field-value crypto-hash" title="${block.Id || '未知'}">${this.truncateHash(block.Id || '未知')}</span>
+                                        <!--span class="field-label">数据</span-->
+                                        <span class="field-value crypto-hash"}">
+                                            <pre style="font-size: 0.7rem; margin: 0; white-space: pre-wrap;">${block.Content || '未知'}</pre>
+                                        </span>
                                     </div>
-                                    <div class="block-field">
-                                        <span class="field-label">滴答时间:</span>
-                                        <span class="field-value">滴答 ${block.Tick || '未知'}</span>
-                                    </div>
+                                    <!--div class="block-field">
+                                    </div-->
                                     ${block.previousHash ? `
                                     <div class="block-field">
                                         <span class="field-label">前区块哈希:</span>

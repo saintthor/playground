@@ -88,7 +88,7 @@ class User
     {
         isAdd ? this.OwnChains.add( rootId ) : this.OwnChains.delete( rootId );
         this.ChainNum = this.OwnChains.size;
-        console.log( 'SetOwnChains', this.Id.slice( 0, 9 ), this.ChainNum );
+        //console.log( 'SetOwnChains', this.Id.slice( 0, 9 ), this.ChainNum );
     };
     
     SendBlockchain( prevBlock, rootId, dida, targetUId )
@@ -121,10 +121,7 @@ class User
     
     GetAssets()
     {
-        let Asset = 0;
-        //console.log( GetAssets );
-        [...this.OwnChains].forEach( rootId => Asset += BlockChain.All.get( rootId ).FaceVal );
-        return Asset;
+        return [...[...this.OwnChains].map( rootId => BlockChain.All.get( rootId ).FaceVal ), 0, 0].reduce(( x, y ) => x + y );
     };
 
     async CreateBlock( prevIdx, dida, data, prevId )

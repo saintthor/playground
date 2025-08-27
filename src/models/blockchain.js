@@ -174,8 +174,9 @@ class BlockChain
     {
         if( this.owner )
         {
-            //this.owner.SetOwnChains( this.Id, false );
+            this.owner.SetOwnChains( this.Id, false );
         }
+        owner.SetOwnChains( block.RootId, true );
         this.owner = owner;
         this.BlockIds.add( block.Id );
     }

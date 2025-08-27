@@ -270,7 +270,7 @@ class UsersTabContent {
                         </div>
                         <div class="detail-info-item">
                             <span class="detail-info-label">所在节点:</span>
-                            <span class="detail-info-value">${[...userData.Peers.values()].map(p => `Peer-${p.Id}`).join(', ')}</span>
+                            <span class="detail-info-value">${[...userData.Peers.values()].map(p => `Peer-${p.Id + 1}`).join(', ')}</span>
                         </div>
                     </div>
                 </div>
