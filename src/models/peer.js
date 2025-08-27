@@ -123,11 +123,11 @@ class Peer
                 await this.Verify( CurrBlock );
             
                 this.LocalBlocks.set( CurrBlock.Id, CurrBlock );
-                CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
             
-                if( this.Users.has( CurrBlock.OwnerId ))
+                if( CurrBlock.Index >= 1 && this.Users.has( CurrBlock.OwnerId ))
                 {
-                    //console.log( 'Receive find owner', CurrBlock.OwnerId );
+                    CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
+                    console.log( 'Receive find owner', CurrBlock.OwnerId.slice( 0, 9 ), CurrBlock.RootId.slice( 0, 9 ));
                     const owner = this.Users.get( CurrBlock.OwnerId );
                     owner.SetOwnChains( CurrBlock.RootId, true );
                     BlockChain.All.get( CurrBlock.RootId ).Update( owner, CurrBlock );

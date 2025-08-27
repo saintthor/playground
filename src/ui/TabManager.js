@@ -97,7 +97,7 @@ class TabManager {
             this.showLoadingState(tabName);
             
             // 保存当前标签页状态
-            this.saveCurrentTabState();
+            //this.saveCurrentTabState();
             
             // 更新激活标签页
             const previousTab = this.activeTab;
@@ -429,7 +429,7 @@ class TabManager {
             // 应用状态到对应的标签页内容
             this.applyTabState(tabName, state);
             
-            console.log(`标签页状态已恢复: ${tabName}`, state);
+            //console.log(`标签页状态已恢复: ${tabName}`, state);
             return state;
             
         } catch (error) {
@@ -679,7 +679,7 @@ class TabManager {
             }
             
             // 保存状态变化（不管是否为当前激活标签页）
-            this.saveTabState(tabName, stateChange);
+            //this.saveTabState(tabName, stateChange);
             
         } catch (error) {
             console.error('处理状态变化失败:', error);
@@ -1130,14 +1130,14 @@ class TabManager {
         
         // 绑定页面卸载事件，保存状态
         window.addEventListener('beforeunload', () => {
-            this.saveCurrentTabState();
+            //this.saveCurrentTabState();
             //this.persistTabStates();
         });
         
         // 绑定页面可见性变化事件，在页面隐藏时保存状态
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                this.saveCurrentTabState();
+                //this.saveCurrentTabState();
                 //this.persistTabStates();
             }
         });
@@ -1177,7 +1177,7 @@ class TabManager {
                     this.updateUsersDataIncremental(newData.userData, previousData?.userData);
                     break;
                 case 'chains':
-                    this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
+                    //this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
                     break;
             }
             
@@ -1549,7 +1549,7 @@ class TabManager {
     destroy() {
         try {
             // 保存当前状态
-            this.saveCurrentTabState();
+            //this.saveCurrentTabState();
             //this.persistTabStates();
             
             // 清理性能优化相关资源

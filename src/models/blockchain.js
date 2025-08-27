@@ -26,7 +26,7 @@ class BaseBlock
 
     get Tick()
     {
-        return this.Index === 0 ? 0 : this.GetContentLns( 1 )[0];
+        return this.Index === 0 ? -1 : this.GetContentLns( 1 )[0];
     };
 
     //get TargetId()
@@ -36,8 +36,8 @@ class BaseBlock
 
     GetContentLns( ...idxes )
     {
-        let Lines = this.Content.split( '\n' );
-        return idxes.map( idx => Lines[idx] );
+        this.Lines = this.Lines || this.Content.split( '\n' );
+        return idxes.map( idx => this.Lines[idx] );
     };
     
     GetBlockChain()
@@ -68,6 +68,7 @@ class BaseBlock
     
     TransferTo( targetUser, dida, sender )  // only for the second block
     {
+        console.log( 'TransferTo', targetUser.Id.slice( 0, 9 ), this.Id.slice( 0, 9 ));
         sender = sender || User.All.get( this.OwnerId );
         return new Block( 1, dida, targetUser.Id, this.Id, sender );
         //return sender.CreateBlock( 0, dida, targetUser.Id, this.Id )  //CreateBlock( prevIdx, dida, data, prevId )
@@ -81,6 +82,7 @@ class RootBlock extends BaseBlock
         super();
         this.Index = 0;
         this.Content = content;
+        this.Lines = null;
         return ( async () =>
         {
             let hash = await Hash( content, 'SHA-1' )
@@ -100,6 +102,7 @@ class Block extends BaseBlock
         this.Index = index;
         this.id = '';
         this.Content = [index, dida, data, prevId || ''].join( '\n' );
+        this.Lines = null;
         return ( async () =>
         {
             let hash = await Hash( this.Content, 'SHA-1' );
@@ -117,6 +120,7 @@ class RebuildBlock extends BaseBlock
         super();
         this.id = id;
         this.Content = content;
+        this.Lines = null;
         const FirstLine = this.GetContentLns( 0 );
         this.Index = isNaN( FirstLine ) ? 0 : Number( FirstLine );
         return this
@@ -168,9 +172,9 @@ class BlockChain
     
     Update( owner, block )
     {
-        if( this.Owner )
+        if( this.owner )
         {
-            this.Owner.SetOwnChains( this.Id, false );
+            //this.owner.SetOwnChains( this.Id, false );
         }
         this.owner = owner;
         this.BlockIds.add( block.Id );

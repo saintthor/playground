@@ -61,6 +61,7 @@ class User
     {
         this.OwnChains = new Set();
         this.Peers = new Map();
+        this.ChainNum = 0;
         return ( async () =>
         {
             let key = await crypto.subtle.generateKey( { name: "ECDSA", namedCurve: "P-256", }, true, ["sign", "verify"] );
@@ -86,6 +87,8 @@ class User
     SetOwnChains( rootId, isAdd )
     {
         isAdd ? this.OwnChains.add( rootId ) : this.OwnChains.delete( rootId );
+        this.ChainNum = this.OwnChains.size;
+        console.log( 'SetOwnChains', this.Id.slice( 0, 9 ), this.ChainNum );
     };
     
     SendBlockchain( prevBlock, rootId, dida, targetUId )
@@ -119,7 +122,7 @@ class User
     GetAssets()
     {
         let Asset = 0;
-        console.log( this.OwnChains );
+        //console.log( GetAssets );
         [...this.OwnChains].forEach( rootId => Asset += BlockChain.All.get( rootId ).FaceVal );
         return Asset;
     };

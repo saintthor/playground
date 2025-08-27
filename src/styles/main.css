@@ -4793,6 +4793,8 @@ small.text-muted {
     font-style: italic;
 }
 
+.owner-link { cursor: pointer; }
+
 /* 用户标签页特定样式 */
 #users-tab .users-container {
     height: 100%;

@@ -95,6 +95,7 @@ class UsersTabContent {
      * @param {string} userId - 用户ID
      */
     handleUserClick(userId) {
+        console.log( 'handleUserClick', userId );
         try {
             // 更新选中状态
             this.updateUserSelection(userId);
