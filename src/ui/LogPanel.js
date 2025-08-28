@@ -21,10 +21,10 @@ class LogPanel {
             
             // 处理待处理的日志
             this.pendingLogs.forEach(log => {
-                this.addLog(log.message, log.level, log.category);
+                this.AddLog( log );
             });
             this.pendingLogs = [];
-            
+            setTimeout(() => this.switchTab( 'all' ), 500 );
             console.log('LogPanel 初始化完成');
         } catch (error) {
             console.error('LogPanel 初始化失败:', error);
@@ -42,7 +42,7 @@ class LogPanel {
             <div class="log-header">
                 <h3>系统日志</h3>
                 <div class="log-controls">
-                    <button class="btn btn-sm btn-secondary" id="clear-logs">清空日志</button>
+                    <!--button class="btn btn-sm btn-secondary" id="clear-logs">清空日志</button-->
                     <button class="btn btn-sm btn-info" id="export-logs">导出日志</button>
                 </div>
             </div>
@@ -119,31 +119,52 @@ class LogPanel {
             });
         });
     }
-
-    addLog(message, level = 'info', category = 'system') {
-        if (!this.isInitialized) {
-            this.pendingLogs.push({ message, level, category, timestamp: new Date() });
+    
+    AddLog( log ) // keys: dida, peer, user, blockchain, block, content, category, level
+    {
+        //console.log( 'AddLog', log );
+        if( !this.isInitialized )
+        {
+            this.pendingLogs.push( log );
             return;
         }
         
-        const logEntry = {
-            id: Date.now() + Math.random(),
-            message,
-            level,
-            category,
-            timestamp: new Date()
-        };
-        
-        this.logs.push(logEntry);
+        this.logs.push( log );
         
         // 限制日志数量
-        if (this.logs.length > this.maxLogs) {
+        if( this.logs.length > this.maxLogs )
+        {
             this.logs.shift();
         }
         
-        this.renderLogEntry(logEntry);
-        this.scrollToBottom();
+        this.renderLogEntry( log );
+        this.scrollToBottom(); 
     }
+
+    //addLog(message, level = 'info', category = 'system') {
+        //if (!this.isInitialized) {
+            //this.pendingLogs.push({ message, level, category, timestamp: new Date() });
+            //return;
+        //}
+        
+        //const logEntry = {
+            //id: Date.now() + Math.random(),
+            //message,
+            //level,
+            //category,
+            //timestamp: new Date()
+        //};
+        
+        //this.logs.push(logEntry);
+        
+        //// 限制日志数量
+        //if (this.logs.length > this.maxLogs) {
+            //this.logs.shift();
+        //}
+        
+        //this.renderLogEntry(logEntry);
+        //this.scrollToBottom();
+    //}
     
     /**
      * 切换日志标签页
@@ -151,6 +172,7 @@ class LogPanel {
      */
     switchTab(tabName) {
         // 更新标签页按钮状态
+        console.log( 'switchTab', tabName );
         const tabButtons = document.querySelectorAll('#log-tabs .nav-link');
         tabButtons.forEach(button => {
             button.classList.remove('active');
@@ -225,16 +247,16 @@ class LogPanel {
         }
         
         // 根据消息内容判断
-        const message = log.message.toLowerCase();
-        if (message.includes('节点') || message.includes('node') || message.includes('连接') || message.includes('网络')) {
-            return 'node';
-        }
-        if (message.includes('用户') || message.includes('user') || message.includes('支付') || message.includes('转账')) {
-            return 'user';
-        }
-        if (message.includes('区块链') || message.includes('blockchain') || message.includes('区块') || message.includes('block')) {
-            return 'blockchain';
-        }
+        //const message = log.message.toLowerCase();
+        //if (message.includes('节点') || message.includes('node') || message.includes('连接') || message.includes('网络')) {
+            //return 'node';
+        //}
+        //if (message.includes('用户') || message.includes('user') || message.includes('支付') || message.includes('转账')) {
+            //return 'user';
+        //}
+        //if (message.includes('区块链') || message.includes('blockchain') || message.includes('区块') || message.includes('block')) {
+            //return 'blockchain';
+        //}
         
         return 'all';
     }
@@ -266,6 +288,7 @@ class LogPanel {
 
     renderLogEntry(logEntry) {
         // 添加到所有日志标签页
+        //console.log( 'renderLogEntry', logEntry );
         this.addToLogList('all-logs-list', logEntry);
         
         // 根据日志分类添加到对应标签页
@@ -281,6 +304,7 @@ class LogPanel {
      * @param {Object} logEntry - 日志条目
      */
     addToLogList(listId, logEntry) {
+        //console.log( 'addToLogList', listId, logEntry );
         const logList = document.getElementById(listId);
         if (!logList) return;
         
@@ -296,11 +320,14 @@ class LogPanel {
 
     createLogElement(logEntry) {
         const logElement = document.createElement('div');
-        logElement.className = `log-entry ${logEntry.level}`;
+        const MainPair = [['Peer', logEntry.peer], ['User', logEntry.user], ['Blockchain', logEntry.blockchain]].find(( [k, v] ) => v );
+        const key = MainPair ? MainPair[0] + ':' + this.formatLogIds( MainPair[1] ) + '-': '';
+        logElement.className = `log-entry`;
         logElement.innerHTML = `
-            <span class="log-timestamp">${logEntry.timestamp.toLocaleTimeString()}</span>
-            <span class="log-message">${this.formatLogMessage(logEntry.message)}</span>
+            <span class="log-timestamp">${logEntry.dida}</span>
+            <span class="log-message">${key + logEntry.content}</span>
         `;
+        //console.log( 'createLogElement', logElement.innerHTML );
         return logElement;
     }
 
@@ -354,10 +381,10 @@ class LogPanel {
     /**
      * 格式化日志消息，截断base64数据只显示前6个字符
      */
-    formatLogMessage(message) {
+    formatLogIds(message) {
         // 匹配base64格式的数据（长度大于10的字母数字字符串）
         return message.replace(/\b[A-Za-z0-9+/]{10,}={0,2}\b/g, (match) => {
-            if (match.length > 6) {
+            if (match.length > 12) {
                 return match.substring(0, 6) + '...';
             }
             return match;

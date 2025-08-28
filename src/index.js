@@ -430,13 +430,14 @@ class App {
         
         BlockChain.InitValueDef( this.uiManager.panels.control.currentConfig.chainDefinition );
         Array.from( new Array( config.nodeCount )).map(( _, i ) => new Peer( i + 1 ));
+        this.uiManager.panels.log.AddLog( { dida: -1, peer: 'all ' + config.nodeCount, content: 'peers created.', category: 'node' } );
         await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
+        this.uiManager.panels.log.AddLog( { dida: -1, user: 'all ' + config.userCount, content: 'users created.', category: 'user' } );
         await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => 
                                         new BlockChain( this.DefHash, i + 1, this.SysUser.Id )));
-        
+        this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all ' + this.BlockChainNum, content: 'blockchains created.', category: 'blockchain' } );
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;
-        
         const Users = [...this.AllUsers.values()];
         Users.forEach( u =>  // live in peers
         {
@@ -446,6 +447,7 @@ class App {
                 n -= u.AddPeer( Peers[idx] );
             }
         } );
+        this.uiManager.panels.log.AddLog( { dida: -1, user: 'all', content: 'each user has 3 peers.', category: 'user' } );
         
         const Blockchains = [...this.AllBlockchains.values()];
         //const AvgChainNum = Blockchains.length / config.userCount;
@@ -454,6 +456,7 @@ class App {
             const idx = Math.floor( Math.random() * config.userCount );
             return c.Root.TransferTo( Users[idx], 0, this.SysUser );
         } ));
+        this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all', content: 'add first trans-block for each blockchain.', category: 'blockchain' } );
         
         for( let p of Peers )         // connect with other peers
         {
@@ -473,6 +476,8 @@ class App {
             await Promise.all( Blockchains.map( c => p.Receive( { type: "NewBlock", block: c.Root.TransData() } )));
             await Promise.all( TransBlocks.map( b => p.Receive( { type: "NewBlock", block: b.TransData() } )));
         }
+        this.uiManager.panels.log.AddLog( { dida: -1, peer: 'all', content: 'peers connected to others.', category: 'node' } );
+        this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all', content: 'sent blockchains.', category: 'blockchain' } );
         
         
         // 生成模拟区块链数据

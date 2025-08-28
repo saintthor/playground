@@ -68,7 +68,7 @@ class BaseBlock
     
     TransferTo( targetUser, dida, sender )  // only for the second block
     {
-        console.log( 'TransferTo', targetUser.Id.slice( 0, 9 ), this.Id.slice( 0, 9 ));
+        //console.log( 'TransferTo', targetUser.Id.slice( 0, 9 ), this.Id.slice( 0, 9 ));
         sender = sender || User.All.get( this.OwnerId );
         return new Block( 1, dida, targetUser.Id, this.Id, sender );
         //return sender.CreateBlock( 0, dida, targetUser.Id, this.Id )  //CreateBlock( prevIdx, dida, data, prevId )
