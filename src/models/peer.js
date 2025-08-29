@@ -11,6 +11,7 @@ class Peer
         this.Connections = new Map();
         this.BlackList = new Set();
         this.Messages = new Map();      //on the way
+        this.WaitList = [];
         this.constructor.All.set( this.Id, this );
     };
 
@@ -46,23 +47,37 @@ class Peer
         }
     };
     
-    static Update( currTick, minConnNum, breakRate = 0.1 )
+    static async Update( currTick, minConnNum, breakRate = 0.1 )
     {
         //console.log( 'Peer.Update', currTick, minConnNum );
-        this.All.values().forEach( p =>
+        for( let p of this.All.values())
         {
-            p.Messages.values().forEach( m =>
+            if( p.WaitList.length > 0 )
+            {
+                p.WaitList = p.WaitList.filter( w =>
+                {
+                    if( w[1] <= currTick )
+                    {
+                        w[0].Status = 0;
+                        return false;
+                    }
+                    return true;
+                } );
+            }
+            
+            for( let m of p.Messages.values())
             {
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    if( p.Receive( msg, neighborId ))
+                    const received = await p.Receive( msg, neighborId );
+                    if( received )
                     {
                         p.Broadcast( msg, currTick, neighborId );
                     }
                     delete p.Messages[msg.Id];
                 }
-            } );
+            };
             
             const ConnNum = p.Connections.size
             if( Math.random() < 0.002 * breakRate * ConnNum )
@@ -83,7 +98,7 @@ class Peer
                     i--;
                 }
             }
-        } );
+        };
     };
     
     BreakConn( k )
@@ -97,9 +112,10 @@ class Peer
         }
     }
 
-    Broadcast( msg, currTick, srcUserId )  //inner & outer
+    Broadcast( msg, currTick, sourceId )  //inner & outer
     {
-        [...this.Connections.values()].filter( c => c[0].Id != srcUserId ).forEach(( n, t ) =>
+        console.log( 'Broadcast', msg, currTick, sourceId );
+        [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( n, t ) =>
         {
             n.AddMessage( msg, this.Id, currTick + t );
         } );
@@ -124,7 +140,12 @@ class Peer
             
                 this.LocalBlocks.set( CurrBlock.Id, CurrBlock );
                 CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
-            
+                if( CurrBlock.Index > 1 )
+                {
+                    CurrBlock.Status = 1;
+                    const WaitTicks = window.app.Tick + window.mainPanel.BaseTicks * ( this.Users.has( CurrBlock.OwnerId ) ? 4 : 2 );
+                    this.WaitList.push( [CurrBlock, WaitTicks] );
+                }
                 if( CurrBlock.Index >= 1 && this.Users.has( CurrBlock.OwnerId ))
                 {
                     //console.log( 'Receive find owner', CurrBlock.OwnerId.slice( 0, 9 ), CurrBlock.RootId.slice( 0, 9 ));
@@ -193,6 +214,23 @@ class Peer
             }
             blockId = prevId;
         }
+    };
+    
+    FindTail( rootId )
+    {
+        const Blocks = [...this.LocalBlocks.values()].filter( b => b.RootId === rootId && b.Status === 0 ).sort( b => -b.Index );
+        if( Blocks.length < 1 )
+        {
+            console.error( 'no blocks for root', rootId );
+            return
+        }
+        
+        if( Blocks[0].Index < Blocks.length )
+        {
+            console.error( 'can not choose.', rootId, Blocks.map( b => b.Index ));
+            return
+        }
+        return Blocks[0].Id;
     };
 
     //async RcvBlock( block )

@@ -53,6 +53,12 @@ async function Hash( raw, hashName, times )
     return ua
 }
 
+Map.prototype.RandVal = Set.prototype.RandVal = function()
+{
+    const idx = Math.floor( Math.random() * this.size );
+    return [...this.values()][idx];
+}
+
 class User
 {
     static All = new Map();
@@ -76,6 +82,8 @@ class User
 
     get Id() { return this.PubKeyStr; };
     
+    get RandChain() { return BlockChain.All.get( this.OwnChains.RandVal()); };
+    
     AddPeer( peer )
     {
         const l = this.Peers.size;
@@ -91,11 +99,27 @@ class User
         //console.log( 'SetOwnChains', this.Id.slice( 0, 9 ), this.ChainNum );
     };
     
-    SendBlockchain( prevBlock, rootId, dida, targetUId )
+    SendBlockchain( prevId, rootId, dida, targetUId )
     {
-        const NewBlockPrms = new Block( prevBlock.Index + 1, dida, targetUId, prevBlock.Id, this );
+        const NewBlockPrms = new Block( prevBlock.Index + 1, dida, targetUId, prevId, this );
         this.SetOwnChains( rootId, false );
         return NewBlockPrms;
+    };
+    
+    Transfer( dida, chain, targetUId )
+    {
+        console.log( 'User.Transfer', dida, chain.Id, targetUId );
+        const PrevBlockIds = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( id => id );
+        const s = new Set( PrevBlockIds );
+        if( s.size === 1 )
+        {
+            const TransBlock = this.SendBlockchain( prevBlock, chain.Id, dida, targetUId );
+            [...this.Peers.values()].forEach( p => p.Broadcast( { type: "NewBlock", block: TransBlock.TransData() }, dida ));
+        }
+        else
+        {
+            console.error( s.size > 1 ? 'got multi tails.' : 'no tails.' );
+        }
     };
     
     //RecvBlockchain( block )

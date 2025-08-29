@@ -417,10 +417,14 @@ class ChainsTabContent {
      * 获取当前选中的区块链
      * @returns {string|null} - 选中的区块链ID
      */
+    GetSelected()
+    {
+        return this.AllChains?.get( this.selectedChain );
+    }
+    
     getSelectedChain() {
         return this.selectedChain;
     }
-    
     /**
      * 设置选中的区块链
      * @param {string|null} chainId - 区块链ID

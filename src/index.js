@@ -438,8 +438,7 @@ class App {
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all ' + this.BlockChainNum, content: 'blockchains created.', category: 'blockchain' } );
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;
-        const Users = [...this.AllUsers.values()];
-        Users.forEach( u =>  // live in peers
+        this.AllUsers.values().forEach( u =>  // live in peers
         {
             for( let n = config.userNodeNum; n > 0; )
             {
@@ -453,8 +452,8 @@ class App {
         //const AvgChainNum = Blockchains.length / config.userCount;
         const TransBlocks = await Promise.all( Blockchains.map( c =>
         {
-            const idx = Math.floor( Math.random() * config.userCount );
-            return c.Root.TransferTo( Users[idx], 0, this.SysUser );
+            const user = this.AllUsers.RandVal();
+            return c.Root.TransferTo( user, 0, this.SysUser );
         } ));
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all', content: 'add first trans-block for each blockchain.', category: 'blockchain' } );
         
@@ -486,8 +485,9 @@ class App {
         
  
         // 重新计算用户资产和区块链数量
-        for (const [publicKey, user] of this.AllUsers) {
-            user.totalAssets = 0; //user.ownedChains.reduce((total, chain) => total + chain.value, 0);
+        for( const [publicKey, user] of this.AllUsers )
+        {
+            //user.totalAssets = 0; //user.ownedChains.reduce((total, chain) => total + chain.value, 0);
             user.chainCount = user.OwnChains.length;
         }
         
@@ -743,7 +743,8 @@ class App {
         //// 转换为base64
         //return btoa(String.fromCharCode.apply(null, hashBytes));
     //}
-
+    
+    get Tick() { return this.currentTick };
     /**
      * 更新滴答计数器
      */

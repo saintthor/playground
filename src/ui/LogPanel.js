@@ -354,10 +354,7 @@ class LogPanel {
             logsToExport = this.logs.filter(log => this.getLogCategory(log) === currentTab);
         }
         
-        const logText = logsToExport.map(log => 
-            `${log.timestamp.toLocaleString()} [${log.level.toUpperCase()}] ${log.message}`
-        ).join('\n');
-        
+        const logText = logsToExport.map( JSON.stringify ).join( '\n' );
         const blob = new Blob([logText], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');

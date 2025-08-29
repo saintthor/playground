@@ -11,6 +11,7 @@ class MainPanel {
         this.networkGraphInitialized = false;
         this.networkLinks = null;
         this.networkSimulation = null;
+        this.BaseTicks = 15;
         
         // 标签页管理器
         this.tabManager = null;
@@ -56,8 +57,8 @@ class MainPanel {
             <div class="main-panel-tabs">
                 <div class="tab-header">
                     <div class="tab-actions">
-                        <button class="btn btn-primary btn-sm" id="send-btn">发送</button>
-                        <button class="btn btn-danger btn-sm" id="attack-btn">攻击</button>
+                        <button class="btn btn-primary btn-sm" id="send-btn" onclick="window.mainPanel.Transfer()">发送</button>
+                        <button class="btn btn-danger btn-sm" id="attack-btn" onclick="window.mainPanel.Attack()">攻击</button>
                     </div>
                     <div class="tab-buttons">
                         <button class="tab-button" data-tab="help">帮助</button>
@@ -140,6 +141,29 @@ class MainPanel {
         
         // 保存当前数据作为下次更新的参考
         this.lastData = this.deepCloneData(data);
+    }
+    
+    Transfer()
+    {
+        let TargetChain = this.tabManager.chainsTabContent.GetSelected();
+        if( !TargetChain )
+        {
+            const SrcUser = this.tabManager.usersTabContent.GetSelected();
+            TargetChain = SrcUser ? SrcUser.RandChain : this.app.AllBlockchains.RandVal();
+        }
+        console.log( TargetChain );
+        
+        const UserIds = [...this.app.AllUsers.keys()].filter( uid => uid != TargetChain.Owner.Id );
+        if( UserIds.length > 0 )
+        {
+            const idx = Math.floor( Math.random() * UserIds.length );
+            TargetChain.Owner.Transfer( this.app.Tick, TargetChain, UserIds[idx] );            
+        } 
+    }
+    
+    Attack()
+    {
+        //对最近一次支付分叉。
     }
     
     /**

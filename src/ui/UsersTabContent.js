@@ -319,6 +319,12 @@ class UsersTabContent {
      * 获取当前选中的用户
      * @returns {string|null} - 选中的用户ID
      */
+     
+    GetSelected()
+    {
+        return this.app.AllUsers?.get( this.selectedUser );
+    }
+    
     getSelectedUser() {
         return this.selectedUser;
     }

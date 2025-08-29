@@ -81,6 +81,7 @@ class RootBlock extends BaseBlock
     {
         super();
         this.Index = 0;
+        this.Status = 0;
         this.Content = content;
         this.Lines = null;
         return ( async () =>
@@ -101,6 +102,7 @@ class Block extends BaseBlock
         super();
         this.Index = index;
         this.id = '';
+        this.Status = 0;
         this.Content = [index, dida, data, prevId || ''].join( '\n' );
         this.Lines = null;
         return ( async () =>
