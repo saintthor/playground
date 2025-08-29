@@ -99,22 +99,23 @@ class User
         //console.log( 'SetOwnChains', this.Id.slice( 0, 9 ), this.ChainNum );
     };
     
-    SendBlockchain( prevId, rootId, dida, targetUId )
+    SendBlockchain( prevBlock, rootId, dida, targetUId )
     {
-        const NewBlockPrms = new Block( prevBlock.Index + 1, dida, targetUId, prevId, this );
+        const NewBlockPrms = new Block( prevBlock.Index + 1, dida, targetUId, prevBlock.Id, this );
         this.SetOwnChains( rootId, false );
         return NewBlockPrms;
     };
     
-    Transfer( dida, chain, targetUId )
+    async Transfer( dida, chain, targetUId )
     {
         console.log( 'User.Transfer', dida, chain.Id, targetUId );
-        const PrevBlockIds = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( id => id );
-        const s = new Set( PrevBlockIds );
+        const PrevBlocks = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( b => b );
+        const s = new Set( PrevBlocks.map( b => b.Id ));
         if( s.size === 1 )
         {
-            const TransBlock = this.SendBlockchain( prevBlock, chain.Id, dida, targetUId );
-            [...this.Peers.values()].forEach( p => p.Broadcast( { type: "NewBlock", block: TransBlock.TransData() }, dida ));
+            const TransBlock = await this.SendBlockchain( PrevBlocks[0], chain.Id, dida, targetUId );
+            [...this.Peers.values()].forEach( p => p.Broadcast( { Id: "NewBlock" + TransBlock.Id,
+                                            type: "NewBlock", block: TransBlock.TransData() }, dida ));
         }
         else
         {

@@ -58,6 +58,7 @@ class Peer
                 {
                     if( w[1] <= currTick )
                     {
+                        console.log( 'Update WaitList', w );
                         w[0].Status = 0;
                         return false;
                     }
@@ -70,9 +71,9 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    const received = await p.Receive( msg, neighborId );
-                    if( received )
+                    if( await p.Receive( msg, neighborId ))
                     {
+                        console.log( p.Id, 'received', msg.Id );
                         p.Broadcast( msg, currTick, neighborId );
                     }
                     delete p.Messages[msg.Id];
@@ -115,7 +116,7 @@ class Peer
     Broadcast( msg, currTick, sourceId )  //inner & outer
     {
         console.log( 'Broadcast', msg, currTick, sourceId );
-        [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( n, t ) =>
+        [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( [n, t] ) =>
         {
             n.AddMessage( msg, this.Id, currTick + t );
         } );
@@ -218,19 +219,20 @@ class Peer
     
     FindTail( rootId )
     {
-        const Blocks = [...this.LocalBlocks.values()].filter( b => b.RootId === rootId && b.Status === 0 ).sort( b => -b.Index );
+        const Blocks = [...this.LocalBlocks.values()].filter( b => b.RootId === rootId && b.Status === 0 ).sort(( x, y ) => y.Index - x.Index );
         if( Blocks.length < 1 )
         {
-            console.error( 'no blocks for root', rootId );
-            return
+            console.error( 'no blocks for root', rootId, this.LocalBlocks.size );
+            return;
         }
         
-        if( Blocks[0].Index < Blocks.length )
+        if( Blocks[0].Index < Blocks.length - 1 )
         {
             console.error( 'can not choose.', rootId, Blocks.map( b => b.Index ));
-            return
+            //window.blocks = [...this.LocalBlocks.values()];
+            return;
         }
-        return Blocks[0].Id;
+        return Blocks[0];
     };
 
     //async RcvBlock( block )

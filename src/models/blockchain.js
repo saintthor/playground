@@ -121,6 +121,7 @@ class RebuildBlock extends BaseBlock
     {
         super();
         this.id = id;
+        this.Status = 0;
         this.Content = content;
         this.Lines = null;
         const FirstLine = this.GetContentLns( 0 );
