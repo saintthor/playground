@@ -965,7 +965,8 @@ body {
 
 .log-display {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
 }
 
 .log-entry {
@@ -1637,12 +1638,12 @@ small.text-muted {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 }
 
 .log-list {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
     padding: 0;
 }
 
@@ -3644,7 +3645,8 @@ small.text-muted {
 
 .log-display {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
     padding: 0.5rem;
     background: #ffffff; /* 使用白色背景，不会太深 */
     max-height: calc(100vh - 200px);
@@ -6211,10 +6213,12 @@ body.resizing .resize-handle {
     display: flex;
     flex-direction: row;
     margin-bottom: 0;
+    list-style: none;
 }
 
 .log-tabs .nav-item {
     margin-bottom: 0;
+    list-style: none;
 }
 
 .log-tabs .nav-link {
@@ -6240,22 +6244,30 @@ body.resizing .resize-handle {
     font-weight: 500;
 }
 
+/* 确保日志标签页没有圆点 */
+.log-tabs ul,
+.log-tabs li {
+    list-style: none !important;
+    list-style-type: none !important;
+}
+
+.log-tabs li::before {
+    display: none !important;
+}
+
 .log-content {
     flex: 1;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
 .log-content .tab-content {
     flex: 1;
-    overflow: hidden;
 }
 
 .log-content .tab-pane {
     height: 100%;
     display: none;
-    overflow: hidden;
 }
 
 .log-content .tab-pane.active {
@@ -6265,8 +6277,11 @@ body.resizing .resize-handle {
 
 .log-list {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
     padding: 0.5rem;
+    max-height: 100%;
+    box-sizing: border-box;
 }
 
 .log-entry {

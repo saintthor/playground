@@ -6,6 +6,7 @@ class LogPanel {
     constructor(uiManager) {
         this.uiManager = uiManager;
         this.app = uiManager.app;
+        window.LogPanel = this;
         this.isInitialized = false;
         this.logs = [];
         this.maxLogs = 1000;
@@ -321,7 +322,7 @@ class LogPanel {
     createLogElement(logEntry) {
         const logElement = document.createElement('div');
         const MainPair = [['Peer', logEntry.peer], ['User', logEntry.user], ['Blockchain', logEntry.blockchain]].find(( [k, v] ) => v );
-        const key = MainPair ? MainPair[0] + ':' + this.formatLogIds( MainPair[1] ) + '-': '';
+        const key = MainPair ? MainPair[0] + ':' + this.formatLogIds( MainPair[1] ) + ' ': '';
         logElement.className = `log-entry`;
         logElement.innerHTML = `
             <span class="log-timestamp">${logEntry.dida}</span>
@@ -380,7 +381,7 @@ class LogPanel {
      */
     formatLogIds(message) {
         // 匹配base64格式的数据（长度大于10的字母数字字符串）
-        return message.replace(/\b[A-Za-z0-9+/]{10,}={0,2}\b/g, (match) => {
+        return message.toString().replace(/\b[A-Za-z0-9+/]{10,}={0,2}\b/g, (match) => {
             if (match.length > 12) {
                 return match.substring(0, 6) + '...';
             }

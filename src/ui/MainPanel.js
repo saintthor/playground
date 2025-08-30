@@ -149,10 +149,10 @@ class MainPanel {
         if( !TargetChain )
         {
             const SrcUser = this.tabManager.usersTabContent.GetSelected();
-            TargetChain = SrcUser ? SrcUser.RandChain : this.app.AllBlockchains.RandVal();
+            TargetChain = SrcUser?.RandChain || this.app.AllBlockchains.RandVal();
         }
         console.log( TargetChain );
-        
+        window.LogPanel.AddLog( { dida: this.app.Tick, blockchain: TargetChain.Id, content: 'start transfer.', category: 'blockchain' } );
         const UserIds = [...this.app.AllUsers.keys()].filter( uid => uid != TargetChain.Owner.Id );
         if( UserIds.length > 0 )
         {

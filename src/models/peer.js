@@ -58,6 +58,7 @@ class Peer
                 {
                     if( w[1] <= currTick )
                     {
+                        window.LogPanel.AddLog( { dida: currTick, peer: this.Id, block: w[0].Id, content: 'new block trusted.', category: 'block' } );
                         console.log( 'Update WaitList', w );
                         w[0].Status = 0;
                         return false;
@@ -71,6 +72,7 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
+                    window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: 'message received.', category: 'peer' } );
                     if( await p.Receive( msg, neighborId ))
                     {
                         console.log( p.Id, 'received', msg.Id );
@@ -119,6 +121,7 @@ class Peer
         [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( [n, t] ) =>
         {
             n.AddMessage( msg, this.Id, currTick + t );
+            window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: sourceId ? 'start broadcasting.' : 'continue broadcasting.', category: 'peer' } );
         } );
     };
 
@@ -143,6 +146,7 @@ class Peer
                 CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
                 if( CurrBlock.Index > 1 )
                 {
+                    window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, block: CurrBlock.Id, content: 'new block veryfied.', category: 'block' } );
                     CurrBlock.Status = 1;
                     const WaitTicks = window.app.Tick + window.mainPanel.BaseTicks * ( this.Users.has( CurrBlock.OwnerId ) ? 4 : 2 );
                     this.WaitList.push( [CurrBlock, WaitTicks] );

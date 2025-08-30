@@ -114,6 +114,7 @@ class User
         if( s.size === 1 )
         {
             const TransBlock = await this.SendBlockchain( PrevBlocks[0], chain.Id, dida, targetUId );
+            window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
             [...this.Peers.values()].forEach( p => p.Broadcast( { Id: "NewBlock" + TransBlock.Id,
                                             type: "NewBlock", block: TransBlock.TransData() }, dida ));
         }
