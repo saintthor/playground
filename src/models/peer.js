@@ -50,6 +50,8 @@ class Peer
     static async Update( currTick, minConnNum, breakRate = 0.1 )
     {
         //console.log( 'Peer.Update', currTick, minConnNum );
+        const Reached = [], Trusted = [];
+        
         for( let p of this.All.values())
         {
             if( p.WaitList.length > 0 )
@@ -61,6 +63,7 @@ class Peer
                         window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'block' } );
                         console.log( 'Update WaitList', w );
                         w[0].Status = 0;
+                        Trusted.push( p.Id );
                         return false;
                     }
                     return true;
@@ -76,6 +79,7 @@ class Peer
                     if( await p.Receive( msg, neighborId ))
                     {
                         console.log( p.Id, 'received', msg.Id );
+                        Reached.push( [p.Id, msg.color] );
                         p.Broadcast( msg, currTick, neighborId );
                     }
                     p.Messages.delete( msg.Id );
@@ -102,6 +106,11 @@ class Peer
                 }
             }
         };
+        
+        if( Reached.length + Trusted.length > 0 )
+        {
+            window.app.NetWorkPanal.UpdateTrans( Reached, Trusted );
+        }
     };
     
     BreakConn( k )
@@ -117,9 +126,9 @@ class Peer
 
     Broadcast( msg, currTick, sourceId )  //inner & outer
     {
-        console.log( 'Broadcast', msg, currTick, sourceId );
         [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( [n, t] ) =>
         {
+        console.log( 'Broadcast', this.Id, n.Id, currTick + t );
             n.AddMessage( msg, this.Id, currTick + t );
             window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: sourceId ? 'start broadcasting.' : 'continue broadcasting.', category: 'peer' } );
         } );

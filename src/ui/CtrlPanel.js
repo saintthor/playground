@@ -160,7 +160,7 @@ class CtrlPanel {
                 <small class="text-muted">当前: 1.0秒</small>
             </div>
             
-            <div class="form-group">
+            <!--div class="form-group">
                 <label class="form-label">
                     分叉攻击测试
                     <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
@@ -171,7 +171,7 @@ class CtrlPanel {
                     </select>
                     <button class="btn btn-warning btn-sm" id="trigger-attack">触发攻击</button>
                 </div>
-            </div>
+            </div-->
         `;
     }
     

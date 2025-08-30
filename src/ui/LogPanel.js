@@ -300,7 +300,7 @@ class LogPanel {
         const Pairs = [['Peer', logEntry.peer?.toString()], ['User', logEntry.user], ['Block', logEntry.block],
             ['Blockchain', logEntry.blockchain]].filter(( [k, v] ) => v ).map(( [k, v] ) => k + ':' + v.slice( 0, 8 ));
         const key = '[' + Pairs.join( ',' ) + ']';
-        console.log( key, logEntry );
+        //console.log( key, logEntry );
         logElement.className = `log-entry`;
         logElement.innerHTML = `
             <span class="log-timestamp">${logEntry.dida}</span>

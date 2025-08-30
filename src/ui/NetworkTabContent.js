@@ -7,6 +7,7 @@ class NetworkTabContent {
         this.tabManager = tabManager;
         this.mainPanel = tabManager.mainPanel;
         this.app = tabManager.mainPanel.app;
+        this.app.NetWorkPanal = this;
         
         // 网络图相关状态
         this.selectedNode = null;
@@ -284,6 +285,15 @@ class NetworkTabContent {
         }
         
         this.selectedNode = nodeId;
+    }
+    
+    UpdateTrans( reached, trusted )
+    {
+        console.log( 'UpdateTrans', reached, trusted );
+        const networkContainer = document.getElementById( 'd3-network-container' );
+        trusted.forEach( id => networkContainer.querySelector( `[data-node-id="${id}"] circle` ).setAttribute( 'fill', '#007bff' ));
+        reached.map(( [id, color] ) => [networkContainer.querySelector( `[data-node-id="${id}"] circle` ), color] )
+                .map(( [circle, color] ) => circle.setAttribute( 'fill', color ));
     }
     
     /**
