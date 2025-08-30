@@ -6225,11 +6225,16 @@ body.resizing .resize-handle {
     border: none;
     border-radius: 0;
     color: #6c757d;
-    font-size: 0.875rem;
-    padding: 0.75rem 1rem;
+/*
+    font-size: 0.7rem;
+*/
+    padding: 0.5625rem 0.75rem;
     background: transparent;
     border-bottom: 2px solid transparent;
     white-space: nowrap;
+    transform: scale(0.9);
+    transform-origin: center;
+    transition: all 0.2s ease;
 }
 
 .log-tabs .nav-link:hover {
@@ -6242,6 +6247,9 @@ body.resizing .resize-handle {
     background: white;
     border-bottom-color: #007bff;
     font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    transform: scale(1);
 }
 
 /* 确保日志标签页没有圆点 */
@@ -6252,6 +6260,54 @@ body.resizing .resize-handle {
 }
 
 .log-tabs li::before {
+    display: none !important;
+}
+
+/* 主面板标签页样式 - 与日志面板保持一致 */
+.main-panel .tab-header {
+    display: flex !important;
+    background: #f8f9fa !important;
+    border-bottom: none !important;
+    padding: 0 1rem !important;
+    margin: 0 !important;
+}
+
+.main-panel .tab-button {
+    flex: 1 !important;
+    padding: 0.5625rem 0.75rem !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    color: #6c757d !important;
+/*
+    font-size: 0.7rem !important;
+*/
+    border-bottom: 2px solid transparent !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    transform: scale(0.9) !important;
+    transform-origin: center !important;
+}
+
+.main-panel .tab-button:hover {
+    border-color: transparent !important;
+    background: rgba(0,0,0,0.05) !important;
+    color: #495057 !important;
+}
+
+.main-panel .tab-button.active {
+    color: #495057 !important;
+    background: white !important;
+    border-bottom-color: #007bff !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    padding: 0.75rem 1rem !important;
+    transform: scale(1) !important;
+}
+
+/* 移除主面板标签页的::after伪元素 */
+.main-panel .tab-button.active::after {
     display: none !important;
 }
 

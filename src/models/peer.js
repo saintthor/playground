@@ -58,7 +58,7 @@ class Peer
                 {
                     if( w[1] <= currTick )
                     {
-                        window.LogPanel.AddLog( { dida: currTick, peer: this.Id, block: w[0].Id, content: 'new block trusted.', category: 'block' } );
+                        window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'block' } );
                         console.log( 'Update WaitList', w );
                         w[0].Status = 0;
                         return false;
@@ -72,13 +72,13 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: 'message received.', category: 'peer' } );
+                    window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: 'message received.', category: 'peer' } );
                     if( await p.Receive( msg, neighborId ))
                     {
                         console.log( p.Id, 'received', msg.Id );
                         p.Broadcast( msg, currTick, neighborId );
                     }
-                    delete p.Messages[msg.Id];
+                    p.Messages.delete( msg.Id );
                 }
             };
             

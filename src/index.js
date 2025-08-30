@@ -30,12 +30,19 @@
  */
 const getColor = ( function()
 {
-  let r = 0, g = 0, b = 0; // 闭包中的 RGB 变量
-  return function()
+  let r = Math.floor( Math.random() * 255 ), g = Math.floor( Math.random() * 255 ), b = Math.floor( Math.random() * 255 ); // 闭包中的 RGB 变量
+  return function( func )
   {
-    r = ( r + 37 ) % 255;
-    g = ( g + 97 ) % 255;
-    b = ( b + 157 ) % 255;
+    for( let _ = 9; _--; )
+    {
+        r = ( r + 67 ) % 255;
+        g = ( g + 97 ) % 255;
+        b = ( b + 137 ) % 255;
+        if( !func || func( r, g, b ))
+        {
+            break;
+        }
+    }
     // 转换为两位十六进制并拼接
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   };

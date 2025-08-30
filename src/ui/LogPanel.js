@@ -142,30 +142,6 @@ class LogPanel {
         this.scrollToBottom(); 
     }
 
-    //addLog(message, level = 'info', category = 'system') {
-        //if (!this.isInitialized) {
-            //this.pendingLogs.push({ message, level, category, timestamp: new Date() });
-            //return;
-        //}
-        
-        //const logEntry = {
-            //id: Date.now() + Math.random(),
-            //message,
-            //level,
-            //category,
-            //timestamp: new Date()
-        //};
-        
-        //this.logs.push(logEntry);
-        
-        //// 限制日志数量
-        //if (this.logs.length > this.maxLogs) {
-            //this.logs.shift();
-        //}
-        
-        //this.renderLogEntry(logEntry);
-        //this.scrollToBottom();
-    //}
     
     /**
      * 切换日志标签页
@@ -321,12 +297,14 @@ class LogPanel {
 
     createLogElement(logEntry) {
         const logElement = document.createElement('div');
-        const MainPair = [['Peer', logEntry.peer], ['User', logEntry.user], ['Blockchain', logEntry.blockchain]].find(( [k, v] ) => v );
-        const key = MainPair ? MainPair[0] + ':' + this.formatLogIds( MainPair[1] ) + ' ': '';
+        const Pairs = [['Peer', logEntry.peer?.toString()], ['User', logEntry.user], ['Block', logEntry.block],
+            ['Blockchain', logEntry.blockchain]].filter(( [k, v] ) => v ).map(( [k, v] ) => k + ':' + v.slice( 0, 8 ));
+        const key = '[' + Pairs.join( ',' ) + ']';
+        console.log( key, logEntry );
         logElement.className = `log-entry`;
         logElement.innerHTML = `
             <span class="log-timestamp">${logEntry.dida}</span>
-            <span class="log-message">${key + logEntry.content}</span>
+            <span class="log-message">${key + ' ' + logEntry.content}</span>
         `;
         //console.log( 'createLogElement', logElement.innerHTML );
         return logElement;
