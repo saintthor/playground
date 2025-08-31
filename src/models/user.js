@@ -62,6 +62,7 @@ Map.prototype.RandVal = Set.prototype.RandVal = function()
 class User
 {
     static All = new Map();
+    static Cache = new Map();
     
     constructor()
     {
@@ -114,10 +115,17 @@ class User
         if( s.size === 1 )
         {
             const TransBlock = await this.SendBlockchain( PrevBlocks[0], chain.Id, dida, targetUId );
-            window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
+            const SrcPeers = [...this.Peers.values()];
+            window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block by ' + SrcPeers.map( p => p.Id ).join( ',' ) + ' to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
             const TransMsg = { Id: "NewBlock" + TransBlock.Id, type: "NewBlock", block: TransBlock.TransData(),
                                 color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
-            [...this.Peers.values()].forEach( p => p.Broadcast( TransMsg, dida ));
+            SrcPeers.forEach( p =>
+            {
+                p.AcceptBlockchain( TransBlock );
+                p.Broadcast( TransMsg, dida )
+            } );
+            
+            window.app.NetWorkPanal.UpdateTrans( SrcPeers.map( p => [p.Id, TransMsg.color] ), [] );
         }
         else
         {
@@ -134,16 +142,31 @@ class User
 
     async Sign( s, pswd )
     {
-        let ua8 = s instanceof String ? Base642ABuff( s ) : s;
-        return ABuff2Base64( await crypto.subtle.sign( { name: "ECDSA", hash: { name: "SHA-1" }, }, this.PriKey, ua8 ));
+        const ua8 = s instanceof String ? Base642ABuff( s ) : s;
+        const sig = ABuff2Base64( await crypto.subtle.sign( { name: "ECDSA", hash: { name: "SHA-1" }, }, this.PriKey, ua8 ));
+        this.constructor.Cache.set( sig, [this.PubKeyStr, s].join( '\n' ));
+        //console.log( 'Verify Cache set.', sig, this.constructor.Cache.get( sig ));
+        return sig;
     };
 
-    static async Verify( sig, data, pubKeyS )
+    static async Verify( sig, s, pubKeyS )
     {
         //console.log( 'Verify', this, sig, data, pubKeyS );
-        let pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),
+        if( this.Cache.get( sig ) === [pubKeyS, s].join( '\n' ))
+        {
+            //console.log( 'Verify Cache shot.', sig, this.Cache.get( sig ));
+            return true;
+        }
+        const hash = await Hash( s, 'SHA-1' );
+        const pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),
                                 { name: "ECDSA", namedCurve: "P-256", }, false, ["verify"] )
-        return crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), data );
+        const Rslt = crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), hash );
+        if( Rslt )
+        {
+            //console.log( 'Verify Cache set.' );
+            this.Cache.set( sig, [pubKeyS, s].join( '\n' ));
+        }
+        return Rslt;
     };
     
     GetAssets()

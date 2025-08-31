@@ -16,6 +16,7 @@ class NetworkTabContent {
         this.networkLinks = null;
         this.networkSimulation = null;
         this.ConnsJson = null;
+        this.NodeColors = new Map();
         
         console.log('NetworkTabContent 初始化完成');
     }
@@ -108,7 +109,9 @@ class NetworkTabContent {
     
     UpdateD3Graph( update )
     {
-        this.SVG.selectAll( '.links line' ).attr( "stroke", l => 'gray' ).attr( "stroke-width", 1 ).attr( "stroke-opacity", 1 );
+        const DefColor = '#007bff';
+        
+        //this.SVG.selectAll( '.links line' ).attr( "stroke", l => 'gray' ).attr( "stroke-width", 1 ).attr( "stroke-opacity", 1 );
     }
     
     renderD3NetworkGraph( nodes, conns )
@@ -164,7 +167,7 @@ class NetworkTabContent {
         // 添加节点圆圈
         node.append("circle")
             .attr("r", 8)
-            .attr("fill", "#007bff")
+            .attr( "fill", d => this.NodeColors.get( d.id ) || "#007bff" )
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
             .style("cursor", "pointer")
@@ -178,7 +181,7 @@ class NetworkTabContent {
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("fill", "#333")
-            .text(d => `N${d.id + 1}`);
+            .text(d => `N${d.id}`);
         
         // 添加拖拽功能
         node.call(d3.drag()
@@ -289,11 +292,21 @@ class NetworkTabContent {
     
     UpdateTrans( reached, trusted )
     {
-        console.log( 'UpdateTrans', reached, trusted );
+        //console.log( 'UpdateTrans', reached, trusted );
         const networkContainer = document.getElementById( 'd3-network-container' );
-        trusted.forEach( id => networkContainer.querySelector( `[data-node-id="${id}"] circle` ).setAttribute( 'fill', '#007bff' ));
-        reached.map(( [id, color] ) => [networkContainer.querySelector( `[data-node-id="${id}"] circle` ), color] )
-                .map(( [circle, color] ) => circle.setAttribute( 'fill', color ));
+        const AlterNodes = new Set();
+        trusted.forEach( id => 
+        {
+            AlterNodes.add( id );
+            this.NodeColors.set( id, '#007bff' );
+        } );
+        reached.forEach(( [id, color] ) => 
+        {
+            AlterNodes.add( id );
+            this.NodeColors.set( id, color );
+        } );
+        
+        AlterNodes.forEach( id => networkContainer.querySelector( `[data-node-id="${id}"] circle` )?.setAttribute( 'fill', this.NodeColors.get( id )));
     }
     
     /**
@@ -377,7 +390,7 @@ class NetworkTabContent {
             
             return {
                 nodeId: nodeId,
-                nodeName: `Node ${nodeId + 1}`,
+                nodeName: `Node ${nodeId}`,
                 users: [...CurrPeer.Users.values()],
                 connections: [...CurrPeer.Connections.values()],
                 stats: {
@@ -474,7 +487,7 @@ class NetworkTabContent {
                     <div class="connections-list">
                         ${nodeData.connections.length > 0 ? nodeData.connections.map(conn => `
                             <div class="connection-item active">
-                                <span class="connection-target">邻接节点&ensp;${conn[0].Id + 1}</span>
+                                <span class="connection-target">邻接节点&ensp;${conn[0].Id}</span>
                                 <span class="connection-latency">${conn[1]} 滴答</span>
                                 <!--span class="connection-status ${conn.isActive ? 'status-active' : 'status-inactive'}">
                                     ${conn.isActive ? '正常' : '故障'}

@@ -60,8 +60,8 @@ class Peer
                 {
                     if( w[1] <= currTick )
                     {
-                        window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'block' } );
-                        console.log( 'Update WaitList', w );
+                        window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
+                        //console.log( 'Update WaitList', w );
                         w[0].Status = 0;
                         Trusted.push( p.Id );
                         return false;
@@ -150,30 +150,35 @@ class Peer
             try
             {
                 await this.Verify( CurrBlock );
-            
-                this.LocalBlocks.set( CurrBlock.Id, CurrBlock );
-                CurrBlock.RootId = this.FindRoot( CurrBlock.Id );
-                if( CurrBlock.Index > 1 )
-                {
-                    window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, block: CurrBlock.Id, content: 'new block veryfied.', category: 'block' } );
-                    CurrBlock.Status = 1;
-                    const WaitTicks = window.app.Tick + window.mainPanel.BaseTicks * ( this.Users.has( CurrBlock.OwnerId ) ? 4 : 2 );
-                    this.WaitList.push( [CurrBlock, WaitTicks] );
-                }
-                if( CurrBlock.Index >= 1 && this.Users.has( CurrBlock.OwnerId ))
-                {
-                    //console.log( 'Receive find owner', CurrBlock.OwnerId.slice( 0, 9 ), CurrBlock.RootId.slice( 0, 9 ));
-                    BlockChain.All.get( CurrBlock.RootId ).Update( this.Users.get( CurrBlock.OwnerId ), CurrBlock );
-                }
             }
             catch( e )
             {
                 console.log( e );
                 return false;
             }
+            
+            this.AcceptBlockchain( CurrBlock );
         }
         return true;
     };
+    
+    AcceptBlockchain( block )
+    {
+        this.LocalBlocks.set( block.Id, block );
+        block.RootId = this.FindRoot( block.Id );
+        if( block.Index > 1 )
+        {
+            window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, block: block.Id, content: 'new block veryfied.', category: 'peer' } );
+            block.Status = 1;
+            const WaitTicks = window.app.Tick + window.mainPanel.BaseTicks * ( this.Users.has( block.OwnerId ) ? 4 : 2 );
+            this.WaitList.push( [block, WaitTicks] );
+        }
+        if( block.Index >= 1 && this.Users.has( block.OwnerId ))
+        {
+            //console.log( 'Receive find owner', block.OwnerId.slice( 0, 9 ), block.RootId.slice( 0, 9 ));
+            BlockChain.All.get( block.RootId ).Update( this.Users.get( block.OwnerId ), block );
+        }
+    }
     
     async Verify( block )
     {
