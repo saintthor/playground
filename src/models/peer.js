@@ -9,6 +9,7 @@ class Peer
         this.Users = new Map();
         this.LocalBlocks = new Map();
         this.Connections = new Map();
+        this.RecvedMsgs = new Set();
         this.BlackList = new Set();
         this.Messages = new Map();      //on the way
         this.WaitList = [];
@@ -128,7 +129,7 @@ class Peer
     {
         [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( [n, t] ) =>
         {
-        console.log( 'Broadcast', this.Id, n.Id, currTick + t );
+        //console.log( 'Broadcast', this.Id, n.Id, currTick + t );
             n.AddMessage( msg, this.Id, currTick + t );
             window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: sourceId ? 'start broadcasting.' : 'continue broadcasting.', category: 'peer' } );
         } );
@@ -140,6 +141,12 @@ class Peer
         {
             return false;
         }
+        if( this.RecvedMsgs.has( message.Id ))
+        {
+            return false;
+        }
+        this.RecvedMsgs.add( message.Id );
+        
         if( message.type === 'NewBlock' )
         {
             const CurrBlock = new RebuildBlock( message.block.Id, message.block.Content );
@@ -153,11 +160,16 @@ class Peer
             }
             catch( e )
             {
-                console.log( e );
+                console.log( e, this.Id );
+                window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, content: 'Verify failed: ' + e, category: 'peer' } );
                 return false;
             }
             
             this.AcceptBlockchain( CurrBlock );
+        }
+        else if( message.type === "Alarm" )
+        {
+            //verify            
         }
         return true;
     };
@@ -203,18 +215,29 @@ class Peer
             }
             
             const PrevOwner = Prev.OwnerId;
-            if( !this.IsTail( Prev ))
+            if( this.BlackList.has( PrevOwner ))
             {
-                if( this.Id != PrevOwner )
-                {
-                    throw "double spending."
-                }
+                throw "previous owner blacklisted."
+            }
+            const OtherChild = this.GetChild( Prev );
+            if( OtherChild )
+            {
+                this.BlackList.add( PrevOwner );
+                this.OnDoubleSpend( PrevOwner, block, OtherChild );
+                throw "double spending."
             }
             if( this.BlackList.has( PrevOwner ))
             {
                 throw  "sender in blacklist.";
             }
         }
+    }
+    
+    OnDoubleSpend( preOwner, block, block0 )
+    {
+        const AlarmMsg = { Id: "Alarm" + preOwner, type: "Alarm", blocks: [block.TransData(), block0.TransData()],
+                            color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
+        this.Broadcast( AlarmMsg, window.app.Tick );
     }
 
     GetBlock( blockId )
@@ -345,9 +368,9 @@ class Peer
         return Branch;
     };
 
-    IsTail( block )
+    GetChild( block )
     {
-        return ![...this.LocalBlocks.values()].find( b => b.PrevId == block.Id );  // find not return an index.
+        return [...this.LocalBlocks.values()].find( b => b.PrevId == block.Id );  // find not return an index.
     };
 }
 

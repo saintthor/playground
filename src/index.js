@@ -479,8 +479,10 @@ class App {
                 }
             }
             
-            await Promise.all( Blockchains.map( c => p.Receive( { type: "NewBlock", block: c.Root.TransData() } )));
-            await Promise.all( TransBlocks.map( b => p.Receive( { type: "NewBlock", block: b.TransData() } )));
+            await Promise.all( Blockchains.map( c => p.Receive( { Id: "NewBlock" + c.Root.Id, type: "NewBlock",
+                                                                    block: c.Root.TransData() } )));
+            await Promise.all( TransBlocks.map( b => p.Receive( { Id: "NewBlock" + b.Id, type: "NewBlock",
+                                                                    block: b.TransData() } )));
         }
         this.uiManager.panels.log.AddLog( { dida: -1, peer: 'all', content: 'peers connected to others.', category: 'node' } );
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all', content: 'sent blockchains.', category: 'blockchain' } );

@@ -69,6 +69,7 @@ class User
         this.OwnChains = new Set();
         this.Peers = new Map();
         this.ChainNum = 0;
+        this.LastSend = null;
         return ( async () =>
         {
             let key = await crypto.subtle.generateKey( { name: "ECDSA", namedCurve: "P-256", }, true, ["sign", "verify"] );
@@ -100,8 +101,24 @@ class User
         //console.log( 'SetOwnChains', this.Id.slice( 0, 9 ), this.ChainNum );
     };
     
+    async DoubleSpend( dida )
+    {
+        if( !this.LastSend )
+        {
+            console.log( 'transfer once before attacking.' );
+            return;
+        }
+        const [prevBlock, rootId, _, lastUId] = this.LastSend;
+        const TargetUid = new Set( [...this.constructor.All.keys()].filter( k => k != this.Id && k != lastUId )).RandVal();
+        const TransBlock = await this.SendBlockchain( prevBlock, rootId, dida, TargetUid );
+        const SrcPeers = [...this.Peers.values()];
+        window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: rootId, block: TransBlock.Id, content: 'Double Spend by ' + SrcPeers.map( p => p.Id ).join( ',' ) + ' to target user' + TargetUid.slice( 0, 8 ) + '...', category: 'user' } );
+        this.StartTransing( TransBlock, dida, SrcPeers );
+    }
+    
     SendBlockchain( prevBlock, rootId, dida, targetUId )
     {
+        this.LastSend = [prevBlock, rootId, dida, targetUId];
         const NewBlockPrms = new Block( prevBlock.Index + 1, dida, targetUId, prevBlock.Id, this );
         this.SetOwnChains( rootId, false );
         return NewBlockPrms;
@@ -117,21 +134,26 @@ class User
             const TransBlock = await this.SendBlockchain( PrevBlocks[0], chain.Id, dida, targetUId );
             const SrcPeers = [...this.Peers.values()];
             window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block by ' + SrcPeers.map( p => p.Id ).join( ',' ) + ' to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
-            const TransMsg = { Id: "NewBlock" + TransBlock.Id, type: "NewBlock", block: TransBlock.TransData(),
-                                color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
-            SrcPeers.forEach( p =>
-            {
-                p.AcceptBlockchain( TransBlock );
-                p.Broadcast( TransMsg, dida )
-            } );
-            
-            window.app.NetWorkPanal.UpdateTrans( SrcPeers.map( p => [p.Id, TransMsg.color] ), [] );
+            this.StartTransing( TransBlock, dida, SrcPeers );
         }
         else
         {
             console.error( s.size > 1 ? 'got multi tails.' : 'no tails.' );
         }
     };
+    
+    StartTransing( block, dida, srcPeers )
+    {
+        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.TransData(),
+                            color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
+        srcPeers.forEach( p =>
+        {
+            p.AcceptBlockchain( block );
+            p.Broadcast( TransMsg, dida )
+        } );
+        
+        window.app.NetWorkPanal.UpdateTrans( srcPeers.map( p => [p.Id, TransMsg.color] ), [] );
+    }
     
     //RecvBlockchain( block )
     //{

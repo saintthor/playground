@@ -157,13 +157,19 @@ class MainPanel {
         if( UserIds.length > 0 )
         {
             const idx = Math.floor( Math.random() * UserIds.length );
-            TargetChain.Owner.Transfer( this.app.Tick, TargetChain, UserIds[idx] );            
+            TargetChain.Owner.Transfer( this.app.Tick, TargetChain, UserIds[idx] );     
+            this.LastTransUser = TargetChain.Owner;
         } 
     }
     
     Attack()
     {
-        //对最近一次支付分叉。
+        if( !this.LastTransUser )
+        {
+            console.log( 'transfer once before attacking.' );
+            return;
+        }
+        this.LastTransUser.DoubleSpend( this.app.Tick );
     }
     
     /**
