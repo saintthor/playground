@@ -169,10 +169,30 @@ class Peer
         }
         else if( message.type === "Alarm" )
         {
-            //verify            
+            const ConfBlocks = message.blocks.map( btd => new RebuildBlock( btd.Id, btd.Content ));
+            if( ConfBlocks.length > 1 && new Set( ConfBlocks.map( b => b.PrevId )).size == 1 )
+            {
+                const Prev = this.SeekBlock( ConfBlocks[0].PrevId );
+                if( Prev && ConfBlocks.every( b => !!b.ChkFollow( Prev.OwnerId )))
+                {
+                    this.BlackList.add( Prev.OwnerId );
+                    window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, user: Prev.OwnerId, content: 'user blacklisted', category: 'user' } );
+                }
+            }
         }
         return true;
     };
+    
+    SeekBlock( blockId )
+    {
+        let block = this.LocalBlocks.get( blockId );
+        if( !block )
+        {
+            block = BaseBlock.All.get( blockId );  //from other peers?
+            this.LocalBlocks.set( blockId, block );
+        }
+        return block;
+    }
     
     AcceptBlockchain( block )
     {
@@ -204,7 +224,7 @@ class Peer
         }
         else
         {
-            const Prev = this.LocalBlocks.get( block.PrevId );
+            const Prev = this.SeekBlock( block.PrevId );
             if( !Prev )
             {
                 throw "previous block not found.";
@@ -247,7 +267,7 @@ class Peer
 
     FindRoot( blockId )
     {
-        for( let block = this.LocalBlocks.get( blockId ); block; block = this.LocalBlocks.get( blockId ))
+        for( let block = this.GetBlock( blockId ); block; block = this.GetBlock( blockId ))
         {
             let [idx, prevId] = block.GetContentLns( 0, 3 );
             if( isNaN( idx ))
