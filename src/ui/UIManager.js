@@ -289,4 +289,29 @@ class UIManager {
             this.panels.main.updateAllData(data);
         }
     }
+    
+    /**
+     * 语言变更处理
+     * @param {string} language - 新的语言代码
+     */
+    onLanguageChanged( language )
+    {
+        console.log( 'UIManager 处理语言变更:', language );
+        
+        // 通知各个面板更新语言
+        if( this.panels.control && this.panels.control.onLanguageChanged )
+        {
+            this.panels.control.onLanguageChanged( language );
+        }
+        
+        if( this.panels.main && this.panels.main.onLanguageChanged )
+        {
+            this.panels.main.onLanguageChanged( language );
+        }
+        
+        if( this.panels.log && this.panels.log.onLanguageChanged )
+        {
+            this.panels.log.onLanguageChanged( language );
+        }
+    }
 }

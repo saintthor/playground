@@ -124,6 +124,14 @@ class App {
      */
     async init() {
         console.log('初始化 P2P 区块链 Playground');
+        
+        // 初始化多语言系统
+        this.textSystem = new Text();
+        this.textSystem.init();
+        
+        // 绑定语言切换按钮事件
+        this.bindLanguageToggle();
+        
         this.SysUser = await new User();
         User.All.clear();
 
@@ -132,6 +140,36 @@ class App {
 
         // 初始化用户界面
         this.uiManager.initUI();
+    }
+
+    /**
+     * 绑定语言切换按钮事件
+     */
+    bindLanguageToggle() {
+        const languageToggle = document.getElementById('language-toggle');
+        if (languageToggle) {
+            languageToggle.addEventListener('click', () => {
+                this.textSystem.toggleLanguage();
+            });
+        }
+        
+        // 监听语言变更事件，更新UI组件
+        window.addEventListener('languageChanged', (event) => {
+            this.onLanguageChanged(event.detail.language);
+        });
+    }
+    
+    /**
+     * 语言变更回调
+     * @param {string} language - 新的语言代码
+     */
+    onLanguageChanged(language) {
+        console.log('语言已切换到:', language);
+        
+        // 通知UI管理器更新界面
+        if (this.uiManager) {
+            this.uiManager.onLanguageChanged(language);
+        }
     }
 
     /**

@@ -11,13 +11,16 @@
 <body>
     <div id="app">
         <header class="app-header">
-            <h1>P2P 区块链 Playground</h1>
+            <div class="header-content">
+                <h1 data-text="app_title">P2P 区块链 Playground</h1>
+                <button id="language-toggle" class="language-toggle" data-text="language_switch">中/En</button>
+            </div>
         </header>
 
         <main class="app-main">
             <!-- 控制面板 -->
             <section id="control-panel" class="panel control-panel">
-                <h2>控制面板</h2>
+                <h2 data-text="control_panel">控制面板</h2>
                 <div class="panel-content">
                     <!-- 控制面板内容将由 CtrlPanel 类动态生成 -->
                 </div>
@@ -32,7 +35,7 @@
 
             <!-- 日志面板 -->
             <section id="log-panel" class="panel log-panel">
-                <h2>操作日志</h2>
+                <h2 data-text="log_panel">操作日志</h2>
                 <div class="panel-content">
                     <!-- 日志面板内容将由 LogPanel 类动态生成 -->
                 </div>
@@ -44,6 +47,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <!-- 按依赖顺序加载所有JS文件 -->
+    <script src="src/services/Text.js"></script>
     <script src="src/services/Crypto.js"></script>
     <script src="src/models/peer.js"></script>
     <script src="src/models/user.js"></script>

@@ -11,54 +11,62 @@ class MainPanel {
         this.networkGraphInitialized = false;
         this.networkLinks = null;
         this.networkSimulation = null;
-        this.BaseTicks = 15;
         
         // 标签页管理器
         this.tabManager = null;
     }
     
-    init() {
-        try {
-            this.render();
-            this.initTabManager();
+    init( )
+    {
+        try
+        {
+            this.render( );
+            this.initTabMgr( );
             this.isInitialized = true;
-            console.log('MainPanel 初始化完成');
-        } catch (error) {
-            console.error('MainPanel 初始化失败:', error);
+            console.log( 'MainPanel 初始化完成' );
+        }
+        catch( error )
+        {
+            console.error( 'MainPanel 初始化失败:', error );
         }
     }
     
     /**
      * 初始化标签页管理器
      */
-    initTabManager() {
-        try {
+    initTabMgr( )
+    {
+        try
+        {
             // 创建标签页管理器实例
-            this.tabManager = new TabManager(this);
+            this.tabManager = new TabManager( this );
             
             // 初始化标签页管理器
-            this.tabManager.init();
+            this.tabManager.init( );
             
-            console.log('TabManager 已集成到 MainPanel');
-        } catch (error) {
-            console.error('TabManager 初始化失败:', error);
+            console.log( 'TabManager 已集成到 MainPanel' );
+        }
+        catch( error )
+        {
+            console.error( 'TabManager 初始化失败:', error );
         }
     }
     
-    render() {
-        const mainPanel = document.getElementById('main-panel');
-        if (!mainPanel) return;
+    render( )
+    {
+        const mainPanel = document.getElementById( 'main-panel' );
+        if( !mainPanel ) return;
         
-        const panelContent = mainPanel.querySelector('.panel-content');
-        if (!panelContent) return;
+        const panelContent = mainPanel.querySelector( '.panel-content' );
+        if( !panelContent ) return;
         
         // 生成标签页HTML结构
         panelContent.innerHTML = `
             <div class="main-panel-tabs">
                 <div class="tab-header">
                     <div class="tab-actions">
-                        <button class="btn btn-primary btn-sm" id="send-btn" onclick="window.mainPanel.Transfer()">发送</button>
-                        <button class="btn btn-danger btn-sm" id="attack-btn" onclick="window.mainPanel.Attack()">攻击</button>
+                        <button class="btn btn-primary btn-sm" id="send-btn">发送</button>
+                        <button class="btn btn-danger btn-sm" id="attack-btn">攻击</button>
                     </div>
                     <div class="tab-buttons">
                         <button class="tab-button" data-tab="help">帮助</button>
@@ -69,20 +77,20 @@ class MainPanel {
                 </div>
                 
                 <div class="tab-content">
-                    <div class="tab-pane active" id="help-tab">
+                    <div class="tab-pane" id="help-tab">
                         <div class="help-content" id="help-content">
                             <div class="help-loading">正在加载帮助内容...</div>
                         </div>
                     </div>
                     
-                    <div class="tab-pane" id="network-tab">
+                    <div class="tab-pane active" id="network-tab">
                         <div class="tab-section-upper">
                             <div class="network-layout">
                                 <div class="network-stats-panel">
                                     <div class="network-stats" id="network-stats">
-                                        <span class="network-stat">节点: 0</span>
-                                        <span class="network-stat">连接: 0</span>
-                                        <span class="network-stat">故障: 0</span>
+                                        <span class="network-stat" data-text="nodes_count">${GetText('node')}: 0</span>
+                                        <span class="network-stat" data-text="connections_count">${GetText('connection')}: 0</span>
+                                        <span class="network-stat" data-text="failures_count">${GetText('failures')}: 0</span>
                                     </div>
                                 </div>
                                 <div class="network-graph-panel">
@@ -131,45 +139,18 @@ class MainPanel {
         `;
     }    
 
-    updateAllData(data) {
-        if (!this.isInitialized) return;
+    updateAllData( data )
+    {
+        if( !this.isInitialized ) return;
         
         // 使用增量更新系统（性能优化版本）
-        if (this.tabManager) {
-            this.tabManager.updateDataIncremental(data, this.lastData);
+        if( this.tabManager )
+        {
+            this.tabManager.updateDataIncremental( data, this.lastData );
         }
         
         // 保存当前数据作为下次更新的参考
-        this.lastData = this.deepCloneData(data);
-    }
-    
-    Transfer()
-    {
-        let TargetChain = this.tabManager.chainsTabContent.GetSelected();
-        if( !TargetChain )
-        {
-            const SrcUser = this.tabManager.usersTabContent.GetSelected();
-            TargetChain = SrcUser?.RandChain || this.app.AllBlockchains.RandVal();
-        }
-        console.log( TargetChain );
-        window.LogPanel.AddLog( { dida: this.app.Tick, blockchain: TargetChain.Id, content: 'start transfer.', category: 'blockchain' } );
-        const UserIds = [...this.app.AllUsers.keys()].filter( uid => uid != TargetChain.Owner.Id );
-        if( UserIds.length > 0 )
-        {
-            const idx = Math.floor( Math.random() * UserIds.length );
-            TargetChain.Owner.Transfer( this.app.Tick, TargetChain, UserIds[idx] );     
-            this.LastTransUser = TargetChain.Owner;
-        } 
-    }
-    
-    Attack()
-    {
-        if( !this.LastTransUser )
-        {
-            console.log( 'transfer once before attacking.' );
-            return;
-        }
-        this.LastTransUser.DoubleSpend( this.app.Tick );
+        this.lastData = this.cloneData( data );
     }
     
     /**
@@ -177,40 +158,49 @@ class MainPanel {
      * @param {Object} data - 要克隆的数据
      * @returns {Object} - 克隆后的数据
      */
-    deepCloneData(data) {
-        try {
+    cloneData( data )
+    {
+        try
+        {
             // 对于Map类型的数据，需要特殊处理
-            const clonedData = {};
+            const clonedData = { };
             
-            if (data.networkData) {
+            if( data.networkData )
+            {
                 clonedData.networkData = { ...data.networkData };
             }
             
-            if (data.userData) {
-                clonedData.userData = new Map();
-                for (const [key, value] of data.userData) {
-                    clonedData.userData.set(key, { ...value });
+            if( data.userData )
+            {
+                clonedData.userData = new Map( );
+                for( const [key, value] of data.userData )
+                {
+                    clonedData.userData.set( key, { ...value } );
                 }
             }
             
-            if (data.chainData) {
-                clonedData.chainData = new Map();
-                for (const [key, value] of data.chainData) {
-                    clonedData.chainData.set(key, { ...value });
+            if( data.chainData )
+            {
+                clonedData.chainData = new Map( );
+                for( const [key, value] of data.chainData )
+                {
+                    clonedData.chainData.set( key, { ...value } );
                 }
             }
             
             return clonedData;
             
-        } catch (error) {
-            console.error('深度克隆数据失败:', error);
+        }
+        catch( error )
+        {
+            console.error( '深度克隆数据失败:', error );
             return data; // 回退到原始数据
         }
     }
     
     renderNetworkGraph(container, networkData) {
         if (!networkData) {
-            container.innerHTML = '<p class="text-muted">暂无网络数据</p>';
+            container.innerHTML = `<p class="text-muted" data-text="no_network_data">${GetText('no_network_data')}</p>`;
             this.networkGraphInitialized = false;
             return;
         }
@@ -235,9 +225,9 @@ class MainPanel {
             const html = `
                 <div class="network-graph-display">
                     <div class="network-stats">
-                        <span class="network-stat">节点: ${nodeCount}</span>
-                        <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
-                        <span class="network-stat">故障: ${failedConnections}</span>
+                        <span class="network-stat">${GetText('node')}: ${nodeCount}</span>
+                        <span class="network-stat">${GetText('connection')}: ${networkData.activeConnections || 0}</span>
+                        <span class="network-stat">${GetText('failures')}: ${failedConnections}</span>
                     </div>
                     <div class="network-visual">
                         <div id="d3-network-container" style="width: 100%; height: 100%;"></div>
@@ -257,9 +247,9 @@ class MainPanel {
             const statsContainer = container.querySelector('.network-stats');
             if (statsContainer) {
                 statsContainer.innerHTML = `
-                    <span class="network-stat">节点: ${nodeCount}</span>
-                    <span class="network-stat">连接: ${networkData.activeConnections || 0}</span>
-                    <span class="network-stat">故障: ${failedConnections}</span>
+                    <span class="network-stat">${GetText('node')}: ${nodeCount}</span>
+                    <span class="network-stat">${GetText('connection')}: ${networkData.activeConnections || 0}</span>
+                    <span class="network-stat">${GetText('failures')}: ${failedConnections}</span>
                 `;
             }
             
@@ -277,7 +267,7 @@ class MainPanel {
   
     renderUsers(container, userData) {
         if (!userData || userData.size === 0) {
-            container.innerHTML = '<p class="text-muted">暂无用户数据</p>';
+            container.innerHTML = `<p class="text-muted" data-text="no_user_data">${GetText('no_user_data')}</p>`;
             return;
         }
         
@@ -342,7 +332,7 @@ class MainPanel {
 
     renderChains(container, chainData) {
         if (!chainData || chainData.size === 0) {
-            container.innerHTML = '<p class="text-muted">暂无区块链数据</p>';
+            container.innerHTML = `<p class="text-muted" data-text="no_chain_data">${GetText('no_chain_data')}</p>`;
             return;
         }
         
@@ -415,7 +405,7 @@ class MainPanel {
         // 检查D3是否可用
         if (typeof d3 === 'undefined') {
             console.error('D3.js 未加载');
-            container.innerHTML = '<div class="network-placeholder">D3.js 未加载</div>';
+            container.innerHTML = `<div class="network-placeholder" data-text="d3_not_loaded">${GetText('d3_not_loaded')}</div>`;
             return;
         }
         
@@ -604,7 +594,6 @@ class MainPanel {
     requestDataUpdate() {
         if (this.app && this.app.getMainPanelData) {
             const data = this.app.getMainPanelData();
-            //console.log( 'requestDataUpdate', data );
             this.updateAllData(data);
         }
     }
@@ -616,7 +605,7 @@ class MainPanel {
         console.log('显示用户详情:', publicKey);
         
         // 获取用户数据（用户ID就是公钥）
-        const userData = this.app.AllUsers.get(publicKey);
+        const userData = this.app.mockUsers.get(publicKey);
         if (!userData) {
             alert('用户数据未找到');
             return;

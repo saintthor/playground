@@ -27,9 +27,39 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .app-header h1 {
     font-size: 1.8rem;
     font-weight: 600;
+    margin: 0;
+}
+
+/* 语言切换按钮 */
+.language-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.language-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.language-toggle:active {
+    transform: translateY(0);
 }
 
 /* 主内容区域 */

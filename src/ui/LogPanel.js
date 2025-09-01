@@ -41,31 +41,31 @@ class LogPanel {
         
         container.innerHTML = `
             <div class="log-header">
-                <h3>系统日志</h3>
+                <h3 data-text="log_panel">系统日志</h3>
                 <div class="log-controls">
                     <!--button class="btn btn-sm btn-secondary" id="clear-logs">清空日志</button-->
-                    <button class="btn btn-sm btn-info" id="export-logs">导出日志</button>
+                    <button class="btn btn-sm btn-info" id="export-logs" data-text="export_logs">导出日志</button>
                 </div>
             </div>
             <div class="log-tabs">
                 <ul class="nav nav-tabs" id="log-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="all-logs-tab" data-tab="all" type="button" role="tab">
+                        <button class="nav-link active" id="all-logs-tab" data-tab="all" type="button" role="tab" data-text="all_logs">
                             所有日志
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="node-logs-tab" data-tab="node" type="button" role="tab">
+                        <button class="nav-link" id="node-logs-tab" data-tab="node" type="button" role="tab" data-text="node_logs">
                             节点日志
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="user-logs-tab" data-tab="user" type="button" role="tab">
+                        <button class="nav-link" id="user-logs-tab" data-tab="user" type="button" role="tab" data-text="user_logs">
                             用户日志
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="blockchain-logs-tab" data-tab="blockchain" type="button" role="tab">
+                        <button class="nav-link" id="blockchain-logs-tab" data-tab="blockchain" type="button" role="tab" data-text="blockchain_logs">
                             区块链日志
                         </button>
                     </li>
@@ -75,22 +75,22 @@ class LogPanel {
                 <div class="tab-content" id="log-tab-content">
                     <div class="tab-pane active" id="all-logs-content">
                         <div class="log-list" id="all-logs-list">
-                            <div class="log-placeholder">暂无日志信息</div>
+                            <div class="log-placeholder" data-text="no_logs">暂无日志信息</div>
                         </div>
                     </div>
                     <div class="tab-pane" id="node-logs-content">
                         <div class="log-list" id="node-logs-list">
-                            <div class="log-placeholder">暂无节点日志</div>
+                            <div class="log-placeholder" data-text="no_node_logs">暂无节点日志</div>
                         </div>
                     </div>
                     <div class="tab-pane" id="user-logs-content">
                         <div class="log-list" id="user-logs-list">
-                            <div class="log-placeholder">暂无用户日志</div>
+                            <div class="log-placeholder" data-text="no_user_logs">暂无用户日志</div>
                         </div>
                     </div>
                     <div class="tab-pane" id="blockchain-logs-content">
                         <div class="log-list" id="blockchain-logs-list">
-                            <div class="log-placeholder">暂无区块链日志</div>
+                            <div class="log-placeholder" data-text="no_blockchain_logs">暂无区块链日志</div>
                         </div>
                     </div>
                 </div>
@@ -244,13 +244,13 @@ class LogPanel {
      * @returns {string} 占位符文本
      */
     getPlaceholderText(tabName) {
-        const placeholders = {
-            all: '暂无日志信息',
-            node: '暂无节点日志',
-            user: '暂无用户日志',
-            blockchain: '暂无区块链日志'
+        const textIds = {
+            all: 'no_logs',
+            node: 'no_node_logs',
+            user: 'no_user_logs',
+            blockchain: 'no_blockchain_logs'
         };
-        return placeholders[tabName] || '暂无日志信息';
+        return GetText(textIds[tabName] || 'no_logs');
     }
     
     /**
@@ -364,6 +364,39 @@ class LogPanel {
                 return match.substring(0, 6) + '...';
             }
             return match;
+        });
+    }
+    
+    /**
+     * 语言变更处理
+     * @param {string} language - 新的语言代码
+     */
+    onLanguageChanged(language) {
+        console.log('LogPanel 处理语言变更:', language);
+        
+        // 更新占位符文本
+        this.updatePlaceholderTexts();
+    }
+    
+    /**
+     * 更新占位符文本
+     */
+    updatePlaceholderTexts() {
+        const placeholderMappings = {
+            'all-logs-list': 'no_logs',
+            'node-logs-list': 'no_node_logs', 
+            'user-logs-list': 'no_user_logs',
+            'blockchain-logs-list': 'no_blockchain_logs'
+        };
+        
+        Object.entries(placeholderMappings).forEach(([listId, textId]) => {
+            const logList = document.getElementById(listId);
+            if (logList) {
+                const placeholder = logList.querySelector('.log-placeholder');
+                if (placeholder) {
+                    placeholder.textContent = GetText(textId);
+                }
+            }
         });
     }
 }

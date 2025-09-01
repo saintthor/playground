@@ -23,7 +23,7 @@ class CtrlPanel {
 401-500 50`
         };
     }
-    
+
     init() {
         try {
             this.render();
@@ -35,97 +35,96 @@ class CtrlPanel {
             console.error('CtrlPanel 初始化失败:', error);
         }
     }
-    
-    async InitDefHash()
-    {
-        const hexHash = await Crypto.sha256( this.currentConfig.DefStr + this.currentConfig.chainDefinition );
-        const hashBytes = new Uint8Array( hexHash.match( /.{1,2}/g ).map( byte => parseInt( byte, 16 )));
-        this.app.DefHash = btoa( String.fromCharCode.apply( null, hashBytes ));
+
+    async InitDefHash() {
+        const hexHash = await Crypto.sha256(this.currentConfig.DefStr + this.currentConfig.chainDefinition);
+        const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+        this.app.DefHash = btoa(String.fromCharCode.apply(null, hashBytes));
     }
-    
+
     render() {
         const controlPanel = document.getElementById('control-panel');
         if (!controlPanel) return;
-        
+
         const systemControls = controlPanel.querySelector('#system-controls .control-buttons');
         const networkSettings = controlPanel.querySelector('#network-settings .settings-form');
         const chainDefinition = controlPanel.querySelector('#chain-definition .chain-def-editor');
         const runtimeControls = controlPanel.querySelector('#runtime-controls .runtime-settings');
-        
+
         if (systemControls) {
             this.renderSystemControls(systemControls);
         }
-        
+
         if (networkSettings) {
             this.renderNetworkSettings(networkSettings);
         }
-        
+
         if (chainDefinition) {
             this.renderChainDefinition(chainDefinition);
         }
-        
+
         if (runtimeControls) {
             this.renderRuntimeControls(runtimeControls);
         }
     }
-    
+
     renderSystemControls(container) {
         container.innerHTML = `
             <div class="system-controls-header">
-                <span>系统控制</span>
-                <button class="help-icon" data-help="system-controls" title="查看帮助">?</button>
+                <span data-text="system_controls">${GetText('system_controls')}</span>
+                <button class="help-icon" data-help="system-controls" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
-            <button class="btn btn-success" id="start-btn">开始</button>
-            <button class="btn btn-warning" id="pause-btn" disabled>暂停</button>
-            <button class="btn btn-danger" id="stop-btn" disabled>停止</button>
+            <button class="btn btn-success" id="start-btn" data-text="start_system">${GetText('start_system')}</button>
+            <button class="btn btn-warning" id="pause-btn" disabled data-text="pause_system">${GetText('pause_system')}</button>
+            <button class="btn btn-danger" id="stop-btn" disabled data-text="stop_system">${GetText('stop_system')}</button>
         `;
     }
-    
+
     renderNetworkSettings(container) {
         container.innerHTML = `
             <div class="form-group inline-input">
                 <label class="form-label">
-                    节点数量
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <span data-text="node_count">${GetText('node_count')}</span>
+                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="node-count" value="${this.currentConfig.nodeCount}" min="1" max="100">
             </div>
             
             <div class="form-group inline-input">
                 <label class="form-label">
-                    用户数量
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <span data-text="user_count">${GetText('user_count')}</span>
+                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
             </div>
             
             <div class="form-group inline-input">
                 <label class="form-label">
-                    节点最大连接数
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <span data-text="max_connections">${GetText('max_connections')}</span>
+                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
             </div>
             
             <div class="form-group inline-input">
                 <label class="form-label">
-                    用户关联节点数
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <span data-text="user_node_connections">${GetText('user_node_connections')}</span>
+                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="userNodeNum" value="${this.currentConfig.userNodeNum}" min="1" max="5">
             </div>
             
             <div class="form-group">
                 <label class="form-label">
-                    连接故障率 (%)
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <span data-text="failure_rate_percent">${GetText('failure_rate_percent')}</span>
+                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
-                <small class="text-muted">当前: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
+                <small class="text-muted" data-text-template="current_percent">${GetText('current')}: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
             </div>
         `;
     }
-    
+
     renderChainDefinition(container) {
         container.innerHTML = `
             <div class="form-group">
@@ -133,7 +132,7 @@ class CtrlPanel {
                     区块链定义
                     <button class="help-icon" data-help="blockchain-definition" title="查看帮助">?</button>
                 </label>
-                <div style="font-size: smaller;">${this.currentConfig.DefStr.replace( '\n', '<br>' )}</div>
+                <div style="font-size: smaller;">${this.currentConfig.DefStr.replace('\n', '<br>')}</div>
                 <textarea class="form-control" id="chain-definition" rows="6">${this.currentConfig.chainDefinition}</textarea>
                 <small class="text-muted">格式: 起始序列号-结束序列号 面值</small>
             </div>
@@ -145,11 +144,11 @@ class CtrlPanel {
             <div id="def-validation-result"></div>
         `;
     }
-    
+
     renderRuntimeControls(container) {
         // 计算默认值的对数位置 (1000ms = 1.0s)
         const defaultLogValue = this.timeToLogScale(1000);
-        
+
         container.innerHTML = `
             <div class="form-group">
                 <label class="form-label">
@@ -160,7 +159,7 @@ class CtrlPanel {
                 <small class="text-muted">当前: 1.0秒</small>
             </div>
             
-            <!--div class="form-group">
+            <div class="form-group">
                 <label class="form-label">
                     分叉攻击测试
                     <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
@@ -171,20 +170,20 @@ class CtrlPanel {
                     </select>
                     <button class="btn btn-warning btn-sm" id="trigger-attack">触发攻击</button>
                 </div>
-            </div-->
+            </div>
         `;
     }
-    
+
     setupEventListeners() {
         // 系统控制按钮
         const startBtn = document.getElementById('start-btn');
         const pauseBtn = document.getElementById('pause-btn');
         const stopBtn = document.getElementById('stop-btn');
-        
+
         if (startBtn) startBtn.addEventListener('click', () => this.handleStart());
         if (pauseBtn) pauseBtn.addEventListener('click', () => this.handlePause());
         if (stopBtn) stopBtn.addEventListener('click', () => this.handleStop());
-        
+
         // 网络设置
         const nodeCount = document.getElementById('node-count');
         const userCount = document.getElementById('user-count');
@@ -192,28 +191,28 @@ class CtrlPanel {
         const userNodeNum = document.getElementById('userNodeNum');
         const failureRate = document.getElementById('failure-rate');
         const paymentRate = document.getElementById('payment-rate');
-        
+
         if (nodeCount) nodeCount.addEventListener('change', (e) => this.updateConfig('nodeCount', parseInt(e.target.value)));
         if (userCount) userCount.addEventListener('change', (e) => this.updateConfig('userCount', parseInt(e.target.value)));
         if (maxConnections) maxConnections.addEventListener('change', (e) => this.updateConfig('maxConnections', parseInt(e.target.value)));
         if (userNodeNum) userNodeNum.addEventListener('change', (e) => this.updateConfig('userNodeNum', parseInt(e.target.value)));
         if (failureRate) failureRate.addEventListener('input', (e) => this.updateFailureRate(e.target.value));
         if (paymentRate) paymentRate.addEventListener('input', (e) => this.updatePaymentRate(e.target.value));
-        
+
         // 区块链定义
         const chainDefinition = document.getElementById('chain-definition');
         const validateBtn = document.getElementById('validate-definition');
-        
+
         if (chainDefinition) chainDefinition.addEventListener('change', (e) => this.updateConfig('chainDefinition', e.target.value));
         if (validateBtn) validateBtn.addEventListener('click', () => this.validateChainDefinition());
-        
+
         // 运行时控制
         const tickInterval = document.getElementById('tick-interval');
         const triggerAttack = document.getElementById('trigger-attack');
-        
+
         if (tickInterval) tickInterval.addEventListener('input', (e) => this.updateTickInterval(e.target.value));
         if (triggerAttack) triggerAttack.addEventListener('click', () => this.triggerAttack());
-        
+
         // 帮助图标事件
         const helpIcons = document.querySelectorAll('.help-icon');
         helpIcons.forEach(icon => {
@@ -224,33 +223,33 @@ class CtrlPanel {
             });
         });
     }
-    
+
     handleStart() {
         console.log('启动系统');
         if (this.app && this.app.start) {
             this.app.start(this.currentConfig);
         }
-        
+
         // 更新按钮状态
         const startBtn = document.getElementById('start-btn');
         const pauseBtn = document.getElementById('pause-btn');
         const stopBtn = document.getElementById('stop-btn');
-        
+
         if (startBtn) startBtn.disabled = true;
         if (pauseBtn) pauseBtn.disabled = false;
         if (stopBtn) stopBtn.disabled = false;
-        
+
         // 隐藏网络设置和区块链定义部分
         this.hideConfigurationSections();
-        
+
         // 自动隐藏控制面板
         this.minimizeControlPanel();
     }
-    
+
     handlePause() {
         console.log('暂停/继续系统');
         const pauseBtn = document.getElementById('pause-btn');
-        
+
         if (this.app && this.app.isPaused !== undefined) {
             if (this.app.isPaused) {
                 // 当前是暂停状态，点击后恢复
@@ -258,7 +257,8 @@ class CtrlPanel {
                     this.app.resume();
                 }
                 if (pauseBtn) {
-                    pauseBtn.textContent = '暂停';
+                    pauseBtn.textContent = GetText('pause_system');
+                    pauseBtn.setAttribute('data-text', 'pause_system');
                     pauseBtn.className = 'btn btn-warning';
                 }
             } else {
@@ -267,57 +267,58 @@ class CtrlPanel {
                     this.app.pause();
                 }
                 if (pauseBtn) {
-                    pauseBtn.textContent = '继续';
+                    pauseBtn.textContent = GetText('resume');
+                    pauseBtn.setAttribute('data-text', 'resume');
                     pauseBtn.className = 'btn btn-success';
                 }
             }
         }
     }
-    
+
     handleStop() {
         console.log('停止系统');
         if (this.app && this.app.stop) {
             this.app.stop();
         }
-        
+
         // 更新按钮状态
         const startBtn = document.getElementById('start-btn');
         const pauseBtn = document.getElementById('pause-btn');
         const stopBtn = document.getElementById('stop-btn');
-        
+
         if (startBtn) startBtn.disabled = false;
         if (pauseBtn) pauseBtn.disabled = true;
         if (stopBtn) stopBtn.disabled = true;
-        
+
         // 显示网络设置和区块链定义部分
         this.showConfigurationSections();
     }
-    
+
     updateConfig(key, value) {
         this.currentConfig[key] = value;
         console.log('配置更新:', key, value);
     }
-    
+
     updateFailureRate(value) {
         const rate = parseFloat(value) / 100;
         this.currentConfig.failureRate = rate;
-        
+
         const small = document.querySelector('#failure-rate + small');
         if (small) {
-            small.textContent = `当前: ${value}%`;
+            small.textContent = `${GetText('current')}: ${value}%`;
         }
     }
-    
+
     updatePaymentRate(value) {
         const rate = parseFloat(value) / 100;
         this.currentConfig.paymentRate = rate;
-        
+
         const small = document.querySelector('#payment-rate + small');
         if (small) {
-            small.textContent = `当前: ${value}%`;
+            small.textContent = `${GetText('current')}: ${value}%`;
         }
     }
-    
+
     /**
      * 显示帮助信息
      * @param {string} section - 帮助章节ID
@@ -325,13 +326,13 @@ class CtrlPanel {
     showHelp(section) {
         try {
             // 通过UIManager获取TabManager
-            if (this.app && this.app.uiManager && this.app.uiManager.panels && 
+            if (this.app && this.app.uiManager && this.app.uiManager.panels &&
                 this.app.uiManager.panels.main && this.app.uiManager.panels.main.tabManager &&
                 this.app.uiManager.panels.main.tabManager.helpTabContent) {
-                
+
                 const helpTabContent = this.app.uiManager.panels.main.tabManager.helpTabContent;
                 helpTabContent.showHelpSection(section);
-                
+
                 console.log('显示帮助章节:', section);
             } else {
                 console.warn('无法访问帮助系统');
@@ -340,43 +341,43 @@ class CtrlPanel {
             console.error('显示帮助失败:', error);
         }
     }
-    
+
     /**
      * 隐藏配置部分（网络设置和区块链定义）
      */
     hideConfigurationSections() {
         const networkSettings = document.getElementById('network-settings');
         const chainDefinition = document.getElementById('chain-definition');
-        
+
         if (networkSettings) {
             networkSettings.style.display = 'none';
         }
-        
+
         if (chainDefinition) {
             chainDefinition.style.display = 'none';
         }
-        
+
         console.log('配置部分已隐藏');
     }
-    
+
     /**
      * 显示配置部分（网络设置和区块链定义）
      */
     showConfigurationSections() {
         const networkSettings = document.getElementById('network-settings');
         const chainDefinition = document.getElementById('chain-definition');
-        
+
         if (networkSettings) {
             networkSettings.style.display = 'block';
         }
-        
+
         if (chainDefinition) {
             chainDefinition.style.display = 'block';
         }
-        
+
         console.log('配置部分已显示');
     }
-    
+
     /**
      * 将对数刻度值转换为实际时间（毫秒）
      * @param {number} logValue - 对数刻度值 (0-100)
@@ -386,12 +387,12 @@ class CtrlPanel {
         // 对数范围：0.01s (10ms) 到 3s (3000ms)
         const minTime = 10;   // 0.01s
         const maxTime = 3000; // 3s
-        
+
         // 使用对数插值：time = minTime * (maxTime/minTime)^(logValue/100)
         const ratio = Math.pow(maxTime / minTime, logValue / 100);
         return Math.round(minTime * ratio);
     }
-    
+
     /**
      * 将实际时间（毫秒）转换为对数刻度值
      * @param {number} timeMs - 实际时间（毫秒）
@@ -400,48 +401,48 @@ class CtrlPanel {
     timeToLogScale(timeMs) {
         const minTime = 10;   // 0.01s
         const maxTime = 3000; // 3s
-        
+
         // 限制范围
         const clampedTime = Math.max(minTime, Math.min(maxTime, timeMs));
-        
+
         // 反向对数计算：logValue = 100 * log(time/minTime) / log(maxTime/minTime)
         const logValue = 100 * Math.log(clampedTime / minTime) / Math.log(maxTime / minTime);
         return Math.round(logValue);
     }
-    
+
     updateTickInterval(logValue) {
         // 将对数刻度值转换为实际时间
         const actualTime = this.logScaleToTime(parseInt(logValue));
         this.currentConfig.tickInterval = actualTime;
-        
+
         const small = document.querySelector('#tick-interval + small');
         if (small) {
             if (actualTime < 1000) {
-                small.textContent = `当前: ${actualTime}毫秒`;
+                small.textContent = `${GetText('current')}: ${actualTime}${GetText('milliseconds')}`;
             } else {
-                small.textContent = `当前: ${(actualTime / 1000).toFixed(2)}秒`;
+                small.textContent = `${GetText('current')}: ${(actualTime / 1000).toFixed(2)}${GetText('seconds')}`;
             }
         }
-        
+
         // 如果系统正在运行，更新定时器间隔
         if (this.app && this.app.updateTickInterval) {
             this.app.updateTickInterval(actualTime);
         }
     }
-    
+
     triggerAttack() {
         const attackUser = document.getElementById('attack-user');
         if (!attackUser || !attackUser.value) {
             alert('请选择要攻击的用户');
             return;
         }
-        
+
         console.log('触发分叉攻击:', attackUser.value);
         if (this.app && this.app.triggerAttack) {
             this.app.triggerAttack(attackUser.value);
         }
     }
-    
+
     /**
      * 验证区块链定义
      */
@@ -452,25 +453,25 @@ class CtrlPanel {
         try {
             const definition = this.currentConfig.chainDefinition;
             const result = this.parseChainDefinition(definition);
-            
+
             this.app.BlockChainNum = result.totalCount;
-            
+
             // 计算定义文件的SHA256哈希值并转换为base64格式
             let definitionHash;
             //try {
-                // 使用Crypto服务计算SHA256哈希
-                const hexHash = await Crypto.sha256(this.currentConfig.DefStr + definition);
-                // 将十六进制哈希转换为base64格式
-                const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-                definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
+            // 使用Crypto服务计算SHA256哈希
+            const hexHash = await Crypto.sha256(this.currentConfig.DefStr + definition);
+            // 将十六进制哈希转换为base64格式
+            const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
             //} catch (cryptoError) {
-                //console.error('哈希计算失败:', cryptoError);
-                //// 使用模拟SHA256哈希并转换为base64
-                //const hexHash = Crypto.mockSha256(definition);
-                //const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-                //definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
+            //console.error('哈希计算失败:', cryptoError);
+            //// 使用模拟SHA256哈希并转换为base64
+            //const hexHash = Crypto.mockSha256(definition);
+            //const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            //definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
             //}
-            
+
             this.updateValidationResult(result, definitionHash);
         } catch (error) {
             resultContainer.innerHTML = `
@@ -480,7 +481,7 @@ class CtrlPanel {
             `;
         }
     }
-    
+
     /**
      * 解析区块链定义
      */
@@ -488,32 +489,32 @@ class CtrlPanel {
         const lines = definition.trim().split('\n');
         const ranges = [];
         let totalCount = 0;
-        
+
         for (const line of lines) {
             const trimmed = line.trim();
             if (!trimmed) continue;
-            
+
             const match = trimmed.match(/^(\d+)-(\d+)\s+(\d+)$/);
             if (!match) {
                 throw new Error(`无效的定义格式: ${trimmed}`);
             }
-            
+
             const start = parseInt(match[1]);
             const end = parseInt(match[2]);
             const value = parseInt(match[3]);
-            
+
             if (start > end) {
                 throw new Error(`起始序列号不能大于结束序列号: ${trimmed}`);
             }
-            
+
             const count = end - start + 1;
             ranges.push({ start, end, value, count });
             totalCount += count;
         }
-        
+
         return { ranges, totalCount };
     }
-    
+
     /**
      * 更新验证结果显示
      */
@@ -529,11 +530,11 @@ class CtrlPanel {
                 <small class="text-muted">此哈希值将加入每条区块链的根区块</small>
             </div>
         `;
-        
+
         // 添加哈希值的鼠标指向事件
         this.setupHashHoverEvents();
     }
-    
+
     /**
      * 设置哈希值的鼠标指向事件
      */
@@ -542,26 +543,26 @@ class CtrlPanel {
         hashElements.forEach(element => {
             let hoverTimer = null;
             let floatingDiv = null;
-            
+
             element.addEventListener('mouseenter', (e) => {
                 // 清除之前的定时器
                 if (hoverTimer) {
                     clearTimeout(hoverTimer);
                 }
-                
+
                 // 设置1秒后显示浮动窗口
                 hoverTimer = setTimeout(() => {
                     floatingDiv = this.showFloatingVerifyDiv(e.target);
                 }, 1000);
             });
-            
+
             element.addEventListener('mouseleave', (e) => {
                 // 清除定时器
                 if (hoverTimer) {
                     clearTimeout(hoverTimer);
                     hoverTimer = null;
                 }
-                
+
                 // 延迟隐藏浮动窗口，给用户时间移动到浮动窗口上
                 setTimeout(() => {
                     if (floatingDiv && !floatingDiv.matches(':hover')) {
@@ -572,16 +573,16 @@ class CtrlPanel {
             });
         });
     }
-    
+
     /**
      * 显示浮动验证窗口
      */
     showFloatingVerifyDiv(element) {
         const fullValue = element.getAttribute('data-full-value');
         const dataType = element.getAttribute('data-type');
-        
+
         if (!fullValue) return null;
-        
+
         // 创建浮动窗口
         const floatingDiv = document.createElement('div');
         floatingDiv.className = 'hash-floating-verify';
@@ -605,7 +606,7 @@ class CtrlPanel {
                 </div>
             </div>
         `;
-        
+
         // 定位浮动窗口
         const rect = element.getBoundingClientRect();
         floatingDiv.style.cssText = `
@@ -623,40 +624,40 @@ class CtrlPanel {
             transform: translateY(-10px);
             transition: all 0.3s ease;
         `;
-        
+
         document.body.appendChild(floatingDiv);
-        
+
         // 动画显示
         setTimeout(() => {
             floatingDiv.style.opacity = '1';
             floatingDiv.style.transform = 'translateY(0)';
         }, 10);
-        
+
         // 添加事件监听器
         this.setupFloatingVerifyEvents(floatingDiv, fullValue, dataType);
-        
+
         // 调整位置以确保在视窗内
         this.adjustFloatingPosition(floatingDiv);
-        
+
         return floatingDiv;
     }
-    
+
     /**
      * 隐藏浮动验证窗口
      */
     hideFloatingVerifyDiv(floatingDiv) {
         if (!floatingDiv || !floatingDiv.parentNode) return;
-        
+
         floatingDiv.style.opacity = '0';
         floatingDiv.style.transform = 'translateY(-10px)';
-        
+
         setTimeout(() => {
             if (floatingDiv.parentNode) {
                 document.body.removeChild(floatingDiv);
             }
         }, 300);
     }
-    
+
     /**
      * 设置浮动验证窗口事件
      */
@@ -668,7 +669,7 @@ class CtrlPanel {
                 this.hideFloatingVerifyDiv(floatingDiv);
             });
         }
-        
+
         // 复制按钮
         const copyBtn = floatingDiv.querySelector('.floating-copy-btn');
         if (copyBtn) {
@@ -677,7 +678,7 @@ class CtrlPanel {
                 this.copyTextToClipboard(code, '验证代码已复制到剪贴板');
             });
         }
-        
+
         // 运行按钮
         const runBtn = floatingDiv.querySelector('.floating-run-btn');
         if (runBtn) {
@@ -685,7 +686,7 @@ class CtrlPanel {
                 this.runFloatingVerification(floatingDiv, fullValue, dataType);
             });
         }
-        
+
         // 鼠标离开事件
         floatingDiv.addEventListener('mouseleave', () => {
             setTimeout(() => {
@@ -695,7 +696,7 @@ class CtrlPanel {
             }, 500);
         });
     }
-    
+
     /**
      * 调整浮动窗口位置
      */
@@ -703,27 +704,27 @@ class CtrlPanel {
         const rect = floatingDiv.getBoundingClientRect();
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        
+
         // 如果超出右边界，向左调整
         if (rect.right > viewportWidth - 20) {
             const newLeft = viewportWidth - rect.width - 20;
             floatingDiv.style.left = Math.max(20, newLeft) + 'px';
         }
-        
+
         // 如果超出下边界，向上调整
         if (rect.bottom > viewportHeight - 20) {
             const newTop = viewportHeight - rect.height - 20;
             floatingDiv.style.top = Math.max(20, newTop) + 'px';
         }
     }
-    
+
     /**
      * 生成验证代码
      */
     generateVerifyCode(value, type) {
         if (type === 'hash') {
             return `// 验证 SHA256 哈希值
-const originalData = \`${this.currentConfig.DefStr.replace( '\\n', '\\\\n' ).replace( '\n', '\\n' ) + this.currentConfig.chainDefinition}\`;
+const originalData = \`${this.currentConfig.DefStr.replace('\\n', '\\\\n').replace('\n', '\\n') + this.currentConfig.chainDefinition}\`;
 const expectedHash = "${value}";
 
 // 计算哈希值 (异步函数)
@@ -744,14 +745,14 @@ const expectedHash = "${value}";
     }
 })();`;
         }
-        
+
         return `// 验证 Base64 数据
 const base64Value = "${value}";
 const decoded = atob(base64Value);
 console.log('Base64 值:', base64Value);
 console.log('解码结果:', decoded);`;
     }
-    
+
     /**
      * 最小化控制面板
      */
@@ -768,7 +769,7 @@ console.log('解码结果:', decoded);`;
     copyToClipboard() {
         const codeElement = document.getElementById('verify-code');
         if (!codeElement) return;
-        
+
         const code = codeElement.textContent;
         this.copyTextToClipboard(code, '验证代码已复制到剪贴板');
     }
@@ -779,7 +780,7 @@ console.log('解码结果:', decoded);`;
     copyConsoleCode() {
         const consoleCodeElement = document.querySelector('.console-code code');
         if (!consoleCodeElement) return;
-        
+
         const code = consoleCodeElement.textContent;
         this.copyTextToClipboard(code, '控制台代码已复制到剪贴板');
     }
@@ -814,7 +815,7 @@ console.log('解码结果:', decoded);`;
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        
+
         try {
             const successful = document.execCommand('copy');
             if (successful) {
@@ -850,9 +851,9 @@ console.log('解码结果:', decoded);`;
             transition: all 0.3s ease;
             ${type === 'success' ? 'background: #28a745;' : 'background: #dc3545;'}
         `;
-        
+
         document.body.appendChild(feedback);
-        
+
         // 3秒后自动移除
         setTimeout(() => {
             if (feedback.parentNode) {
@@ -864,33 +865,47 @@ console.log('解码结果:', decoded);`;
             }
         }, 3000);
     }
-    
+
+    /**
+     * 语言变更处理
+     * @param {string} language - 新的语言代码
+     */
+    onLanguageChanged(language) {
+        console.log('CtrlPanel 处理语言变更:', language);
+
+        // 重新渲染控制面板内容
+        if (this.isInitialized) {
+            this.render();
+            this.setupEventListeners();
+        }
+    }
+
     /**
      * 运行浮动验证
      */
     async runFloatingVerification(floatingDiv, fullValue, dataType) {
         const resultElement = floatingDiv.querySelector('#floating-verify-result');
-        if (!resultElement) return;
-        
-        resultElement.innerHTML = '<div class="alert alert-info">验证中...</div>';
-        
+        if (!resultElement) return; eturn;
+
+        resultElement.innerHTML = `<div class="alert alert-info">${GetText('verifying')}</div>`;
+
         try {
             if (dataType === 'hash') {
                 // 验证哈希值
                 const originalData = this.currentConfig.DefStr + this.currentConfig.chainDefinition;
                 const expectedHash = fullValue;
-                
+
                 const hexHash = await Crypto.sha256(originalData);
                 const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
                 const actualHash = btoa(String.fromCharCode.apply(null, hashBytes));
-                
+
                 const isValid = actualHash === expectedHash;
-                
+
                 resultElement.innerHTML = `
                     <div class="alert alert-${isValid ? 'success' : 'danger'}">
-                        <strong>验证结果:</strong> ${isValid ? '✓ 验证通过' : '✗ 验证失败'}<br>
-                        <small>期望: ${expectedHash}</small><br>
-                        <small>实际: ${actualHash}</small>
+                        <strong>${GetText('verification_result')}:</strong> ${isValid ? '✓ ' + GetText('verification_passed') : '✗ ' + GetText('verification_failed')}<br>
+                        <small>${GetText('expected')}: ${expectedHash}</small><br>
+                        <small>${GetText('actual')}: ${actualHash}</small>
                     </div>
                 `;
             } else {
@@ -898,7 +913,7 @@ console.log('解码结果:', decoded);`;
                 const decoded = atob(fullValue);
                 resultElement.innerHTML = `
                     <div class="alert alert-success">
-                        <strong>Base64解码结果:</strong><br>
+                        <strong>${GetText('base64_decode_result')}:</strong><br>
                         <code>${decoded}</code>
                     </div>
                 `;
@@ -906,7 +921,7 @@ console.log('解码结果:', decoded);`;
         } catch (error) {
             resultElement.innerHTML = `
                 <div class="alert alert-danger">
-                    <strong>验证失败:</strong> ${error.message}
+                    <strong>${GetText('verification_failed')}:</strong> ${error.message}
                 </div>
             `;
         }
@@ -918,16 +933,16 @@ console.log('解码结果:', decoded);`;
     updateUserList(users) {
         const attackUser = document.getElementById('attack-user');
         if (!attackUser || !users) return;
-        
-        attackUser.innerHTML = '<option value="">选择用户</option>';
-        
+
+        attackUser.innerHTML = `<option value="">${GetText('select_user')}</option>`;
+
         try {
             // 检查 users 是否是 Map 对象
             if (users instanceof Map) {
                 for (const [userId, user] of users) {
                     const option = document.createElement('option');
                     option.value = userId;
-                    option.textContent = `${userId} (资产: ${user.totalAssets || 0})`;
+                    option.textContent = `${userId} (${GetText('assets')}: ${user.totalAssets || 0})`;
                     attackUser.appendChild(option);
                 }
             } else if (Array.isArray(users)) {
@@ -935,7 +950,7 @@ console.log('解码结果:', decoded);`;
                 users.forEach((user, index) => {
                     const option = document.createElement('option');
                     option.value = user.id || `user${index}`;
-                    option.textContent = `${user.id || `user${index}`} (资产: ${user.totalAssets || 0})`;
+                    option.textContent = `${user.id || `user${index}`} (${GetText('assets')}: ${user.totalAssets || 0})`;
                     attackUser.appendChild(option);
                 });
             } else if (typeof users === 'object') {
@@ -943,7 +958,7 @@ console.log('解码结果:', decoded);`;
                 Object.entries(users).forEach(([userId, user]) => {
                     const option = document.createElement('option');
                     option.value = userId;
-                    option.textContent = `${userId} (资产: ${user.totalAssets || 0})`;
+                    option.textContent = `${userId} (${GetText('assets')}: ${user.totalAssets || 0})`;
                     attackUser.appendChild(option);
                 });
             } else {

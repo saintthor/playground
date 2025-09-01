@@ -363,6 +363,20 @@ class HelpTabContent {
     }
     
     /**
+     * 语言变更处理
+     * @param {string} language - 新的语言代码
+     */
+    onLanguageChanged(language) {
+        console.log('HelpTabContent 处理语言变更:', language);
+        
+        // 重新渲染帮助内容
+        if (this.isInitialized) {
+            this.isInitialized = false;
+            this.renderHelpContent();
+        }
+    }
+    
+    /**
      * 销毁帮助标签页内容
      */
     destroy() {
