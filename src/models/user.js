@@ -127,7 +127,7 @@ class User
     async Transfer( dida, chain, targetUId )
     {
         console.log( 'User.Transfer', dida, chain.Id, targetUId );
-        const PrevBlocks = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( b => b );
+        const PrevBlocks = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( b => b && b.Status === 0 );
         const s = new Set( PrevBlocks.map( b => b.Id ));
         if( s.size === 1 )
         {
