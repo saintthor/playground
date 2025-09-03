@@ -445,6 +445,8 @@ class App {
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all ' + this.BlockChainNum, content: 'blockchains created.', category: 'blockchain' } );
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;
+        Peer.ResetBrcTicks( config.maxConnections );
+        
         this.AllUsers.values().forEach( u =>  // live in peers
         {
             for( let n = config.userNodeNum; n > 0; )

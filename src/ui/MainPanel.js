@@ -11,7 +11,6 @@ class MainPanel {
         this.networkGraphInitialized = false;
         this.networkLinks = null;
         this.networkSimulation = null;
-        this.BaseTicks = 15;
         
         // 标签页管理器
         this.tabManager = null;

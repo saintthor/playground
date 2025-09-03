@@ -2,6 +2,7 @@ class Peer
 {
     static All = new Map();
     static Trans = new Map();
+    static BroadcastTicks = 15;
     
     constructor( id )
     {
@@ -46,6 +47,11 @@ class Peer
         {
             this.Messages.set( msg.Id, [msg, neighborId, tick] );
         }
+    };
+    
+    static ResetBrcTicks( minConns )
+    {
+        this.BroadcastTicks = Math.floor( Math.log( this.All.size ) / Math.log( minConns ) * 4 ) + 5;
     };
     
     static async Update( currTick, minConnNum, breakRate = 0.1 )
@@ -216,7 +222,7 @@ class Peer
         {
             window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, block: block.Id, content: 'new block veryfied.', category: 'peer' } );
             block.Status = 1;
-            const WaitTicks = window.app.Tick + window.mainPanel.BaseTicks * ( this.Users.has( block.OwnerId ) ? 4 : 2 );
+            const WaitTicks = window.app.Tick + this.constructor.BroadcastTicks * ( this.Users.has( block.OwnerId ) ? 4 : 2 );
             this.WaitList.push( [block, WaitTicks] );
         }
         if( block.Index >= 1 && this.Users.has( block.OwnerId ))
