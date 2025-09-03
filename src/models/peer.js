@@ -68,7 +68,7 @@ class Peer
                     if( w[1] <= currTick && w[0].Status > 0 )
                     {
                         window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
-                        //console.log( 'Update WaitList', w );
+                        console.log( 'Update WaitList', p.Id, w );
                         w[0].Status = 0;
                         Trusted.push( p.Id );
                     }
@@ -81,7 +81,7 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: 'message received.', category: 'peer' } );
+                    window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: msg.Id.slice( 0, 11 ) + ' message received.', category: 'peer' } );
                     if( await p.Receive( msg, neighborId ))
                     {
                         console.log( p.Id, 'received', msg.Id );
@@ -136,7 +136,7 @@ class Peer
         {
         //console.log( 'Broadcast', this.Id, n.Id, currTick + t );
             n.AddMessage( msg, this.Id, currTick + t );
-            window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: sourceId ? 'start broadcasting.' : 'continue broadcasting.', category: 'peer' } );
+            window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: ( sourceId ? 'start broadcasting.' : 'continue broadcasting.' ) + msg.Id.slice( 0, 16 ), category: 'peer' } );
         } );
     };
 
@@ -183,11 +183,11 @@ class Peer
                     this.BlackList.add( Prev.OwnerId );
                     b1.Status = b0.Status = -1;
                     this.LocalBlocks.set( b1.Id, b1 );
+                    this.WaitList = this.WaitList.filter(( [b, t] ) => b.Id != b0.Id && b.Id != b1.Id );
                     const ExistB0 = this.LocalBlocks.get( b0.Id )
                     if( ExistB0?.Status > 0 )
                     {
                         ExistB0.Status *= -1;
-                        this.WaitList = this.WaitList.filter(( [b, t] ) => b.Id != b0.Id );
                     }
                     else if( ExistB0 == null )
                     {

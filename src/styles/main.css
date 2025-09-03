@@ -979,6 +979,7 @@ body {
     gap: 0.75rem;
     background-color: #fafbfc;
     min-height: 32px;
+    word-wrap: anywhere;
 }
 
 .log-entry:hover {
