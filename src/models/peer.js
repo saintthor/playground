@@ -289,8 +289,37 @@ class Peer
         const AlarmMsg = { Id: "Alarm" + preOwner, type: "Alarm", blocks: [block.TransData(), block0.TransData()],
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         this.Broadcast( AlarmMsg, window.app.Tick );
+        this.WaitList = this.WaitList.filter(( [b, t] ) => b.Id != block.Id && b.Id != block0.Id );
+    }
+    
+    static GetOther( n, exceptKs )
+    {
+        const ValidKeys = new Set( this.All.keys()).difference( new Set( exceptKs ));
+        const Rslt = [];
+        console.log( 'GetOther', n, ValidKeys.size );
+        for( n = n <= ValidKeys.size ? n : ValidKeys.size; n-- > 0; )
+        {
+            const k = ValidKeys.RandVal();
+            ValidKeys.delete( k );
+            Rslt.push( k );
+        }
+        return Rslt;        
     }
 
+    static StartTransing( block, dida, srcPeerKs )
+    {
+        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.TransData(),
+                            color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
+        srcPeerKs.forEach( k =>
+        {
+            const peer = this.All.get( k );
+            peer.AcceptBlockchain( block );
+            peer.Broadcast( TransMsg, dida )
+        } );
+        
+        window.app.NetWorkPanal.UpdateTrans( srcPeerKs.map( k => [k, TransMsg.color] ), [] );
+    }
+    
     GetBlock( blockId )
     {
         return this.LocalBlocks.get( blockId );
