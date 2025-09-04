@@ -65,14 +65,18 @@ class Peer
             {
                 p.WaitList = p.WaitList.filter( w =>
                 {
-                    if( w[1] <= currTick && w[0].Status > 0 )
+                    if( w[1] <= currTick )
                     {
-                        window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
+                        if( w[0].Status > 0 )
+                        {
+                            window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
+                            w[0].Status = 0;
+                        }
                         console.log( 'Update WaitList', p.Id, w );
-                        w[0].Status = 0;
                         Trusted.push( p.Id );
+                        return false;
                     }
-                    return w[1] > currTick;
+                    return true;
                 } );
             }
             
