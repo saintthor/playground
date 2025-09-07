@@ -48,10 +48,10 @@ class HelpTabContent {
                     <ul class="help-nav">
                         <li><a href="#overview" class="help-nav-link">概述</a></li>
                         <li><a href="#getting-started" class="help-nav-link">快速开始</a></li>
-                        <li><a href="#system-controls" class="help-nav-link">系统控制</a></li>
-                        <li><a href="#network-settings" class="help-nav-link">网络设置</a></li>
+                        <li><a href="#systemctrls" class="help-nav-link">系统控制</a></li>
+                        <li><a href="#networksettings" class="help-nav-link">网络设置</a></li>
                         <li><a href="#blockchain-definition" class="help-nav-link">区块链定义</a></li>
-                        <li><a href="#runtime-controls" class="help-nav-link">运行时控制</a></li>
+                        <li><a href="#runtimectrls" class="help-nav-link">运行时控制</a></li>
                         <li><a href="#network-view" class="help-nav-link">网络视图</a></li>
                         <li><a href="#users-view" class="help-nav-link">用户视图</a></li>
                         <li><a href="#blockchain-view" class="help-nav-link">区块链视图</a></li>
@@ -85,7 +85,7 @@ class HelpTabContent {
                         </ol>
                     </section>
                     
-                    <section id="system-controls" class="help-section">
+                    <section id="systemctrls" class="help-section">
                         <h2>系统控制</h2>
                         <p>位于控制面板顶部的系统控制按钮用于管理模拟系统的运行状态。</p>
                         
@@ -105,7 +105,7 @@ class HelpTabContent {
                         </div>
                     </section>
                     
-                    <section id="network-settings" class="help-section">
+                    <section id="networksettings" class="help-section">
                         <h2>网络设置</h2>
                         <p>配置P2P网络的基本参数，这些设置在系统启动前可以修改。</p>
                         
@@ -160,7 +160,7 @@ class HelpTabContent {
                         </div>
                     </section>
                     
-                    <section id="runtime-controls" class="help-section">
+                    <section id="runtimectrls" class="help-section">
                         <h2>运行时控制</h2>
                         <p>系统运行时可以调整的参数，用于控制模拟的速度和行为。</p>
                         
@@ -312,16 +312,41 @@ class HelpTabContent {
      * 滚动到指定章节
      * @param {string} sectionId - 章节ID
      */
-    scrollToSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (section) {
-            section.scrollIntoView({ 
+    scrollToSection( sectionId )
+    {
+        console.log( '滚动到章节:', sectionId );
+        
+        const section = document.getElementById( sectionId );
+        if( section )
+        {
+            // 确保章节在视口中可见
+            section.scrollIntoView( { 
                 behavior: 'smooth',
-                block: 'start'
-            });
+                block: 'start',
+                inline: 'nearest'
+            } );
             
             // 高亮当前章节
-            this.highlightSection(sectionId);
+            this.highlightSection( sectionId );
+            
+            // 添加临时高亮效果
+            section.style.backgroundColor = '#fff3cd';
+            section.style.transition = 'background-color 0.3s ease';
+            section.style.borderLeft = '4px solid #ffc107';
+            section.style.paddingLeft = '16px';
+            
+            setTimeout( () =>
+            {
+                section.style.backgroundColor = '';
+                section.style.borderLeft = '';
+                section.style.paddingLeft = '';
+            }, 2000 );
+            
+            console.log( '已滚动到章节:', sectionId );
+        }
+        else
+        {
+            console.warn( '未找到章节:', sectionId );
         }
     }
     
@@ -329,17 +354,20 @@ class HelpTabContent {
      * 高亮当前章节
      * @param {string} sectionId - 章节ID
      */
-    highlightSection(sectionId) {
+    highlightSection( sectionId )
+    {
         // 移除之前的高亮
-        const prevActive = document.querySelector('.help-nav-link.active');
-        if (prevActive) {
-            prevActive.classList.remove('active');
+        const prevActive = document.querySelector( '.help-nav-link.active' );
+        if( prevActive )
+        {
+            prevActive.classList.remove( 'active' );
         }
         
         // 添加新的高亮
-        const currentLink = document.querySelector(`[href="#${sectionId}"]`);
-        if (currentLink) {
-            currentLink.classList.add('active');
+        const currentLink = document.querySelector( `[href="#${ sectionId }"]` );
+        if( currentLink )
+        {
+            currentLink.classList.add( 'active' );
         }
     }
     
@@ -348,18 +376,44 @@ class HelpTabContent {
      * @param {string} sectionId - 章节ID
      */
     showHelpSection(sectionId) {
+        console.log('显示帮助章节:', sectionId);
+        
         // 切换到帮助标签页
-        if (this.tabManager) {
+        if (this.tabManager && typeof this.tabManager.switchTab === 'function') {
             this.tabManager.switchTab('help');
         }
         
         // 确保内容已渲染
         this.renderHelpContent();
         
-        // 滚动到指定章节
+        // 等待DOM更新后滚动到指定章节
         setTimeout(() => {
             this.scrollToSection(sectionId);
-        }, 100);
+        }, 150);
+        
+        // 备用滚动，确保章节可见
+        setTimeout(() => {
+            const section = document.getElementById(sectionId);
+            if (section && !this.isElementInViewport(section)) {
+                console.log('备用滚动到章节:', sectionId);
+                this.scrollToSection(sectionId);
+            }
+        }, 500);
+    }
+    
+    /**
+     * 检查元素是否在视口中
+     * @param {Element} element - 要检查的元素
+     * @returns {boolean} 是否在视口中
+     */
+    isElementInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
     }
     
     /**

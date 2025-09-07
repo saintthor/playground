@@ -73,7 +73,7 @@ class CtrlPanel {
         container.innerHTML = `
             <div class="system-controls-header">
                 <span>系统控制</span>
-                <button class="help-icon" data-help="system-controls" title="查看帮助">?</button>
+                <button class="help-icon" data-help="systemctrls" title="查看帮助">?</button>
             </div>
             <button class="btn btn-success" id="start-btn">开始</button>
             <button class="btn btn-warning" id="pause-btn" disabled>暂停</button>
@@ -86,7 +86,7 @@ class CtrlPanel {
             <div class="form-group inline-input">
                 <label class="form-label">
                     节点数量
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <button class="help-icon" data-help="networksettings" title="查看帮助">?</button>
                 </label>
                 <input type="number" class="form-control" id="node-count" value="${this.currentConfig.nodeCount}" min="1" max="100">
             </div>
@@ -94,7 +94,7 @@ class CtrlPanel {
             <div class="form-group inline-input">
                 <label class="form-label">
                     用户数量
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <button class="help-icon" data-help="networksettings" title="查看帮助">?</button>
                 </label>
                 <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
             </div>
@@ -102,7 +102,7 @@ class CtrlPanel {
             <div class="form-group inline-input">
                 <label class="form-label">
                     节点最大连接数
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <button class="help-icon" data-help="networksettings" title="查看帮助">?</button>
                 </label>
                 <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
             </div>
@@ -110,7 +110,7 @@ class CtrlPanel {
             <div class="form-group inline-input">
                 <label class="form-label">
                     用户关联节点数
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <button class="help-icon" data-help="networksettings" title="查看帮助">?</button>
                 </label>
                 <input type="number" class="form-control" id="userNodeNum" value="${this.currentConfig.userNodeNum}" min="1" max="5">
             </div>
@@ -118,7 +118,7 @@ class CtrlPanel {
             <div class="form-group">
                 <label class="form-label">
                     连接故障率 (%)
-                    <button class="help-icon" data-help="network-settings" title="查看帮助">?</button>
+                    <button class="help-icon" data-help="networksettings" title="查看帮助">?</button>
                 </label>
                 <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
                 <small class="text-muted">当前: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
@@ -154,7 +154,7 @@ class CtrlPanel {
             <div class="form-group">
                 <label class="form-label">
                     滴答时间间隔
-                    <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
+                    <button class="help-icon" data-help="runtimectrls" title="查看帮助">?</button>
                 </label>
                 <input type="range" class="form-control" id="tick-interval" value="${defaultLogValue}" min="0" max="100" step="1">
                 <small class="text-muted">当前: 1.0秒</small>

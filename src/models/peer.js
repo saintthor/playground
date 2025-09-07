@@ -105,10 +105,10 @@ class Peer
             
             for( let i = minConnNum - p.Connections.size; i > 0; )
             {
-                const peer = [...p.constructor.All.values()][Math.floor( Math.random() * p.constructor.All.size )];
+                const peer = p.constructor.All.RandVal();
                 if( p.Id != peer.Id )
                 {
-                    console.log( 'Connect', p.Id, peer.Id );
+                    //console.log( 'Connect', p.Id, peer.Id );
                     const Tick = Math.floor( Math.random() * 5 + 1 );
                     p.Connect( peer, Tick );
                     peer.Connect( p, Tick );
