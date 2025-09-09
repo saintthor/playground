@@ -785,7 +785,7 @@ describe('综合系统集成测试', () => {
 
     describe('需求9-12: 用户界面和控制功能', () => {
         beforeEach(() => {
-            systemComponents.uiManager.initUI();
+            systemComponents.uiManager.init();
         });
 
         it('应该显示控制面板、主面板和日志面板', () => {
@@ -988,7 +988,7 @@ describe('综合系统集成测试', () => {
             expect(validationResult.isValid).toBe(true);
 
             // 验证需求9-12: 界面和控制
-            systemComponents.uiManager.initUI();
+            systemComponents.uiManager.init();
             expect(document.querySelector('#control-panel')).toBeTruthy();
             expect(document.querySelector('#main-panel')).toBeTruthy();
             expect(document.querySelector('#log-panel')).toBeTruthy();

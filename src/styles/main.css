@@ -128,7 +128,8 @@ body {
 
 /* 主面板样式 */
 .main-panel {
-    min-width: 640px;
+    min-width: 400px;
+    flex-grow: 1; 
 }
 
 /* 日志面板样式 */
@@ -3585,6 +3586,7 @@ small.text-muted {
     display: flex;
     flex-direction: column;
     height: 100%;
+    flex-grow: 1; 
 }
 
 .network-graph-container {

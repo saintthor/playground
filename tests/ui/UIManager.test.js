@@ -83,7 +83,7 @@ describe('UIManager', () => {
         });
 
         it('应该设置面板结构', () => {
-            uiManager.initUI();
+            uiManager.init();
             
             // Check control panel structure
             const controlContent = document.querySelector('#control-panel .panel-content');
@@ -107,7 +107,7 @@ describe('UIManager', () => {
 
     describe('面板结构设置', () => {
         beforeEach(() => {
-            uiManager.initUI();
+            uiManager.init();
         });
 
         it('应该正确设置控制面板结构', () => {
@@ -152,7 +152,7 @@ describe('UIManager', () => {
 
     describe('事件处理', () => {
         beforeEach(() => {
-            uiManager.initUI();
+            uiManager.init();
         });
 
         it('应该处理用户点击事件', () => {
@@ -194,7 +194,7 @@ describe('UIManager', () => {
 
     describe('Base64 数据处理', () => {
         beforeEach(() => {
-            uiManager.initUI();
+            uiManager.init();
         });
 
         it('应该显示Base64 tooltip', () => {
@@ -228,7 +228,7 @@ describe('UIManager', () => {
 
     describe('面板更新方法', () => {
         beforeEach(() => {
-            uiManager.initUI();
+            uiManager.init();
         });
 
         it('应该提供控制面板更新方法', () => {
@@ -276,7 +276,7 @@ describe('UIManager', () => {
 
     describe('工具方法', () => {
         beforeEach(() => {
-            uiManager.initUI();
+            uiManager.init();
         });
 
         it('应该获取面板元素', () => {
@@ -312,7 +312,7 @@ describe('UIManager', () => {
 
     describe('销毁', () => {
         it('应该正确销毁UIManager', () => {
-            uiManager.initUI();
+            uiManager.init();
             
             // Add tooltip to test cleanup
             const base64Element = document.createElement('span');
@@ -335,7 +335,7 @@ describe('UIManager', () => {
             document.body.innerHTML = '';
             
             expect(() => {
-                uiManager.initUI();
+                uiManager.init();
             }).toThrow('必需的DOM元素未找到');
         });
 
@@ -344,7 +344,7 @@ describe('UIManager', () => {
             document.querySelector('#control-panel .panel-content').remove();
             
             expect(() => {
-                uiManager.initUI();
+                uiManager.init();
             }).toThrow('面板内容容器未找到: control');
         });
     });
