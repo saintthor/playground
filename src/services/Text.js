@@ -18,13 +18,13 @@ class Text {
     {
         // 应用标题和基础文本
         this.textMap.set('app_title', {
-            cn: 'P2P区块链演示平台',
-            en: 'P2P Blockchain Playground'
+            cn: 'AOB 钞票演示平台',
+            en: 'AOB Banknotes Playground'
         });
         
         this.textMap.set('language_switch', {
-            cn: '中/En',
-            en: 'En/中'
+            cn: '中文/English',
+            en: 'English/中文'
         });
         
         // 控制面板
@@ -38,24 +38,114 @@ class Text {
             en: 'System Controls'
         });
         
+        this.textMap.set('blockchain_definition', {
+            cn: '区块链定义',
+            en: 'Blockchain Definition'
+        });
+        
+        this.textMap.set('chain_def0', {
+            cn: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS\\nK。其中：\nH 为本文件 sha256 值（Base64）；K 是初始持有人的公钥（Base64），固定为 ",
+            en: 'Define each blockchain as a banknote, with the data structure of its genesis block as: H\\nS\\nK, where: H is the SHA256 hash of this document (Base64); K is the public key of the initial holder (Base64), fixed at '
+        });
+        
+        this.textMap.set('chain_def1', {
+            cn: "；S 是序列号，与钞票面值的对应关系如下：",
+            en: "; S is the serial number, with the following correspondence to the banknote's denomination:"
+        });
+        
+        this.textMap.set('chain_def2', {
+            cn: "格式: 起始序列号-结束序列号 面值",
+            en: "serial numbe range and denomination"
+        });
+        
+        this.textMap.set('verify_def', {
+            cn: "验证定义",
+            en: "verify"
+        });
+        
+        this.textMap.set('validation_pass', {
+            cn: "格式正确",
+            en: "PASSED"
+        });
+        
+        this.textMap.set('validation_pass0', {
+            cn: "共定义",
+            en: "altogether"
+        });
+        
+        this.textMap.set('validation_pass1', {
+            cn: "个范围，总计",
+            en: "ranges and"
+        });
+        
+        this.textMap.set('validation_pass2', {
+            cn: "条区块链",
+            en: "blockchains"
+        });
+        
+        this.textMap.set('validation_pass3', {
+            cn: "定义文件哈希",
+            en: "Tthe hash of this defination is"
+        });
+        
+        this.textMap.set('validation_pass4', {
+            cn: "此哈希值将加入每条区块链的根区块",
+            en: "This hash value will be included in the genesis block of each blockchain."
+        });
+        
+        this.textMap.set('network_settings', {
+            cn: '网络设置',
+            en: 'Network Settings'
+        });
+        
+        this.textMap.set('verify_data', {
+            cn: '验证数据',
+            en: 'Verify data'
+        });
+        
+        this.textMap.set('target_val', {
+            cn: '目标值',
+            en: 'target value'
+        });
+        
+        this.textMap.set('copy_code', {
+            cn: '复制代码',
+            en: 'Copy code'
+        });
+        
+        this.textMap.set('verify_here', {
+            cn: '在此运行',
+            en: 'Run here'
+        });
+        
+        this.textMap.set('runtime_ctrl', {
+            cn: '运行时控制',
+            en: 'Runtime control'
+        });
+        
+        this.textMap.set('tick_interval', {
+            cn: '滴答时长',
+            en: 'Tick interval'
+        });
+        
         this.textMap.set('start_system', {
-            cn: '启动系统',
-            en: 'Start System'
+            cn: '启动',
+            en: 'Start'
         });
         
         this.textMap.set('pause_system', {
-            cn: '暂停系统',
-            en: 'Pause System'
+            cn: '暂停',
+            en: 'Pause'
         });
         
         this.textMap.set('stop_system', {
-            cn: '停止系统',
-            en: 'Stop System'
+            cn: '停止',
+            en: 'Stop'
         });
         
         this.textMap.set('reset_system', {
-            cn: '重置系统',
-            en: 'Reset System'
+            cn: '重置',
+            en: 'Reset'
         });
         
         this.textMap.set('network_config', {
@@ -120,8 +210,8 @@ class Text {
         
         // 控制面板详细配置
         this.textMap.set('max_connections', {
-            cn: '节点最大连接数',
-            en: 'Max Node Connections'
+            cn: '节点最小连接数',
+            en: 'Min Node Connections'
         });
         
         this.textMap.set('user_node_connections', {
@@ -182,7 +272,7 @@ class Text {
         
         this.textMap.set('chains_tab', {
             cn: '区块链',
-            en: 'Chains'
+            en: 'Blockchains'
         });
         
         this.textMap.set('help_tab', {
@@ -197,28 +287,28 @@ class Text {
         });
         
         this.textMap.set('all_logs', {
-            cn: '所有日志',
-            en: 'All Logs'
+            cn: '所有',
+            en: 'All'
         });
         
         this.textMap.set('node_logs', {
-            cn: '节点日志',
-            en: 'Node Logs'
+            cn: '节点',
+            en: 'Peer'
         });
         
         this.textMap.set('user_logs', {
-            cn: '用户日志',
-            en: 'User Logs'
+            cn: '用户',
+            en: 'User'
         });
         
         this.textMap.set('blockchain_logs', {
-            cn: '区块链日志',
-            en: 'Blockchain Logs'
+            cn: '区块链',
+            en: 'Blockchain'
         });
         
         this.textMap.set('export_logs', {
             cn: '导出日志',
-            en: 'Export Logs'
+            en: 'Export'
         });
         
         // 网络页面
@@ -245,6 +335,16 @@ class Text {
         this.textMap.set('click_node_prompt', {
             cn: '请点击网络图上的节点查看详情',
             en: 'Click on a node in the network graph to view details'
+        });
+        
+        this.textMap.set('click_user', {
+            cn: '请点击用户缩略图查看详情',
+            en: 'Click on a user in the network graph to view details'
+        });
+        
+        this.textMap.set('click_chain', {
+            cn: '请点击区块链缩略图查看详情',
+            en: 'Click on a blockchain in the network graph to view details'
         });
         
         this.textMap.set('node_users', {
@@ -484,6 +584,11 @@ class Text {
         this.textMap.set('d3_not_loaded', {
             cn: 'D3.js 未加载',
             en: 'D3.js not loaded'
+        });
+        
+        this.textMap.set('sys_not_started', {
+            cn: '系统未启动',
+            en: 'System not started'
         });
         
         // 时间单位

@@ -69,17 +69,17 @@ class MainPanel {
                         <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">攻击</button>
                     </div>
                     <div class="tab-buttons">
-                        <button class="tab-button" data-tab="help">帮助</button>
-                        <button class="tab-button active" data-tab="network">网络</button>
-                        <button class="tab-button" data-tab="users">用户</button>
-                        <button class="tab-button" data-tab="chains">区块链</button>
+                        <button class="tab-button" data-tab="help">${GetText('help_tab')}</button>
+                        <button class="tab-button active" data-tab="network">${GetText('network_tab')}</button>
+                        <button class="tab-button" data-tab="users">${GetText('users_tab')}</button>
+                        <button class="tab-button" data-tab="chains">${GetText('chains_tab')}</button>
                     </div>
                 </div>
                 
                 <div class="tab-content">
                     <div class="tab-pane" id="help-tab">
                         <div class="help-content" id="help-content">
-                            <div class="help-loading">正在加载帮助内容...</div>
+                            <div class="help-loading">Loading...</div>
                         </div>
                     </div>
                     
@@ -96,7 +96,7 @@ class MainPanel {
                                 <div class="network-graph-panel">
                                     <div class="network-visual" id="network-visual">
                                         <div id="d3-network-container" style="width: 100%; height: 100%;">
-                                            <p class="text-muted">系统未启动</p>
+                                            <p class="text-muted">${GetText('sys_not_started')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -104,7 +104,7 @@ class MainPanel {
                         </div>
                         <div class="tab-section-lower">
                             <div class="node-details-container" id="node-details-container">
-                                <p class="text-muted">请点击网络图上的节点查看详情</p>
+                                <p class="text-muted">${GetText('click_node_prompt')}</p>
                             </div>
                         </div>
                     </div>
@@ -112,12 +112,12 @@ class MainPanel {
                     <div class="tab-pane" id="users-tab">
                         <div class="tab-section-upper">
                             <div class="users-container" id="users-container">
-                                <p class="text-muted">系统未启动</p>
+                                <p class="text-muted">${GetText('sys_not_started')}</p>
                             </div>
                         </div>
                         <div class="tab-section-lower">
                             <div class="user-details-container" id="user-details-container">
-                                <p class="text-muted">请点击用户缩略图查看详情</p>
+                                <p class="text-muted">${GetText('click_user')}</p>
                             </div>
                         </div>
                     </div>
@@ -125,12 +125,12 @@ class MainPanel {
                     <div class="tab-pane" id="chains-tab">
                         <div class="tab-section-upper">
                             <div class="chains-container" id="chains-container">
-                                <p class="text-muted">系统未启动</p>
+                                <p class="text-muted">${GetText('sys_not_started')}</p>
                             </div>
                         </div>
                         <div class="tab-section-lower">
                             <div class="chain-details-container" id="chain-details-container">
-                                <p class="text-muted">请点击区块链缩略图查看详情</p>
+                                <p class="text-muted">${GetText('click_chain')}</p>
                             </div>
                         </div>
                     </div>
@@ -323,7 +323,7 @@ class MainPanel {
                 userCard.innerHTML = `
                     <div class="user-id">用户${user.displayNumber || '?'}</div>
                     <div class="user-assets">${user.totalAssets || 0}</div>
-                    ${isTransferring ? '<div class="transfer-indicator">转账中</div>' : ''}
+                    ${isTransferring ? '<div class="transfer-indicator">transferring</div>' : ''}
                 `;
                 usersGrid.appendChild(userCard);
                 
@@ -386,9 +386,9 @@ class MainPanel {
                 chainCard.className = `chain-card ${isTransferring ? 'transferring' : ''}`;
                 chainCard.setAttribute('data-chain-id', chainId);
                 chainCard.innerHTML = `
-                    <div class="chain-id">链${chain.displayNumber || '?'}</div>
+                    <div class="chain-id">${chain.displayNumber || '?'}</div>
                     <div class="chain-value">${chain.value || 0}</div>
-                    <div class="chain-status">${isTransferring ? '转移中' : '正常'}</div>
+                    <div class="chain-status">${isTransferring ? 'transferring' : 'rest'}</div>
                 `;
                 chainsGrid.appendChild(chainCard);
                 
@@ -404,7 +404,7 @@ class MainPanel {
                 }
                 
                 const statusElement = chainCard.querySelector('.chain-status');
-                const newStatus = isTransferring ? '转移中' : '正常';
+                const newStatus = isTransferring ? 'transferring' : 'rest';
                 if (statusElement && statusElement.textContent !== newStatus) {
                     statusElement.textContent = newStatus;
                 }

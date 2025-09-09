@@ -136,28 +136,28 @@ class UIManager {
     _setupControlPanelStructure(contentElement) {
         contentElement.innerHTML = `
             <div class="control-section" id="system-controls">
-                <h3>系统控制</h3>
+                <h3 data-text="system_controls">${GetText('system_controls')}</h3>
                 <div class="control-buttons">
                     <!-- 控制按钮将由 CtrlPanel 类添加 -->
                 </div>
             </div>
             
             <div class="control-section" id="network-settings">
-                <h3>网络设置</h3>
+                <h3 data-text="network_settings">${GetText('network_settings')}</h3>
                 <div class="settings-form">
                     <!-- 网络参数设置将由 CtrlPanel 类添加 -->
                 </div>
             </div>
             
             <div class="control-section" id="chain-definition">
-                <h3>区块链定义</h3>
+                <h3 data-text="blockchain_definition">${GetText('blockchain_definition')}</h3>
                 <div class="chain-def-editor">
                     <!-- 区块链定义编辑器将由 CtrlPanel 类添加 -->
                 </div>
             </div>
             
             <div class="control-section" id="runtime-controls">
-                <h3>运行时控制</h3>
+                <h3>${GetText('runtime_ctrl')}</h3>
                 <div class="runtime-settings">
                     <!-- 运行时控制将由 CtrlPanel 类添加 -->
                 </div>
@@ -174,21 +174,21 @@ class UIManager {
             <div class="main-section" id="user-assets">
                 <h3>用户资产</h3>
                 <div class="assets-display">
-                    <p class="text-muted">系统未启动</p>
+                    <p class="text-muted">${GetText('sys_not_started')}</p>
                 </div>
             </div>
             
             <div class="main-section" id="chain-ownership">
                 <h3>区块链归属</h3>
                 <div class="ownership-display">
-                    <p class="text-muted">系统未启动</p>
+                    <p class="text-muted">${GetText('sys_not_started')}</p>
                 </div>
             </div>
             
             <div class="main-section" id="network-status">
                 <h3>网络状态</h3>
                 <div class="network-display">
-                    <p class="text-muted">系统未启动</p>
+                    <p class="text-muted">${GetText('sys_not_started')}</p>
                 </div>
             </div>
         `;

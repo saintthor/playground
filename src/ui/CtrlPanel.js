@@ -15,7 +15,6 @@ class CtrlPanel {
             failureRate: 0.1,
             paymentRate: 0.05,
             tickInterval: 1000,
-            DefStr: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS\\nK。其中：\nH 为本文件 sha256 值（Base64）；K 是初始持有人的公钥（Base64），固定为 " + this.app.SysUser.Id + "；S 是序列号，与钞票面值的对应关系如下：",
             chainDefinition: `1-100 1
 101-200 5
 201-300 10
@@ -37,7 +36,8 @@ class CtrlPanel {
     }
 
     async InitDefHash() {
-        const hexHash = await Crypto.sha256( this.currentConfig.DefStr + this.currentConfig.chainDefinition );
+        const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
+        const hexHash = await Crypto.sha256( DefStr + this.currentConfig.chainDefinition );
         const hashBytes = new Uint8Array( hexHash.match( /.{1,2}/g ).map( byte => parseInt( byte, 16 )));
         this.app.DefHash = btoa( String.fromCharCode.apply( null, hashBytes ));
     }
@@ -70,13 +70,12 @@ class CtrlPanel {
 
     renderSystemControls(container) {
         container.innerHTML = `
-            <div class="system-controls-header">
-                <span data-text="system_controls">${GetText('system_controls')}</span>
-                <button class="help-icon" data-help="system-controls" title="${GetText('view_help')}">${GetText('help_icon')}</button>
-            </div>
             <button class="btn btn-success" id="start-btn" data-text="start_system">${GetText('start_system')}</button>
             <button class="btn btn-warning" id="pause-btn" disabled data-text="pause_system">${GetText('pause_system')}</button>
             <button class="btn btn-danger" id="stop-btn" disabled data-text="stop_system">${GetText('stop_system')}</button>
+            <div class="system-controls-header">
+                <button class="help-icon" data-help="system-controls" title="${GetText('view_help')}">${GetText('help_icon')}</button>
+            </div>
         `;
     }
 
@@ -126,19 +125,17 @@ class CtrlPanel {
     }
 
     renderChainDefinition(container) {
+        const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
         container.innerHTML = `
             <div class="form-group">
-                <label class="form-label">
-                    区块链定义
-                    <button class="help-icon" data-help="blockchain-definition" title="查看帮助">?</button>
-                </label>
-                <div style="font-size: smaller;">${this.currentConfig.DefStr.replace( '\n', '<br>' )}</div>
+                <div style="font-size: smaller;">${DefStr.replace( '\n', '<br>' )}</div>
                 <textarea class="form-control" id="chain-definition" rows="6">${this.currentConfig.chainDefinition}</textarea>
-                <small class="text-muted">格式: 起始序列号-结束序列号 面值</small>
+                <small class="text-muted">${GetText('chain_def2')}</small>
             </div>
             
             <div class="form-group">
-                <button class="btn btn-primary" id="validate-definition">验证定义</button>
+                <button class="btn btn-primary" id="validate-definition">${GetText('verify_def')}</button>
+                <button class="help-icon" data-help="blockchain-definition" title="help">?</button>
             </div>
             
             <div id="def-validation-result"></div>
@@ -152,11 +149,11 @@ class CtrlPanel {
         container.innerHTML = `
             <div class="form-group">
                 <label class="form-label">
-                    滴答时间间隔
-                    <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
+                    ${GetText('tick_interval')}
+                    <button class="help-icon" data-help="runtime-controls" title="help">?</button>
                 </label>
                 <input type="range" class="form-control" id="tick-interval" value="${defaultLogValue}" min="0" max="100" step="1">
-                <small class="text-muted">当前: 1.0秒</small>
+                <small class="text-muted">${GetText('current')}: 1.0 ${GetText('seconds')}</small>
             </div>
             
             <!--div class="form-group">
@@ -460,7 +457,8 @@ class CtrlPanel {
             let definitionHash;
             //try {
             // 使用Crypto服务计算SHA256哈希
-            const hexHash = await Crypto.sha256(this.currentConfig.DefStr + definition);
+            const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
+            const hexHash = await Crypto.sha256(DefStr + definition);
             // 将十六进制哈希转换为base64格式
             const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
             definitionHash = btoa(String.fromCharCode.apply(null, hashBytes));
@@ -524,10 +522,10 @@ class CtrlPanel {
         this.app.DefHash = definitionHash;
         resultContainer.innerHTML = `
             <div class="alert alert-success">
-                <strong>定义格式正确!</strong><br>
-                共定义 ${result.ranges.length} 个范围，总计 ${result.totalCount} 个区块链<br>
-                <strong>定义文件哈希:</strong> <code class="definition-hash base64-data" data-type="hash" data-full-value="${definitionHash}">${definitionHash}</code><br>
-                <small class="text-muted">此哈希值将加入每条区块链的根区块</small>
+                <strong>${GetText('validation_pass')}</strong><br>
+                ${GetText('validation_pass0')} ${result.ranges.length} ${GetText('validation_pass1')} ${result.totalCount} ${GetText('validation_pass2')}<br>
+                <strong>${GetText('validation_pass3')}:</strong> <code class="definition-hash base64-data" data-type="hash" data-full-value="${definitionHash}">${definitionHash}</code><br>
+                <small class="text-muted">${GetText('validation_pass4')}</small>
             </div>
         `;
 
@@ -588,17 +586,17 @@ class CtrlPanel {
         floatingDiv.className = 'hash-floating-verify';
         floatingDiv.innerHTML = `
             <div class="floating-verify-header">
-                <span class="verify-type">${dataType === 'hash' ? 'SHA256 哈希' : 'Base64 数据'}</span>
+                <span class="verify-type">${GetText('verify_data')}</span>
                 <button class="floating-verify-close">&times;</button>
             </div>
             <div class="floating-verify-content">
                 <div class="hash-display">
-                    <label>完整值:</label>
+                    <label>${GetText('target_val')}:</label>
                     <code class="full-hash">${fullValue}</code>
                 </div>
                 <div class="verify-actions">
-                    <button class="btn btn-sm btn-primary floating-copy-btn">复制验证代码</button>
-                    <button class="btn btn-sm btn-secondary floating-run-btn">运行验证</button>
+                    <button class="btn btn-sm btn-primary floating-copy-btn">${GetText('copy_code')}</button>
+                    <button class="btn btn-sm btn-secondary floating-run-btn">${GetText('verify_here')}</button>
                 </div>
                 <div class="verify-result" id="floating-verify-result"></div>
                 <div class="verify-code-preview">
@@ -722,35 +720,33 @@ class CtrlPanel {
      * 生成验证代码
      */
     generateVerifyCode(value, type) {
+        const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
         if (type === 'hash') {
-            return `// 验证 SHA256 哈希值
-const originalData = \`${this.currentConfig.DefStr.replace( '\\n', '\\\\n' ).replace( '\n', '\\n' ) + this.currentConfig.chainDefinition}\`;
+            return `
+const originalData = \`${DefStr.replace( '\\n', '\\\\n' ).replace( '\n', '\\n' ) + this.currentConfig.chainDefinition}\`;
 const expectedHash = "${value}";
 
-// 计算哈希值 (异步函数)
 (async function() {
     try {
         const hexHash = await Crypto.sha256(originalData);
-        // 将十六进制哈希转换为base64格式
         const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
         const actualHash = btoa(String.fromCharCode.apply(null, hashBytes));
         
-        // 验证结果
-        console.log('原始数据:', originalData);
-        console.log('期望哈希 (base64):', expectedHash);
-        console.log('实际哈希 (base64):', actualHash);
-        console.log('验证结果:', actualHash === expectedHash ? '✓ 验证通过' : '✗ 验证失败');
+        console.log('Original:', originalData);
+        console.log('Expected (base64):', expectedHash);
+        console.log('Actual (base64):', actualHash);
+        console.log('Result:', actualHash === expectedHash ? '✓ Passed' : '✗ Failed');
     } catch (error) {
-        console.error('验证失败:', error);
+        console.error('error:', error);
     }
 })();`;
         }
 
-        return `// 验证 Base64 数据
+        return `
 const base64Value = "${value}";
 const decoded = atob(base64Value);
-console.log('Base64 值:', base64Value);
-console.log('解码结果:', decoded);`;
+console.log('Base64:', base64Value);
+console.log('Result:', decoded);`;
     }
 
     /**
@@ -890,8 +886,9 @@ console.log('解码结果:', decoded);`;
 
         try {
             if (dataType === 'hash') {
+                const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
                 // 验证哈希值
-                const originalData = this.currentConfig.DefStr + this.currentConfig.chainDefinition;
+                const originalData = DefStr + this.currentConfig.chainDefinition;
                 const expectedHash = fullValue;
 
                 const hexHash = await Crypto.sha256(originalData);
