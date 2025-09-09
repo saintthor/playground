@@ -212,7 +212,7 @@ class LogPanel {
     getLogCategory(log) {
         // 根据日志内容和类别判断分类
         if (log.category) {
-            if (log.category.includes('node') || log.category.includes('network')) {
+            if (log.category.includes('node') || log.category.includes('peer')) {
                 return 'node';
             }
             if (log.category.includes('user') || log.category.includes('payment')) {

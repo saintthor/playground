@@ -2,6 +2,7 @@ class Peer
 {
     static All = new Map();
     static Trans = new Map();
+    static BroadcastTicks = 15;
     
     constructor( id )
     {
@@ -48,6 +49,11 @@ class Peer
         }
     };
     
+    static ResetBrcTicks( minConns )
+    {
+        this.BroadcastTicks = Math.floor( Math.log( this.All.size ) / Math.log( minConns ) * 4 ) + 5;
+    };
+    
     static async Update( currTick, minConnNum, breakRate = 0.1 )
     {
         //console.log( 'Peer.Update', currTick, minConnNum );
@@ -61,9 +67,12 @@ class Peer
                 {
                     if( w[1] <= currTick )
                     {
-                        window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
-                        //console.log( 'Update WaitList', w );
-                        w[0].Status = 0;
+                        if( w[0].Status > 0 )
+                        {
+                            window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
+                            w[0].Status = 0;
+                        }
+                        console.log( 'Update WaitList', p.Id, w );
                         Trusted.push( p.Id );
                         return false;
                     }
@@ -76,7 +85,7 @@ class Peer
                 const [msg, neighborId, tick] = m;
                 if( tick <= currTick )
                 {
-                    window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: 'message received.', category: 'peer' } );
+                    window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: msg.Id.slice( 0, 11 ) + ' message received.', category: 'peer' } );
                     if( await p.Receive( msg, neighborId ))
                     {
                         console.log( p.Id, 'received', msg.Id );
@@ -96,10 +105,10 @@ class Peer
             
             for( let i = minConnNum - p.Connections.size; i > 0; )
             {
-                const peer = [...p.constructor.All.values()][Math.floor( Math.random() * p.constructor.All.size )];
+                const peer = p.constructor.All.RandVal();
                 if( p.Id != peer.Id )
                 {
-                    console.log( 'Connect', p.Id, peer.Id );
+                    //console.log( 'Connect', p.Id, peer.Id );
                     const Tick = Math.floor( Math.random() * 5 + 1 );
                     p.Connect( peer, Tick );
                     peer.Connect( p, Tick );
@@ -131,7 +140,7 @@ class Peer
         {
         //console.log( 'Broadcast', this.Id, n.Id, currTick + t );
             n.AddMessage( msg, this.Id, currTick + t );
-            window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: sourceId ? 'start broadcasting.' : 'continue broadcasting.', category: 'peer' } );
+            window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: ( sourceId ? 'start broadcasting.' : 'continue broadcasting.' ) + msg.Id.slice( 0, 16 ), category: 'peer' } );
         } );
     };
 
@@ -169,16 +178,31 @@ class Peer
         }
         else if( message.type === "Alarm" )
         {
-            const ConfBlocks = message.blocks.map( btd => new RebuildBlock( btd.Id, btd.Content ));
-            if( ConfBlocks.length > 1 && new Set( ConfBlocks.map( b => b.PrevId )).size == 1 )
+            const [b1, b0] = message.blocks.map( btd => new RebuildBlock( btd.Id, btd.Content ));
+            if( b1.PrevId === b0.PrevId )
             {
-                const Prev = this.SeekBlock( ConfBlocks[0].PrevId );
-                if( Prev && ConfBlocks.every( b => !!b.ChkFollow( Prev.OwnerId )))
+                const Prev = this.SeekBlock( b1.PrevId );
+                if( Prev && [b1, b0].every( async b => !!( await b.ChkFollow( Prev.OwnerId ))))
                 {
                     this.BlackList.add( Prev.OwnerId );
+                    b1.Status = b0.Status = -1;
+                    this.LocalBlocks.set( b1.Id, b1 );
+                    this.WaitList = this.WaitList.filter(( [b, t] ) => b.Id != b0.Id && b.Id != b1.Id );
+                    const ExistB0 = this.LocalBlocks.get( b0.Id )
+                    if( ExistB0?.Status > 0 )
+                    {
+                        ExistB0.Status *= -1;
+                    }
+                    else if( ExistB0 == null )
+                    {
+                        this.LocalBlocks.set( b0.Id, b0 );
+                    }
                     window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, user: Prev.OwnerId, content: 'user blacklisted', category: 'user' } );
                 }
             }
+        }
+        else if( message.type === "Article" )
+        {
         }
         return true;
     };
@@ -202,7 +226,7 @@ class Peer
         {
             window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, block: block.Id, content: 'new block veryfied.', category: 'peer' } );
             block.Status = 1;
-            const WaitTicks = window.app.Tick + window.mainPanel.BaseTicks * ( this.Users.has( block.OwnerId ) ? 4 : 2 );
+            const WaitTicks = window.app.Tick + this.constructor.BroadcastTicks * ( this.Users.has( block.OwnerId ) ? 4 : 2 );
             this.WaitList.push( [block, WaitTicks] );
         }
         if( block.Index >= 1 && this.Users.has( block.OwnerId ))
@@ -228,6 +252,13 @@ class Peer
             if( !Prev )
             {
                 throw "previous block not found.";
+            }
+            if( Prev.Status < 0 )
+            {
+                this.LocalBlocks.set( block.Id, block );
+                block.Status = Prev.Status;
+                block.RootId = this.FindRoot( block.Id );
+                throw "previous block invalid.";
             }
             if( !await block.ChkFollow( Prev.OwnerId ))
             {
@@ -258,8 +289,37 @@ class Peer
         const AlarmMsg = { Id: "Alarm" + preOwner, type: "Alarm", blocks: [block.TransData(), block0.TransData()],
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         this.Broadcast( AlarmMsg, window.app.Tick );
+        this.WaitList = this.WaitList.filter(( [b, t] ) => b.Id != block.Id && b.Id != block0.Id );
+    }
+    
+    static GetOther( n, exceptKs )
+    {
+        const ValidKeys = new Set( this.All.keys()).difference( new Set( exceptKs ));
+        const Rslt = [];
+        console.log( 'GetOther', n, ValidKeys.size );
+        for( n = n <= ValidKeys.size ? n : ValidKeys.size; n-- > 0; )
+        {
+            const k = ValidKeys.RandVal();
+            ValidKeys.delete( k );
+            Rslt.push( k );
+        }
+        return Rslt;        
     }
 
+    static StartTransing( block, dida, srcPeerKs )
+    {
+        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.TransData(),
+                            color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
+        srcPeerKs.forEach( k =>
+        {
+            const peer = this.All.get( k );
+            peer.AcceptBlockchain( block );
+            peer.Broadcast( TransMsg, dida )
+        } );
+        
+        window.app.NetWorkPanal.UpdateTrans( srcPeerKs.map( k => [k, TransMsg.color] ), [] );
+    }
+    
     GetBlock( blockId )
     {
         return this.LocalBlocks.get( blockId );
@@ -269,6 +329,10 @@ class Peer
     {
         for( let block = this.GetBlock( blockId ); block; block = this.GetBlock( blockId ))
         {
+            if( block.RootId )
+            {
+                return block.RootId;
+            }
             let [idx, prevId] = block.GetContentLns( 0, 3 );
             if( isNaN( idx ))
             {
@@ -290,7 +354,6 @@ class Peer
         if( Blocks[0].Index < Blocks.length - 1 )
         {
             console.error( 'can not choose.', rootId, Blocks.map( b => b.Index ));
-            //window.blocks = [...this.LocalBlocks.values()];
             return;
         }
         return Blocks[0];

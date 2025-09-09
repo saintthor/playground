@@ -37,9 +37,9 @@ class CtrlPanel {
     }
 
     async InitDefHash() {
-        const hexHash = await Crypto.sha256(this.currentConfig.DefStr + this.currentConfig.chainDefinition);
-        const hashBytes = new Uint8Array(hexHash.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-        this.app.DefHash = btoa(String.fromCharCode.apply(null, hashBytes));
+        const hexHash = await Crypto.sha256( this.currentConfig.DefStr + this.currentConfig.chainDefinition );
+        const hashBytes = new Uint8Array( hexHash.match( /.{1,2}/g ).map( byte => parseInt( byte, 16 )));
+        this.app.DefHash = btoa( String.fromCharCode.apply( null, hashBytes ));
     }
 
     render() {
@@ -132,7 +132,7 @@ class CtrlPanel {
                     区块链定义
                     <button class="help-icon" data-help="blockchain-definition" title="查看帮助">?</button>
                 </label>
-                <div style="font-size: smaller;">${this.currentConfig.DefStr.replace('\n', '<br>')}</div>
+                <div style="font-size: smaller;">${this.currentConfig.DefStr.replace( '\n', '<br>' )}</div>
                 <textarea class="form-control" id="chain-definition" rows="6">${this.currentConfig.chainDefinition}</textarea>
                 <small class="text-muted">格式: 起始序列号-结束序列号 面值</small>
             </div>
@@ -159,7 +159,7 @@ class CtrlPanel {
                 <small class="text-muted">当前: 1.0秒</small>
             </div>
             
-            <div class="form-group">
+            <!--div class="form-group">
                 <label class="form-label">
                     分叉攻击测试
                     <button class="help-icon" data-help="runtime-controls" title="查看帮助">?</button>
@@ -170,7 +170,7 @@ class CtrlPanel {
                     </select>
                     <button class="btn btn-warning btn-sm" id="trigger-attack">触发攻击</button>
                 </div>
-            </div>
+            </div-->
         `;
     }
 
@@ -724,7 +724,7 @@ class CtrlPanel {
     generateVerifyCode(value, type) {
         if (type === 'hash') {
             return `// 验证 SHA256 哈希值
-const originalData = \`${this.currentConfig.DefStr.replace('\\n', '\\\\n').replace('\n', '\\n') + this.currentConfig.chainDefinition}\`;
+const originalData = \`${this.currentConfig.DefStr.replace( '\\n', '\\\\n' ).replace( '\n', '\\n' ) + this.currentConfig.chainDefinition}\`;
 const expectedHash = "${value}";
 
 // 计算哈希值 (异步函数)
@@ -885,8 +885,7 @@ console.log('解码结果:', decoded);`;
      */
     async runFloatingVerification(floatingDiv, fullValue, dataType) {
         const resultElement = floatingDiv.querySelector('#floating-verify-result');
-        if (!resultElement) return; eturn;
-
+        if (!resultElement) return;
         resultElement.innerHTML = `<div class="alert alert-info">${GetText('verifying')}</div>`;
 
         try {

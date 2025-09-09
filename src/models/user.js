@@ -111,9 +111,9 @@ class User
         const [prevBlock, rootId, _, lastUId] = this.LastSend;
         const TargetUid = new Set( [...this.constructor.All.keys()].filter( k => k != this.Id && k != lastUId )).RandVal();
         const TransBlock = await this.SendBlockchain( prevBlock, rootId, dida, TargetUid );
-        const SrcPeers = [...this.Peers.values()];
-        window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: rootId, block: TransBlock.Id, content: 'Double Spend by ' + SrcPeers.map( p => p.Id ).join( ',' ) + ' to target user' + TargetUid.slice( 0, 8 ) + '...', category: 'user' } );
-        this.StartTransing( TransBlock, dida, SrcPeers );
+        const SrcPeerKs = Peer.GetOther( 1, [...this.Peers.keys()] );
+        window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: rootId, block: TransBlock.Id, content: 'Double Spend by ' + SrcPeerKs.join( ',' ) + ' to target user' + TargetUid.slice( 0, 8 ) + '...', category: 'user' } );
+        Peer.StartTransing( TransBlock, dida, SrcPeerKs );
     }
     
     SendBlockchain( prevBlock, rootId, dida, targetUId )
@@ -127,33 +127,20 @@ class User
     async Transfer( dida, chain, targetUId )
     {
         console.log( 'User.Transfer', dida, chain.Id, targetUId );
-        const PrevBlocks = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( b => b );
+        const PrevBlocks = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( b => b && b.Status === 0 );
         const s = new Set( PrevBlocks.map( b => b.Id ));
         if( s.size === 1 )
         {
             const TransBlock = await this.SendBlockchain( PrevBlocks[0], chain.Id, dida, targetUId );
-            const SrcPeers = [...this.Peers.values()];
-            window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block by ' + SrcPeers.map( p => p.Id ).join( ',' ) + ' to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
-            this.StartTransing( TransBlock, dida, SrcPeers );
+            const SrcPeerKs = [...this.Peers.keys()];
+            window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block by ' + SrcPeerKs.join( ',' ) + ' to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
+            Peer.StartTransing( TransBlock, dida, SrcPeerKs );
         }
         else
         {
             console.error( s.size > 1 ? 'got multi tails.' : 'no tails.' );
         }
     };
-    
-    StartTransing( block, dida, srcPeers )
-    {
-        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.TransData(),
-                            color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
-        srcPeers.forEach( p =>
-        {
-            p.AcceptBlockchain( block );
-            p.Broadcast( TransMsg, dida )
-        } );
-        
-        window.app.NetWorkPanal.UpdateTrans( srcPeers.map( p => [p.Id, TransMsg.color] ), [] );
-    }
     
     //RecvBlockchain( block )
     //{

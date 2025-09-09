@@ -48,10 +48,10 @@ class HelpTabContent {
                     <ul class="help-nav">
                         <li><a href="#overview" class="help-nav-link">概述</a></li>
                         <li><a href="#getting-started" class="help-nav-link">快速开始</a></li>
-                        <li><a href="#system-controls" class="help-nav-link">系统控制</a></li>
-                        <li><a href="#network-settings" class="help-nav-link">网络设置</a></li>
+                        <li><a href="#systemctrls" class="help-nav-link">系统控制</a></li>
+                        <li><a href="#networksettings" class="help-nav-link">网络设置</a></li>
                         <li><a href="#blockchain-definition" class="help-nav-link">区块链定义</a></li>
-                        <li><a href="#runtime-controls" class="help-nav-link">运行时控制</a></li>
+                        <li><a href="#runtimectrls" class="help-nav-link">运行时控制</a></li>
                         <li><a href="#network-view" class="help-nav-link">网络视图</a></li>
                         <li><a href="#users-view" class="help-nav-link">用户视图</a></li>
                         <li><a href="#blockchain-view" class="help-nav-link">区块链视图</a></li>
@@ -85,7 +85,7 @@ class HelpTabContent {
                         </ol>
                     </section>
                     
-                    <section id="system-controls" class="help-section">
+                    <section id="systemctrls" class="help-section">
                         <h2>系统控制</h2>
                         <p>位于控制面板顶部的系统控制按钮用于管理模拟系统的运行状态。</p>
                         
@@ -105,7 +105,7 @@ class HelpTabContent {
                         </div>
                     </section>
                     
-                    <section id="network-settings" class="help-section">
+                    <section id="networksettings" class="help-section">
                         <h2>网络设置</h2>
                         <p>配置P2P网络的基本参数，这些设置在系统启动前可以修改。</p>
                         
@@ -160,7 +160,7 @@ class HelpTabContent {
                         </div>
                     </section>
                     
-                    <section id="runtime-controls" class="help-section">
+                    <section id="networksettings" class="help-section">
                         <h2>运行时控制</h2>
                         <p>系统运行时可以调整的参数，用于控制模拟的速度和行为。</p>
                         

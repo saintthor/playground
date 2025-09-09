@@ -300,7 +300,7 @@ class App {
         }
 
         // 停止自动转账
-        this.stopAutoTransfer();
+        //this.stopAutoTransfer();
         
         // 停止滴答计数器
         this.stopTickCounter();
@@ -405,10 +405,10 @@ class App {
      * @returns {void}
      * @todo 实现实际的攻击模拟逻辑
      */
-    simulateAttack(userId) {
-        console.log('模拟分叉攻击:', userId);
-        // 这里将来会实现实际的攻击模拟逻辑
-    }
+    //simulateAttack(userId) {
+        //console.log('模拟分叉攻击:', userId);
+        //// 这里将来会实现实际的攻击模拟逻辑
+    //}
 
     /**
      * 处理用户选择事件
@@ -420,9 +420,9 @@ class App {
      * @returns {void}
      * @deprecated 使用重载版本的 handleUserSelection 方法
      */
-    handleUserSelection(userId) {
-        console.log('应用处理用户选择:', userId);
-    }
+    //handleUserSelection(userId) {
+        //console.log('应用处理用户选择:', userId);
+    //}
 
     /**
      * 处理区块链选择事件
@@ -483,6 +483,8 @@ class App {
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all ' + this.BlockChainNum, content: 'blockchains created.', category: 'blockchain' } );
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;
+        Peer.ResetBrcTicks( config.maxConnections );
+        
         this.AllUsers.values().forEach( u =>  // live in peers
         {
             for( let n = config.userNodeNum; n > 0; )
@@ -603,17 +605,17 @@ class App {
     /**
      * 处理用户选择（更新版本）
      */
-    handleUserSelection(userId) {
-        console.log('应用处理用户选择:', userId);
-        this.selectedUser = userId;
-        this.selectedChain = null;
+    //handleUserSelection(userId) {
+        //console.log('应用处理用户选择:', userId);
+        //this.selectedUser = userId;
+        //this.selectedChain = null;
 
-        // 可以在这里添加日志过滤逻辑
-        if (this.uiManager.panels.log) {
-            // 过滤显示与该用户相关的日志
-            // this.uiManager.panels.log.filterByUser(userId);
-        }
-    }
+        //// 可以在这里添加日志过滤逻辑
+        //if (this.uiManager.panels.log) {
+            //// 过滤显示与该用户相关的日志
+            //// this.uiManager.panels.log.filterByUser(userId);
+        //}
+    //}
 
     /**
      * 处理区块链选择（更新版本）
@@ -633,115 +635,115 @@ class App {
     /**
      * 启动自动转账模拟
      */
-    startAutoTransfer() {
-        if (this.autoTransferInterval) {
-            clearInterval(this.autoTransferInterval);
-        }
+    //startAutoTransfer() {
+        //if (this.autoTransferInterval) {
+            //clearInterval(this.autoTransferInterval);
+        //}
 
-        this.autoTransferInterval = setInterval(() => {
-            if (!this.isRunning || this.isPaused) return;
+        //this.autoTransferInterval = setInterval(() => {
+            //if (!this.isRunning || this.isPaused) return;
 
-            // 根据支付速率决定是否进行转账
-            if (Math.random() < this.config.paymentRate) {
-                this.simulateTransfer();
-            }
-        }, this.config.tickInterval || 200);
-    }
+            //// 根据支付速率决定是否进行转账
+            //if (Math.random() < this.config.paymentRate) {
+                //this.simulateTransfer();
+            //}
+        //}, this.config.tickInterval || 200);
+    //}
 
     /**
      * 模拟转账操作
      */
-    simulateTransfer() {
-        const users = Array.from(this.AllUsers.keys());
-        if (users.length < 2) return;
+    //simulateTransfer() {
+        //const users = Array.from(this.AllUsers.keys());
+        //if (users.length < 2) return;
 
-        // 随机选择发送者
-        const senderUserId = users[Math.floor(Math.random() * users.length)];
-        const sender = this.AllUsers.get(senderUserId);
+        //// 随机选择发送者
+        //const senderUserId = users[Math.floor(Math.random() * users.length)];
+        //const sender = this.AllUsers.get(senderUserId);
         
-        if (!sender || sender.ownedChains.length === 0) return;
+        //if (!sender || sender.ownedChains.length === 0) return;
 
-        // 随机选择接收者（不能是自己）
-        const receivers = users.filter(id => id !== senderUserId);
-        const receiverUserId = receivers[Math.floor(Math.random() * receivers.length)];
-        const receiver = this.AllUsers.get(receiverUserId);
+        //// 随机选择接收者（不能是自己）
+        //const receivers = users.filter(id => id !== senderUserId);
+        //const receiverUserId = receivers[Math.floor(Math.random() * receivers.length)];
+        //const receiver = this.AllUsers.get(receiverUserId);
 
-        if (!receiver) return;
+        //if (!receiver) return;
 
-        // 随机选择要转移的区块链
-        const chainToTransfer = sender.ownedChains[Math.floor(Math.random() * sender.ownedChains.length)];
-        const chain = this.mockChains.get(chainToTransfer.chainId);
+        //// 随机选择要转移的区块链
+        //const chainToTransfer = sender.ownedChains[Math.floor(Math.random() * sender.ownedChains.length)];
+        //const chain = this.mockChains.get(chainToTransfer.chainId);
 
-        if (!chain) return;
+        //if (!chain) return;
 
-        // 标记为转移中
-        sender.isTransferring = true;
-        chain.isTransferring = true;
+        //// 标记为转移中
+        //sender.isTransferring = true;
+        //chain.isTransferring = true;
 
-        // 记录日志
-        if (this.uiManager.panels.log) {
-            this.uiManager.panels.log.addLog('block', 
-                `${senderUserId} 向 ${receiverUserId} 转移区块链 (面值: ${chainToTransfer.value})`,
-                { senderId: senderUserId, receiverId: receiverUserId, chainId: chainToTransfer.chainId }
-            );
-        }
+        //// 记录日志
+        //if (this.uiManager.panels.log) {
+            //this.uiManager.panels.log.addLog('block', 
+                //`${senderUserId} 向 ${receiverUserId} 转移区块链 (面值: ${chainToTransfer.value})`,
+                //{ senderId: senderUserId, receiverId: receiverUserId, chainId: chainToTransfer.chainId }
+            //);
+        //}
 
         // 模拟网络延迟后完成转账
-        setTimeout(() => {
-            this.completeTransfer(senderUserId, receiverUserId, chainToTransfer.chainId);
-        }, Math.random() * 2000 + 500); // 0.5-2.5秒延迟
-    }
+        //setTimeout(() => {
+            //this.completeTransfer(senderUserId, receiverUserId, chainToTransfer.chainId);
+        //}, Math.random() * 2000 + 500); // 0.5-2.5秒延迟
+    //}
 
     /**
      * 完成转账操作
      */
-    completeTransfer(senderUserId, receiverUserId, chainId) {
-        const sender = this.AllUsers.get(senderUserId);
-        const receiver = this.AllUsers.get(receiverUserId);
-        const chain = this.mockChains.get(chainId);
+    //completeTransfer(senderUserId, receiverUserId, chainId) {
+        //const sender = this.AllUsers.get(senderUserId);
+        //const receiver = this.AllUsers.get(receiverUserId);
+        //const chain = this.mockChains.get(chainId);
 
-        if (!sender || !receiver || !chain) return;
+        //if (!sender || !receiver || !chain) return;
 
-        // 从发送者移除区块链
-        sender.ownedChains = sender.ownedChains.filter(c => c.chainId !== chainId);
-        sender.totalAssets = sender.ownedChains.reduce((total, c) => total + c.value, 0);
-        sender.chainCount = sender.ownedChains.length;
+        //// 从发送者移除区块链
+        //sender.ownedChains = sender.ownedChains.filter(c => c.chainId !== chainId);
+        //sender.totalAssets = sender.ownedChains.reduce((total, c) => total + c.value, 0);
+        //sender.chainCount = sender.ownedChains.length;
 
-        // 添加到接收者
-        receiver.ownedChains.push({
-            chainId: chainId,
-            serialNumber: chain.serialNumber,
-            value: chain.value
-        });
-        receiver.totalAssets = receiver.ownedChains.reduce((total, c) => total + c.value, 0);
-        receiver.chainCount = receiver.ownedChains.length;
+        //// 添加到接收者
+        //receiver.ownedChains.push({
+            //chainId: chainId,
+            //serialNumber: chain.serialNumber,
+            //value: chain.value
+        //});
+        //receiver.totalAssets = receiver.ownedChains.reduce((total, c) => total + c.value, 0);
+        //receiver.chainCount = receiver.ownedChains.length;
 
-        // 更新区块链所有者
-        chain.ownerUserId = receiverUserId;
-        chain.ownerId = receiver.publicKey;
+        //// 更新区块链所有者
+        //chain.ownerUserId = receiverUserId;
+        //chain.ownerId = receiver.publicKey;
 
-        // 清除转移状态
-        sender.isTransferring = false;
-        chain.isTransferring = false;
+        //// 清除转移状态
+        //sender.isTransferring = false;
+        //chain.isTransferring = false;
 
-        // 记录完成日志
-        if (this.uiManager.panels.log) {
-            this.uiManager.panels.log.addLog('block', 
-                `转账完成: ${chainId} 已转移至 ${receiverUserId}`,
-                { senderId: senderUserId, receiverId: receiverUserId, chainId: chainId }
-            );
-        }
-    }
+        //// 记录完成日志
+        //if (this.uiManager.panels.log) {
+            //this.uiManager.panels.log.addLog('block', 
+                //`转账完成: ${chainId} 已转移至 ${receiverUserId}`,
+                //{ senderId: senderUserId, receiverId: receiverUserId, chainId: chainId }
+            //);
+        //}
+    //}
 
     /**
      * 停止自动转账
      */
-    stopAutoTransfer() {
-        if (this.autoTransferInterval) {
-            clearInterval(this.autoTransferInterval);
-            this.autoTransferInterval = null;
-        }
-    }
+    //stopAutoTransfer() {
+        //if (this.autoTransferInterval) {
+            //clearInterval(this.autoTransferInterval);
+            //this.autoTransferInterval = null;
+        //}
+    //}
 
     /**
      * 启动滴答计数器

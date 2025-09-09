@@ -16,12 +16,12 @@ class MainPanel {
         this.tabManager = null;
     }
     
-    init( )
+    init()
     {
         try
         {
-            this.render( );
-            this.initTabMgr( );
+            this.render();
+            this.initTabMgr();
             this.isInitialized = true;
             console.log( 'MainPanel 初始化完成' );
         }
@@ -34,7 +34,7 @@ class MainPanel {
     /**
      * 初始化标签页管理器
      */
-    initTabMgr( )
+    initTabMgr()
     {
         try
         {
@@ -42,7 +42,7 @@ class MainPanel {
             this.tabManager = new TabManager( this );
             
             // 初始化标签页管理器
-            this.tabManager.init( );
+            this.tabManager.init();
             
             console.log( 'TabManager 已集成到 MainPanel' );
         }
@@ -52,7 +52,7 @@ class MainPanel {
         }
     }
     
-    render( )
+    render()
     {
         const mainPanel = document.getElementById( 'main-panel' );
         if( !mainPanel ) return;
@@ -65,8 +65,8 @@ class MainPanel {
             <div class="main-panel-tabs">
                 <div class="tab-header">
                     <div class="tab-actions">
-                        <button class="btn btn-primary btn-sm" id="send-btn">发送</button>
-                        <button class="btn btn-danger btn-sm" id="attack-btn">攻击</button>
+                        <button class="btn btn-primary btn-sm" id="send-btn" data-text="tranfer" onclick="window.mainPanel.Transfer()">发送</button>
+                        <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">攻击</button>
                     </div>
                     <div class="tab-buttons">
                         <button class="tab-button" data-tab="help">帮助</button>
@@ -153,6 +153,36 @@ class MainPanel {
         this.lastData = this.cloneData( data );
     }
     
+    Transfer()
+    {
+        let TargetChain = this.tabManager.chainsTabContent.GetSelected();
+        if( !TargetChain )
+        {
+            const SrcUser = this.tabManager.usersTabContent.GetSelected();
+            TargetChain = SrcUser?.RandChain || this.app.AllBlockchains.RandVal();
+        }
+        //console.log( TargetChain );
+        window.LogPanel.AddLog( { dida: this.app.Tick, blockchain: TargetChain.Id, content: 'start transfer.', category: 'blockchain' } );
+        const UserIds = [...this.app.AllUsers.keys()].filter( uid => uid != TargetChain.Owner.Id );
+        if( UserIds.length > 0 )
+        {
+            const idx = Math.floor( Math.random() * UserIds.length );
+            TargetChain.Owner.Transfer( this.app.Tick, TargetChain, UserIds[idx] );     
+            this.LastTransUser = TargetChain.Owner;
+        } 
+    }
+    
+    Attack()
+    {
+        if( !this.LastTransUser )
+        {
+            console.log( 'transfer once before attacking.' );
+            return;
+        }
+        this.LastTransUser.DoubleSpend( this.app.Tick );
+     }
+
+
     /**
      * 深度克隆数据用于增量更新比较
      * @param {Object} data - 要克隆的数据
@@ -605,7 +635,7 @@ class MainPanel {
         console.log('显示用户详情:', publicKey);
         
         // 获取用户数据（用户ID就是公钥）
-        const userData = this.app.mockUsers.get(publicKey);
+        const userData = this.app.AllUsers.get(publicKey);
         if (!userData) {
             alert('用户数据未找到');
             return;
