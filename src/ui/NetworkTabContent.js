@@ -32,11 +32,11 @@ class NetworkTabContent {
         
         if( !allPeers ) {
             statsContainer.innerHTML = `
-                <span class="network-stat">节点: 0</span>
-                <span class="network-stat">连接: 0</span>
-                <span class="network-stat">故障: 0</span>
+                <span class="network-stat">${GetText('node_label')}: 0</span>
+                <span class="network-stat">${GetText('connections_label')}: 0</span>
+                <span class="network-stat">${GetText('failures_label')}: 0</span>
             `;
-            visualContainer.innerHTML = '<p class="text-muted">暂无网络数据</p>';
+            visualContainer.innerHTML = `<p class="text-muted">${GetText('no_network_data_to_display')}</p>`;
             this.networkGraphInitialized = false;
             return;
         }
@@ -53,14 +53,14 @@ class NetworkTabContent {
         // 更新统计信息
         const ConnNum = nodeCount > 0 ? [...allPeers.values()].map( p => p.Connections.size ).reduce(( a, b ) => a + b ) / 2 : 0;
         statsContainer.innerHTML = `
-            <span class="network-stat">节点: ${ nodeCount }</span>
-            <span class="network-stat">连接: ${ ConnNum || 0 }</span>
-            <span class="network-stat">故障: </span>
+            <span class="network-stat">${GetText('node_label')}: ${ nodeCount }</span>
+            <span class="network-stat">${GetText('connections_label')}: ${ ConnNum || 0 }</span>
+            <span class="network-stat">${GetText('failures_label')}: </span>
         `;
         
         // 如果节点数为0，显示系统未启动状态
         if (nodeCount === 0) {
-            visualContainer.innerHTML = '<p class="text-muted">系统未启动</p>';
+            visualContainer.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
             this.networkGraphInitialized = false;
             return;
         }
@@ -118,14 +118,14 @@ class NetworkTabContent {
     {
         const container = document.getElementById( 'd3-network-container' );
         if (!container) {
-            console.error('D3网络图容器未找到');
+            console.error(GetText('d3_container_not_found'));
             return;
         }
         
         // 检查D3是否可用
         if (typeof d3 === 'undefined') {
-            console.error('D3.js 未加载');
-            container.innerHTML = '<div class="network-placeholder">D3.js 未加载</div>';
+            console.error(GetText('d3_not_loaded'));
+            container.innerHTML = `<div class="network-placeholder">${GetText('d3_not_loaded_placeholder')}</div>`;
             return;
         }
         
@@ -316,7 +316,7 @@ class NetworkTabContent {
     showNodeDetails(nodeId) {
         const detailsContainer = document.getElementById('node-details-container');
         if (!detailsContainer) {
-            console.error('节点详情容器未找到');
+            console.error(GetText('node_details_container_not_found'));
             return;
         }
         
@@ -325,7 +325,7 @@ class NetworkTabContent {
             const nodeData = this.getNodeData(nodeId);
             
             if (!nodeData) {
-                detailsContainer.innerHTML = '<p class="text-muted">未选择节点</p>';
+                detailsContainer.innerHTML = `<p class="text-muted">${GetText('no_node_selected')}</p>`;
                 return;
             }
             
@@ -340,7 +340,7 @@ class NetworkTabContent {
             
         } catch (error) {
             console.error('显示节点详情失败:', error);
-            detailsContainer.innerHTML = '<p class="text-danger">显示节点详情时发生错误</p>';
+            detailsContainer.innerHTML = `<p class="text-danger">${GetText('error_showing_node_details')}</p>`;
         }
     }
     
@@ -451,8 +451,8 @@ class NetworkTabContent {
         return `
             <div class="node-details">
                 <div class="node-details-header">
-                    <h5>节点详情 - ${nodeData.nodeName}</h5>
-                    <span class="node-id">ID: ${nodeId}</span>
+                    <h5>${GetText('node_details_title')} ${nodeData.nodeName}</h5>
+                    <span class="node-id">${GetText('chain_id_label')} ${nodeId}</span>
                 </div>
                 
                 <!--div class="node-stats">
@@ -471,29 +471,29 @@ class NetworkTabContent {
                 </div-->
                 
                 <div class="node-users-section">
-                    <h6>节点用户 (${nodeData.users.length})</h6>
+                    <h6>${GetText('node_users_title')} (${nodeData.users.length})</h6>
                     <div class="users-list">
                         ${nodeData.users.length > 0 ? nodeData.users.map(user => `
                             <div class="user-item" onclick0="window.mainPanel.showUserDetails('${user.Id}')"  onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${user.Id}'), 100);">
-                                <span class="user-display">用户&emsp;<span style="font-size: smaller;">${user.Id.slice( 0, 17 ) + '...'}</span></span>
-                                <span class="user-assets">${user.GetAssets()} 资产</span>
+                                <span class="user-display">${GetText('user')}&emsp;<span style="font-size: smaller;">${user.Id.slice( 0, 17 ) + '...'}</span></span>
+                                <span class="user-assets">${user.GetAssets()} ${GetText('assets')}</span>
                             </div>
-                        `).join('') : '<p class="text-muted">该节点暂无用户</p>'}
+                        `).join('') : `<p class="text-muted">${GetText('no_users')}</p>`}
                     </div>
                 </div>
                 
                 <div class="node-connections-section">
-                    <h6>节点连接 (${nodeData.connections.length})</h6>
+                    <h6>${GetText('node_connections')} (${nodeData.connections.length})</h6>
                     <div class="connections-list">
                         ${nodeData.connections.length > 0 ? nodeData.connections.map(conn => `
                             <div class="connection-item active">
-                                <span class="connection-target">邻接节点&ensp;${conn[0].Id}</span>
-                                <span class="connection-latency">${conn[1]} 滴答</span>
+                                <span class="connection-target">${GetText('adjoining_node')}&ensp;${conn[0].Id}</span>
+                                <span class="connection-latency">${conn[1]} ${GetText('ticks')}</span>
                                 <!--span class="connection-status ${conn.isActive ? 'status-active' : 'status-inactive'}">
-                                    ${conn.isActive ? '正常' : '故障'}
+                                    ${conn.isActive ? GetText('status_normal') : GetText('status_faulty')}
                                 </span-->
                             </div>
-                        `).join('') : '<p class="text-muted">该节点暂无连接</p>'}
+                        `).join('') : `<p class="text-muted">${GetText('no_connections')}</p>`}
                     </div>
                 </div>
             </div>
@@ -519,7 +519,7 @@ class NetworkTabContent {
         
         const detailsContainer = document.getElementById('node-details-container');
         if (detailsContainer) {
-            detailsContainer.innerHTML = '<p class="text-muted">请点击网络图上的节点查看详情</p>';
+            detailsContainer.innerHTML = `<p class="text-muted">${GetText('click_node_prompt')}</p>`;
             detailsContainer.classList.remove('has-content');
         }
     }
@@ -569,14 +569,14 @@ class NetworkTabContent {
         
         if (statsContainer) {
             statsContainer.innerHTML = `
-                <span class="network-stat">节点: 0</span>
-                <span class="network-stat">连接: 0</span>
-                <span class="network-stat">故障: 0</span>
+                <span class="network-stat">${GetText('node_label')}: 0</span>
+                <span class="network-stat">${GetText('connections_label')}: 0</span>
+                <span class="network-stat">${GetText('failures_label')}: 0</span>
             `;
         }
         
         if (visualContainer) {
-            visualContainer.innerHTML = '<p class="text-muted">系统未启动</p>';
+            visualContainer.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
         }
     }
     

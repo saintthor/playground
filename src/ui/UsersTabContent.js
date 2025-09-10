@@ -22,12 +22,12 @@ class UsersTabContent {
     renderUsersGrid(userData) {
         const container = document.getElementById('users-container');
         if (!container) {
-            console.error('用户容器未找到');
+            console.error(GetText('users_container_not_found'));
             return;
         }
         
         if (!userData || userData.size === 0) {
-            container.innerHTML = '<p class="text-muted">系统未启动</p>';
+            container.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
             this.usersGridInitialized = false;
             return;
         }
@@ -150,7 +150,7 @@ class UsersTabContent {
     showUserDetails(userId) {
         const detailsContainer = document.getElementById('user-details-container');
         if (!detailsContainer) {
-            console.error('用户详情容器未找到');
+            console.error(GetText('user_details_container_not_found'));
             return;
         }
         
@@ -159,7 +159,7 @@ class UsersTabContent {
             const user = this.app.CurrUser = this.getUserData(userId);
             
             if (!user) {
-                detailsContainer.innerHTML = '<p class="text-muted">用户数据未找到</p>';
+                detailsContainer.innerHTML = `<p class="text-muted">${GetText('user_data_not_found')}</p>`;
                 return;
             }
             
@@ -177,7 +177,7 @@ class UsersTabContent {
             
         } catch (error) {
             console.error('显示用户详情失败:', error);
-            detailsContainer.innerHTML = '<p class="text-danger">显示用户详情时发生错误</p>';
+            detailsContainer.innerHTML = `<p class="text-danger">${GetText('error_showing_user_details')}</p>`;
         }
     }
     
@@ -250,33 +250,33 @@ class UsersTabContent {
         return `
             <div class="user-details">
                 <div class="user-details-header">
-                    <h5>用户详情 - ID: ${this.truncateKey(userId)}</h5>
+                    <h5>${GetText('user_details_title')} ${this.truncateKey(userId)}</h5>
                 </div>
                 
                 <div class="user-basic-info">
-                    <h6>基本信息</h6>
+                    <h6>${GetText('basic_info')}</h6>
                     <div class="detail-info-grid">
                         <div class="detail-info-item">
-                            <span class="detail-info-label">公钥 (用户ID):</span>
+                            <span class="detail-info-label">${GetText('public_key_user_id_label')}</span>
                             <span class="detail-info-value crypto-key" title="${userId}">${this.truncateKey(userId)}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">总资产:</span>
+                            <span class="detail-info-label">${GetText('total_assets_label')}</span>
                             <span class="detail-info-value">${userData.GetAssets() || 0}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">拥有区块链数:</span>
+                            <span class="detail-info-label">${GetText('owned_chains_count_label')}</span>
                             <span class="detail-info-value">${userChains.length || 0}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">所在节点:</span>
+                            <span class="detail-info-label">${GetText('node_location_label')}</span>
                             <span class="detail-info-value">${[...userData.Peers.values()].map(p => `Peer-${p.Id + 1}`).join(', ')}</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="user-chains-section">
-                    <h6>拥有的区块链: (${userChains.length})</h6>
+                    <h6>${GetText('owned_chains_title')} (${userChains.length})</h6>
                     <div class="chains-list">
                         ${userChains.length > 0 ? userChains.map(chain => `
                             <div class="chain-item" onclick="window.mainPanel.tabManager.switchTab('chains'); setTimeout(() => window.mainPanel.showChainDetails('${chain.Id}'), 100);">
@@ -284,7 +284,7 @@ class UsersTabContent {
                                 <span class="chain-value">${chain.FaceVal}</span>
                                 <!--span class="chain-status ${chain.isTransferring ? 'transferring' : ''}"></span-->
                             </div>
-                        `).join('') : '<p class="text-muted">暂无区块链</p>'}
+                        `).join('') : `<p class="text-muted">${GetText('no_chains_owned')}</p>`}
                     </div>
                 </div>
             </div>
@@ -310,7 +310,7 @@ class UsersTabContent {
         
         const detailsContainer = document.getElementById('user-details-container');
         if (detailsContainer) {
-            detailsContainer.innerHTML = '<p class="text-muted">请点击用户缩略图查看详情</p>';
+            detailsContainer.innerHTML = `<p class="text-muted">${GetText('click_user_to_see_details')}</p>`;
             detailsContainer.classList.remove('has-content');
         }
     }
@@ -360,7 +360,7 @@ class UsersTabContent {
         
         const container = document.getElementById('users-container');
         if (container) {
-            container.innerHTML = '<p class="text-muted">系统未启动</p>';
+            container.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
         }
     }
     
@@ -370,7 +370,7 @@ class UsersTabContent {
      * @returns {string} - 前6个字符
      */
     generateKeyPreview(key) {
-        if (!key || key === '未设置' || key === '未知') return '未知';
+        if (!key || key === GetText('not_set') || key === GetText('unknown')) return GetText('unknown');
         if (key.length < 6) return key;
         return key.substring(0, 6);
     }
@@ -381,7 +381,7 @@ class UsersTabContent {
      * @returns {string} - 截断后的密钥
      */
     truncateKey(key) {
-        if (!key || key === '未设置' || key === '未知') return key;
+        if (!key || key === GetText('not_set') || key === GetText('unknown')) return key;
         if (key.length <= 20) return key;
         return key.substring(0, 10) + '...' + key.substring(key.length - 10);
     }
@@ -392,7 +392,7 @@ class UsersTabContent {
      * @returns {string} - 截断后的哈希值
      */
     truncateHash(hash) {
-        if (!hash || hash === '未知') return hash;
+        if (!hash || hash === GetText('unknown')) return hash;
         if (hash.length <= 16) return hash;
         return hash.substring(0, 8) + '...' + hash.substring(hash.length - 8);
     }

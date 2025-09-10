@@ -872,6 +872,200 @@ class Text {
             cn: '选择一个用户进行分叉攻击测试，观察网络如何处理恶意行为。',
             en: 'Select a user to perform fork attack testing and observe how the network handles malicious behavior.'
         });
+
+        // Chains tab content
+        this.textMap.set('chain_data_not_found', {
+            cn: '区块链数据未找到',
+            en: 'Blockchain data not found'
+        });
+        this.textMap.set('error_showing_chain_details', {
+            cn: '显示区块链详情时发生错误',
+            en: 'Error showing chain details'
+        });
+        this.textMap.set('chain_details_title', {
+            cn: '区块链详情',
+            en: 'Chain Details'
+        });
+        this.textMap.set('chain_id_label', {
+            cn: 'ID:',
+            en: 'ID:'
+        });
+        this.textMap.set('basic_info', {
+            cn: '基本信息',
+            en: 'Basic Information'
+        });
+        this.textMap.set('chain_id_root_hash_label', {
+            cn: '区块链ID (根区块哈希):',
+            en: 'Chain ID (Root Block Hash):'
+        });
+        this.textMap.set('owner_public_key_label', {
+            cn: '拥有者公钥:',
+            en: 'Owner Public Key:'
+        });
+        this.textMap.set('owner_label', {
+            cn: '拥有者:',
+            en: 'Owner:'
+        });
+        this.textMap.set('unknown_user', {
+            cn: '未知用户',
+            en: 'Unknown User'
+        });
+        this.textMap.set('view_details_link', {
+            cn: '(查看详情)',
+            en: '(View Details)'
+        });
+        this.textMap.set('current_value_label', {
+            cn: '当前价值:',
+            en: 'Current Value:'
+        });
+        this.textMap.set('block_count_label', {
+            cn: '区块数量:',
+            en: 'Block Count:'
+        });
+        this.textMap.set('root_block_info_title', {
+            cn: '根区块信息',
+            en: 'Root Block Information'
+        });
+        this.textMap.set('chain_root_block_id_label', {
+            cn: '区块链/根区块 ID:',
+            en: 'Chain/Root Block ID:'
+        });
+        this.textMap.set('unknown', {
+            cn: '未知',
+            en: 'Unknown'
+        });
+        this.textMap.set('subsequent_blocks_title', {
+            cn: '后续区块',
+            en: 'Subsequent Blocks'
+        });
+        this.textMap.set('root_block', {
+            cn: '根区块',
+            en: 'Root Block'
+        });
+        this.textMap.set('payment_block', {
+            cn: '支付区块',
+            en: 'Payment Block'
+        });
+        this.textMap.set('no_block_data', {
+            cn: '暂无区块数据',
+            en: 'No block data available'
+        });
+        this.textMap.set('click_chain_to_see_details', {
+            cn: '请点击区块链缩略图查看详情',
+            en: 'Please click a chain thumbnail to see details'
+        });
+        this.textMap.set('chains_container_not_found', {
+            cn: '区块链容器未找到',
+            en: 'Chains container not found'
+        });
+        this.textMap.set('chain_details_container_not_found', {
+            cn: '区块链详情容器未找到',
+            en: 'Chain details container not found'
+        });
+        this.textMap.set('not_set', {
+            cn: '未设置',
+            en: 'Not set'
+        });
+
+        // Users tab content
+        this.textMap.set('users_container_not_found', {
+            cn: '用户容器未找到',
+            en: 'Users container not found'
+        });
+        this.textMap.set('user_details_container_not_found', {
+            cn: '用户详情容器未找到',
+            en: 'User details container not found'
+        });
+        this.textMap.set('user_data_not_found', {
+            cn: '用户数据未找到',
+            en: 'User data not found'
+        });
+        this.textMap.set('error_showing_user_details', {
+            cn: '显示用户详情时发生错误',
+            en: 'Error showing user details'
+        });
+        this.textMap.set('user_details_title', {
+            cn: '用户详情 - ID:',
+            en: 'User Details - ID:'
+        });
+        this.textMap.set('public_key_user_id_label', {
+            cn: '公钥 (用户ID):',
+            en: 'Public Key (User ID):'
+        });
+        this.textMap.set('total_assets_label', {
+            cn: '总资产:',
+            en: 'Total Assets:'
+        });
+        this.textMap.set('owned_chains_count_label', {
+            cn: '拥有区块链数:',
+            en: 'Owned Chains:'
+        });
+        this.textMap.set('node_location_label', {
+            cn: '所在节点:',
+            en: 'Located at Node:'
+        });
+        this.textMap.set('owned_chains_title', {
+            cn: '拥有的区块链:',
+            en: 'Owned Blockchains:'
+        });
+        this.textMap.set('no_chains_owned', {
+            cn: '暂无区块链',
+            en: 'No blockchains owned'
+        });
+        this.textMap.set('click_user_to_see_details', {
+            cn: '请点击用户缩略图查看详情',
+            en: 'Please click a user thumbnail to see details'
+        });
+
+        // Network tab content
+        this.textMap.set('node_label', {
+            cn: '节点',
+            en: 'Node'
+        });
+        this.textMap.set('connections_label', {
+            cn: '连接',
+            en: 'Connections'
+        });
+        this.textMap.set('failures_label', {
+            cn: '故障',
+            en: 'Failures'
+        });
+        this.textMap.set('no_network_data_to_display', {
+            cn: '暂无网络数据',
+            en: 'No network data to display'
+        });
+        this.textMap.set('d3_container_not_found', {
+            cn: 'D3网络图容器未找到',
+            en: 'D3 network graph container not found'
+        });
+        this.textMap.set('d3_not_loaded_placeholder', {
+            cn: 'D3.js 未加载',
+            en: 'D3.js not loaded'
+        });
+        this.textMap.set('node_details_container_not_found', {
+            cn: '节点详情容器未找到',
+            en: 'Node details container not found'
+        });
+        this.textMap.set('no_node_selected', {
+            cn: '未选择节点',
+            en: 'No node selected'
+        });
+        this.textMap.set('error_showing_node_details', {
+            cn: '显示节点详情时发生错误',
+            en: 'Error showing node details'
+        });
+        this.textMap.set('node_details_title', {
+            cn: '节点详情 -',
+            en: 'Node Details -'
+        });
+        this.textMap.set('node_users_title', {
+            cn: '节点用户',
+            en: 'Node Users'
+        });
+        this.textMap.set('adjoining_node', {
+            cn: '邻接节点',
+            en: 'Adjoining Node'
+        });
     }
     
     /**

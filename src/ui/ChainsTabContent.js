@@ -23,7 +23,7 @@ class ChainsTabContent {
         //console.log( chainData.size, BlockChain.All.size );
         const container = document.getElementById('chains-container');
         if (!container) {
-            console.error('区块链容器未找到');
+            console.error(GetText('chains_container_not_found'));
             return;
         }
         
@@ -160,7 +160,7 @@ class ChainsTabContent {
     showChainDetails(chainId) {
         const detailsContainer = document.getElementById('chain-details-container');
         if (!detailsContainer) {
-            console.error('区块链详情容器未找到');
+            console.error(GetText('chain_details_container_not_found'));
             return;
         }
         
@@ -169,7 +169,7 @@ class ChainsTabContent {
             const chainData = this.AllChains.get( chainId );
             
             if (!chainData) {
-                detailsContainer.innerHTML = '<p class="text-muted">区块链数据未找到</p>';
+                detailsContainer.innerHTML = `<p class="text-muted">${GetText('chain_data_not_found')}</p>`;
                 return;
             }
             
@@ -190,7 +190,7 @@ class ChainsTabContent {
             
         } catch (error) {
             console.error('显示区块链详情失败:', error);
-            detailsContainer.innerHTML = '<p class="text-danger">显示区块链详情时发生错误</p>';
+            detailsContainer.innerHTML = `<p class="text-danger">${GetText('error_showing_chain_details')}</p>`;
         }
     }
     
@@ -285,15 +285,15 @@ class ChainsTabContent {
         return `
             <div class="chain-details">
                 <div class="chain-details-header">
-                    <h5>区块链详情</h5>
-                    <span class="chain-id">ID: ${this.truncateHash( chainData.Id )}</span>
+                    <h5>${GetText('chain_details_title')}</h5>
+                    <span class="chain-id">${GetText('chain_id_label')} ${this.truncateHash( chainData.Id )}</span>
                 </div>
                 
                 <div class="chain-basic-info">
-                    <h6>基本信息</h6>
+                    <h6>${GetText('basic_info')}</h6>
                     <div class="detail-info-grid">
                         <div class="detail-info-item">
-                            <span class="detail-info-label">区块链ID (根区块哈希):</span>
+                            <span class="detail-info-label">${GetText('chain_id_root_hash_label')}</span>
                             <span class="detail-info-value crypto-hash" title="${chainId}">${this.truncateHash(chainData.Id)}</span>
                         </div>
                         <!--div class="detail-info-item">
@@ -301,22 +301,22 @@ class ChainsTabContent {
                             <span class="detail-info-value">链${chainData.displayNumber || '?'}</span>
                         </div-->
                         <div class="detail-info-item">
-                            <span class="detail-info-label">拥有者公钥:</span>
-                            <span class="detail-info-value crypto-key" title="${ownerData.Id || '未知'}">${this.truncateKey(ownerData.Id || '未知')}</span>
+                            <span class="detail-info-label">${GetText('owner_public_key_label')}</span>
+                            <span class="detail-info-value crypto-key" title="${ownerData.Id || GetText('unknown')}">${this.truncateKey(ownerData.Id || GetText('unknown'))}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">拥有者:</span>
+                            <span class="detail-info-label">${GetText('owner_label')}</span>
                             <span class="detail-info-value">
-                                ${ownerData ? `用户${ ownerData.Id.slice( 0, 15 ) }` : '未知用户'}
-                                ${ownerData ? `<span class="owner-link" onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${ownerData.Id}'), 100);">(查看详情)</span>` : ''}
+                                ${ownerData ? `${GetText('user')}${ ownerData.Id.slice( 0, 15 ) }` : GetText('unknown_user')}
+                                ${ownerData ? `<span class="owner-link" onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${ownerData.Id}'), 100);">${GetText('view_details_link')}</span>` : ''}
                             </span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">当前价值:</span>
+                            <span class="detail-info-label">${GetText('current_value_label')}</span>
                             <span class="detail-info-value">${chainData.FaceVal || 0}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">区块数量:</span>
+                            <span class="detail-info-label">${GetText('block_count_label')}</span>
                             <span class="detail-info-value">${chainData.BlockNum }</span>
                         </div>
                         <!--div class="detail-info-item">
@@ -328,21 +328,21 @@ class ChainsTabContent {
                 
                 ${ true ? `
                 <div class="root-block-section">
-                    <h6>根区块信息</h6>
+                    <h6>${GetText('root_block_info_title')}</h6>
                     <div class="block-info">
                         <div class="detail-info-grid">
                             <!--div class="detail-info-item">
                                 <span class="detail-info-label">滴答时间:</span>
-                                <span class="detail-info-value">滴答 ${chainData.Root.Tick || '未知'}</span>
+                                <span class="detail-info-value">滴答 ${chainData.Root.Tick || GetText('unknown')}</span>
                             </div-->
                             <div class="detail-info-item">
-                                <span class="detail-info-label">区块链/根区块 ID:</span>
-                                <span class="detail-info-value crypto-hash" title="${chainData.Id || '未知'}">${chainData.Id || '未知'}</span>
+                                <span class="detail-info-label">${GetText('chain_root_block_id_label')}</span>
+                                <span class="detail-info-value crypto-hash" title="${chainData.Id || GetText('unknown')}">${chainData.Id || GetText('unknown')}</span>
                             </div>
                             <div class="detail-info-item">
                                 <!--span class="detail-info-label">数据</span-->
                                 <span class="detail-info-value">
-                                    <pre style="font-size: 0.8rem; margin: 0; white-space: pre-wrap;">${chainData.Root.Content || '未知'}</pre>
+                                    <pre style="font-size: 0.8rem; margin: 0; white-space: pre-wrap;">${chainData.Root.Content || GetText('unknown')}</pre>
                                 </span>
                             </div>
                         </div>
@@ -351,25 +351,25 @@ class ChainsTabContent {
                 ` : ''}
                 
                 <div class="chain-blocks-section">
-                    <h6>后续区块 (${chainData.BlockNum})</h6>
+                    <h6>${GetText('subsequent_blocks_title')} (${chainData.BlockNum})</h6>
                     <div class="blocks-list">
                         ${chainData.BlockNum ? chainData.BlockList.map( block => `
                             <div class="block-item ${block.Index === 0 ? 'root-block' : ''}">
                                 <div class="block-header">
                                     <span class="block-index">#${block.Index}</span>
-                                    <span class="block-type">${block.Index === 0 ? '根区块' : '支付区块'}</span>
+                                    <span class="block-type">${block.Index === 0 ? GetText('root_block') : GetText('payment_block')}</span>
                                 </div>
                                 <div class="block-content">
                                     <!--div class="block-field">
                                         <span class="field-label">类型:</span>
                                         <span class="field-label">时间:</span>
-                                        <span class="field-value">${block.Tick || '未知'} 滴答</span>
-                                        <span class="field-value">${block.type || '未知'}</span>
+                                        <span class="field-value">${block.Tick || GetText('unknown')} 滴答</span>
+                                        <span class="field-value">${block.type || GetText('unknown')}</span>
                                     </div-->
                                     <div class="block-field">
                                         <!--span class="field-label">数据</span-->
                                         <span class="field-value crypto-hash"}">
-                                            <pre style="font-size: 0.7rem; margin: 0; white-space: pre-wrap;">${block.Content || '未知'}</pre>
+                                            <pre style="font-size: 0.7rem; margin: 0; white-space: pre-wrap;">${block.Content || GetText('unknown')}</pre>
                                         </span>
                                     </div>
                                     <!--div class="block-field">
@@ -382,7 +382,7 @@ class ChainsTabContent {
                                     ` : ''}
                                 </div>
                             </div>
-                        `).join('') : '<p class="text-muted">暂无区块数据</p>'}
+                        `).join('') : `<p class="text-muted">${GetText('no_block_data')}</p>`}
                     </div>
                 </div>
             </div>
@@ -408,7 +408,7 @@ class ChainsTabContent {
         
         const detailsContainer = document.getElementById('chain-details-container');
         if (detailsContainer) {
-            detailsContainer.innerHTML = '<p class="text-muted">请点击区块链缩略图查看详情</p>';
+            detailsContainer.innerHTML = `<p class="text-muted">${GetText('click_chain_to_see_details')}</p>`;
             detailsContainer.classList.remove('has-content');
         }
     }
@@ -466,7 +466,7 @@ class ChainsTabContent {
      * @returns {string} - 前6个字符
      */
     generateChainIdPreview(chainId) {
-        if (!chainId || chainId === '未设置' || chainId === '未知') return '未知';
+        if (!chainId || chainId === GetText('not_set') || chainId === GetText('unknown')) return GetText('unknown');
         if (chainId.length < 6) return chainId;
         return chainId.substring(0, 6);
     }
@@ -477,7 +477,7 @@ class ChainsTabContent {
      * @returns {string} - 截断后的密钥
      */
     truncateKey(key) {
-        if (!key || key === '未设置' || key === '未知') return key;
+        if (!key || key === GetText('not_set') || key === GetText('unknown')) return key;
         if (key.length <= 20) return key;
         return key.substring(0, 10) + '...' + key.substring(key.length - 10);
     }
@@ -488,7 +488,7 @@ class ChainsTabContent {
      * @returns {string} - 截断后的哈希值
      */
     truncateHash(hash) {
-        if (!hash || hash === '未知') return hash;
+        if (!hash || hash === GetText('unknown')) return hash;
         if (hash.length <= 16) return hash;
         return hash.substring(0, 8) + '...' + hash.substring(hash.length - 8);
     }
