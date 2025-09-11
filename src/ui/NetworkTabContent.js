@@ -452,7 +452,7 @@ class NetworkTabContent {
             <div class="node-details">
                 <div class="node-details-header">
                     <h5 data-text="node_details_title">${GetText('node_details_title')} ${nodeData.nodeName}</h5>
-                    <span class="node-id" data-text="chain_id_label">${GetText('chain_id_label')} ${nodeId}</span>
+                    <span class="node-id" data-text="node_id_label">${GetText('node_id_label')} ${nodeId}</span>
                 </div>
                 
                 <!--div class="node-stats">
@@ -471,29 +471,29 @@ class NetworkTabContent {
                 </div-->
                 
                 <div class="node-users-section">
-                    <h6>${GetText('node_users_title')} (${nodeData.users.length})</h6>
+                    <h6 data-text="node_users_title">${GetText('node_users_title')} (${nodeData.users.length})</h6>
                     <div class="users-list">
                         ${nodeData.users.length > 0 ? nodeData.users.map(user => `
                             <div class="user-item" onclick0="window.mainPanel.showUserDetails('${user.Id}')"  onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${user.Id}'), 100);">
-                                <span class="user-display">${GetText('user')}&emsp;<span style="font-size: smaller;">${user.Id.slice( 0, 17 ) + '...'}</span></span>
-                                <span class="user-assets">${user.GetAssets()} ${GetText('assets')}</span>
+                                <span class="user-display" data-text="user">${GetText('user')}&emsp;<span style="font-size: smaller;">${user.Id.slice( 0, 17 ) + '...'}</span></span>
+                                <span class="user-assets">${user.GetAssets()} <span data-text="assets">${GetText('assets')}</span></span>
                             </div>
-                        `).join('') : `<p class="text-muted">${GetText('no_users')}</p>`}
+                        `).join('') : `<p class="text-muted" data-text="no_users">${GetText('no_users')}</p>`}
                     </div>
                 </div>
                 
                 <div class="node-connections-section">
-                    <h6>${GetText('node_connections')} (${nodeData.connections.length})</h6>
+                    <h6 data-text="node_connections">${GetText('node_connections')} (${nodeData.connections.length})</h6>
                     <div class="connections-list">
                         ${nodeData.connections.length > 0 ? nodeData.connections.map(conn => `
                             <div class="connection-item active">
-                                <span class="connection-target">${GetText('adjoining_node')}&ensp;${conn[0].Id}</span>
-                                <span class="connection-latency">${conn[1]} ${GetText('ticks')}</span>
+                                <span class="connection-target" data-text="adjoining_node">${GetText('adjoining_node')}&ensp;${conn[0].Id}</span>
+                                <span class="connection-latency">${conn[1]} <span data-text="ticks">${GetText('ticks')}</span></span>
                                 <!--span class="connection-status ${conn.isActive ? 'status-active' : 'status-inactive'}">
                                     ${conn.isActive ? GetText('status_normal') : GetText('status_faulty')}
                                 </span-->
                             </div>
-                        `).join('') : `<p class="text-muted">${GetText('no_connections')}</p>`}
+                        `).join('') : `<p class="text-muted" data-text="no_connections">${GetText('no_connections')}</p>`}
                     </div>
                 </div>
             </div>
@@ -519,7 +519,7 @@ class NetworkTabContent {
         
         const detailsContainer = document.getElementById('node-details-container');
         if (detailsContainer) {
-            detailsContainer.innerHTML = `<p class="text-muted">${GetText('click_node_prompt')}</p>`;
+            detailsContainer.innerHTML = `<p class="text-muted" data-text="click_node_prompt">${GetText('click_node_prompt')}</p>`;
             detailsContainer.classList.remove('has-content');
         }
     }
@@ -569,14 +569,14 @@ class NetworkTabContent {
         
         if (statsContainer) {
             statsContainer.innerHTML = `
-                <span class="network-stat">${GetText('node_label')}: 0</span>
-                <span class="network-stat">${GetText('connections_label')}: 0</span>
-                <span class="network-stat">${GetText('failures_label')}: 0</span>
+                <span class="network-stat" data-text="node_label">${GetText('node_label')}: 0</span>
+                <span class="network-stat" data-text="connections_label">${GetText('connections_label')}: 0</span>
+                <span class="network-stat" data-text="failures_label">${GetText('failures_label')}: 0</span>
             `;
         }
         
         if (visualContainer) {
-            visualContainer.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
+            visualContainer.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
         }
     }
     

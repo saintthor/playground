@@ -27,7 +27,7 @@ class UsersTabContent {
         }
         
         if (!userData || userData.size === 0) {
-            container.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
+            container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
             this.usersGridInitialized = false;
             return;
         }
@@ -159,7 +159,7 @@ class UsersTabContent {
             const user = this.app.CurrUser = this.getUserData(userId);
             
             if (!user) {
-                detailsContainer.innerHTML = `<p class="text-muted">${GetText('user_data_not_found')}</p>`;
+                detailsContainer.innerHTML = `<p class="text-muted" data-text="user_data_not_found">${GetText('user_data_not_found')}</p>`;
                 return;
             }
             
@@ -177,7 +177,7 @@ class UsersTabContent {
             
         } catch (error) {
             console.error('显示用户详情失败:', error);
-            detailsContainer.innerHTML = `<p class="text-danger">${GetText('error_showing_user_details')}</p>`;
+            detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_user_details">${GetText('error_showing_user_details')}</p>`;
         }
     }
     
@@ -250,33 +250,33 @@ class UsersTabContent {
         return `
             <div class="user-details">
                 <div class="user-details-header">
-                    <h5>${GetText('user_details_title')} ${this.truncateKey(userId)}</h5>
+                    <h5 data-text="user_details_title">${GetText('user_details_title')} ${this.truncateKey(userId)}</h5>
                 </div>
                 
                 <div class="user-basic-info">
-                    <h6>${GetText('basic_info')}</h6>
+                    <h6 data-text="basic_info">${GetText('basic_info')}</h6>
                     <div class="detail-info-grid">
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('public_key_user_id_label')}</span>
+                            <span class="detail-info-label" data-text="public_key_user_id_label">${GetText('public_key_user_id_label')}</span>
                             <span class="detail-info-value crypto-key" title="${userId}">${this.truncateKey(userId)}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('total_assets_label')}</span>
+                            <span class="detail-info-label" data-text="total_assets_label">${GetText('total_assets_label')}</span>
                             <span class="detail-info-value">${userData.GetAssets() || 0}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('owned_chains_count_label')}</span>
+                            <span class="detail-info-label" data-text="owned_chains_count_label">${GetText('owned_chains_count_label')}</span>
                             <span class="detail-info-value">${userChains.length || 0}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('node_location_label')}</span>
+                            <span class="detail-info-label" data-text="node_location_label">${GetText('node_location_label')}</span>
                             <span class="detail-info-value">${[...userData.Peers.values()].map(p => `Peer-${p.Id + 1}`).join(', ')}</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="user-chains-section">
-                    <h6>${GetText('owned_chains_title')} (${userChains.length})</h6>
+                    <h6 data-text="owned_chains_title">${GetText('owned_chains_title')} (${userChains.length})</h6>
                     <div class="chains-list">
                         ${userChains.length > 0 ? userChains.map(chain => `
                             <div class="chain-item" onclick="window.mainPanel.tabManager.switchTab('chains'); setTimeout(() => window.mainPanel.showChainDetails('${chain.Id}'), 100);">
@@ -284,7 +284,7 @@ class UsersTabContent {
                                 <span class="chain-value">${chain.FaceVal}</span>
                                 <!--span class="chain-status ${chain.isTransferring ? 'transferring' : ''}"></span-->
                             </div>
-                        `).join('') : `<p class="text-muted">${GetText('no_chains_owned')}</p>`}
+                        `).join('') : `<p class="text-muted" data-text="no_chains_owned">${GetText('no_chains_owned')}</p>`}
                     </div>
                 </div>
             </div>
@@ -310,7 +310,7 @@ class UsersTabContent {
         
         const detailsContainer = document.getElementById('user-details-container');
         if (detailsContainer) {
-            detailsContainer.innerHTML = `<p class="text-muted">${GetText('click_user_to_see_details')}</p>`;
+            detailsContainer.innerHTML = `<p class="text-muted" data-text="click_user_to_see_details">${GetText('click_user_to_see_details')}</p>`;
             detailsContainer.classList.remove('has-content');
         }
     }
@@ -360,7 +360,7 @@ class UsersTabContent {
         
         const container = document.getElementById('users-container');
         if (container) {
-            container.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
+            container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
         }
     }
     

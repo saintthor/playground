@@ -169,7 +169,7 @@ class ChainsTabContent {
             const chainData = this.AllChains.get( chainId );
             
             if (!chainData) {
-                detailsContainer.innerHTML = `<p class="text-muted">${GetText('chain_data_not_found')}</p>`;
+                detailsContainer.innerHTML = `<p class="text-muted" data-text="chain_data_not_found">${GetText('chain_data_not_found')}</p>`;
                 return;
             }
             
@@ -190,7 +190,7 @@ class ChainsTabContent {
             
         } catch (error) {
             console.error('显示区块链详情失败:', error);
-            detailsContainer.innerHTML = `<p class="text-danger">${GetText('error_showing_chain_details')}</p>`;
+            detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_chain_details">${GetText('error_showing_chain_details')}</p>`;
         }
     }
     
@@ -285,15 +285,15 @@ class ChainsTabContent {
         return `
             <div class="chain-details">
                 <div class="chain-details-header">
-                    <h5>${GetText('chain_details_title')}</h5>
-                    <span class="chain-id">${GetText('chain_id_label')} ${this.truncateHash( chainData.Id )}</span>
+                    <h5 data-text="chain_details_title">${GetText('chain_details_title')}</h5>
+                    <span class="chain-id" data-text="chain_id_label">${GetText('chain_id_label')} ${this.truncateHash( chainData.Id )}</span>
                 </div>
                 
                 <div class="chain-basic-info">
-                    <h6>${GetText('basic_info')}</h6>
+                    <h6 data-text="basic_info">${GetText('basic_info')}</h6>
                     <div class="detail-info-grid">
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('chain_id_root_hash_label')}</span>
+                            <span class="detail-info-label" data-text="chain_id_root_hash_label">${GetText('chain_id_root_hash_label')}</span>
                             <span class="detail-info-value crypto-hash" title="${chainId}">${this.truncateHash(chainData.Id)}</span>
                         </div>
                         <!--div class="detail-info-item">
@@ -301,22 +301,22 @@ class ChainsTabContent {
                             <span class="detail-info-value">链${chainData.displayNumber || '?'}</span>
                         </div-->
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('owner_public_key_label')}</span>
+                            <span class="detail-info-label" data-text="owner_public_key_label">${GetText('owner_public_key_label')}</span>
                             <span class="detail-info-value crypto-key" title="${ownerData.Id || GetText('unknown')}">${this.truncateKey(ownerData.Id || GetText('unknown'))}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('owner_label')}</span>
+                            <span class="detail-info-label" data-text="owner_label">${GetText('owner_label')}</span>
                             <span class="detail-info-value">
-                                ${ownerData ? `${GetText('user')}${ ownerData.Id.slice( 0, 15 ) }` : GetText('unknown_user')}
-                                ${ownerData ? `<span class="owner-link" onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${ownerData.Id}'), 100);">${GetText('view_details_link')}</span>` : ''}
+                                ${ownerData ? `<span data-text="user">${GetText('user')}</span>${ ownerData.Id.slice( 0, 15 ) }` : `<span data-text="unknown_user">${GetText('unknown_user')}</span>`}
+                                ${ownerData ? `<span class="owner-link" data-text="view_details_link" onclick="window.mainPanel.tabManager.switchTab('users'); setTimeout(() => window.mainPanel.tabManager.usersTabContent.setSelectedUser('${ownerData.Id}'), 100);">${GetText('view_details_link')}</span>` : ''}
                             </span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('current_value_label')}</span>
+                            <span class="detail-info-label" data-text="current_value_label">${GetText('current_value_label')}</span>
                             <span class="detail-info-value">${chainData.FaceVal || 0}</span>
                         </div>
                         <div class="detail-info-item">
-                            <span class="detail-info-label">${GetText('block_count_label')}</span>
+                            <span class="detail-info-label" data-text="block_count_label">${GetText('block_count_label')}</span>
                             <span class="detail-info-value">${chainData.BlockNum }</span>
                         </div>
                         <!--div class="detail-info-item">
@@ -328,7 +328,7 @@ class ChainsTabContent {
                 
                 ${ true ? `
                 <div class="root-block-section">
-                    <h6>${GetText('root_block_info_title')}</h6>
+                    <h6 data-text="root_block_info_title">${GetText('root_block_info_title')}</h6>
                     <div class="block-info">
                         <div class="detail-info-grid">
                             <!--div class="detail-info-item">
@@ -336,7 +336,7 @@ class ChainsTabContent {
                                 <span class="detail-info-value">滴答 ${chainData.Root.Tick || GetText('unknown')}</span>
                             </div-->
                             <div class="detail-info-item">
-                                <span class="detail-info-label">${GetText('chain_root_block_id_label')}</span>
+                                <span class="detail-info-label" data-text="chain_root_block_id_label">${GetText('chain_root_block_id_label')}</span>
                                 <span class="detail-info-value crypto-hash" title="${chainData.Id || GetText('unknown')}">${chainData.Id || GetText('unknown')}</span>
                             </div>
                             <div class="detail-info-item">
@@ -351,13 +351,13 @@ class ChainsTabContent {
                 ` : ''}
                 
                 <div class="chain-blocks-section">
-                    <h6>${GetText('subsequent_blocks_title')} (${chainData.BlockNum})</h6>
+                    <h6 data-text="subsequent_blocks_title">${GetText('subsequent_blocks_title')} (${chainData.BlockNum})</h6>
                     <div class="blocks-list">
                         ${chainData.BlockNum ? chainData.BlockList.map( block => `
                             <div class="block-item ${block.Index === 0 ? 'root-block' : ''}">
                                 <div class="block-header">
                                     <span class="block-index">#${block.Index}</span>
-                                    <span class="block-type">${block.Index === 0 ? GetText('root_block') : GetText('payment_block')}</span>
+                                    <span class="block-type" data-text="${block.Index === 0 ? 'root_block' : 'payment_block'}">${block.Index === 0 ? GetText('root_block') : GetText('payment_block')}</span>
                                 </div>
                                 <div class="block-content">
                                     <!--div class="block-field">
@@ -382,7 +382,7 @@ class ChainsTabContent {
                                     ` : ''}
                                 </div>
                             </div>
-                        `).join('') : `<p class="text-muted">${GetText('no_block_data')}</p>`}
+                        `).join('') : `<p class="text-muted" data-text="no_block_data">${GetText('no_block_data')}</p>`}
                     </div>
                 </div>
             </div>
@@ -408,7 +408,7 @@ class ChainsTabContent {
         
         const detailsContainer = document.getElementById('chain-details-container');
         if (detailsContainer) {
-            detailsContainer.innerHTML = `<p class="text-muted">${GetText('click_chain_to_see_details')}</p>`;
+            detailsContainer.innerHTML = `<p class="text-muted" data-text="click_chain_to_see_details">${GetText('click_chain_to_see_details')}</p>`;
             detailsContainer.classList.remove('has-content');
         }
     }
@@ -456,7 +456,7 @@ class ChainsTabContent {
         
         const container = document.getElementById('chains-container');
         if (container) {
-            container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText("sys_not_started")}`;
+            container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText("sys_not_started")}</p>`;
         }
     }
     
