@@ -69,21 +69,21 @@ class MainPanel {
                         <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">${GetText('attack')}</button>
                     </div>
                     <div class="tab-buttons">
-                        <button class="tab-button" data-tab="help" data-text="help_tab">${GetText('help_tab')}</button>
-                        <button class="tab-button active" data-tab="network" data-text="network_tab">${GetText('network_tab')}</button>
+                        <button class="tab-button active" data-tab="help" data-text="help_tab">${GetText('help_tab')}</button>
+                        <button class="tab-button" data-tab="network" data-text="network_tab">${GetText('network_tab')}</button>
                         <button class="tab-button" data-tab="users" data-text="users_tab">${GetText('users_tab')}</button>
                         <button class="tab-button" data-tab="chains" data-text="chains_tab">${GetText('chains_tab')}</button>
                     </div>
                 </div>
                 
-                <div class="tab-content">
+                <div class="tab-content active">
                     <div class="tab-pane" id="help-tab">
                         <div class="help-content" id="help-content">
                             <div class="help-loading">Loading...</div>
                         </div>
                     </div>
                     
-                    <div class="tab-pane active" id="network-tab">
+                    <div class="tab-pane" id="network-tab">
                         <div class="tab-section-upper">
                             <div class="network-layout">
                                 <div class="network-stats-panel">
@@ -876,11 +876,7 @@ class MainPanel {
     {
         console.log( 'MainPanal 处理语言变更:', language );
         
-        //this.render();
         this.tabManager.helpTabContent.onLanguageChanged( language );
-        //this.tabManager.loadNetworkTabContent();
-        //this.tabManager.loadUsersTabContent();
-        //this.tabManager.loadChainsTabContent();
     }
     
     /**

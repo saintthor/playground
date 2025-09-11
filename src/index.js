@@ -589,16 +589,7 @@ class App {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
             userData: this.AllUsers,
-            chainData: this.AllBlockchains,
-            networkData: {
-                totalUsers: this.AllUsers.size,
-                totalChains: totalChains,
-                totalValue: totalValue,
-                activeConnections: activeConnections,
-                maxConnections: this.config.maxConnections || 5,
-                failureRate: this.config.failureRate || 0.1,
-                nodeCount: this.config.nodeCount || 30
-            }
+            chainData: this.AllBlockchains
         };
     }
 

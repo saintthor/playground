@@ -6,7 +6,7 @@
 class TabManager {
     constructor(mainPanel) {
         this.mainPanel = mainPanel;
-        this.activeTab = 'network'; // 默认激活网络标签页
+        this.activeTab = 'help'; // 默认激活网络标签页
         this.tabStates = {
             help: {
                 isLoaded: false,
@@ -896,7 +896,7 @@ class TabManager {
      * 重置为默认状态
      */
     resetToDefaultStates() {
-        this.activeTab = 'network';
+        this.activeTab = 'help';
         this.tabStates = {
             network: { 
                 selectedNode: null,
