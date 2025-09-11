@@ -1,48 +1,48 @@
-# 设计文档
+# Design Document
 
-## 概述
+## Overview
 
-P2P 区块链 Playground 是一个基于 Web 的交互式演示系统，用于模拟和可视化分布式网络中的区块链传输、验证和安全机制。系统采用客户端 JavaScript 实现，使用面向对象的设计模式，提供实时的网络状态可视化和交互控制功能。
+The P2P Blockchain Playground is a web-based interactive demonstration system for simulating and visualizing blockchain transfers, validation, and security mechanisms in a distributed network. The system is implemented in client-side JavaScript, using object-oriented design patterns, and provides real-time network status visualization and interactive control features.
 
-### 核心特性
-- 模拟 P2P 网络环境（m 个节点，n 个虚拟用户）
-- 基于密码学的身份验证和数据签名
-- 区块链创建、转移和验证机制
-- 双花攻击检测和安全防护
-- 实时网络状态可视化
-- 交互式控制和参数调整
+### Core Features
+- Simulation of a P2P network environment (m nodes, n virtual users)
+- Cryptography-based identity verification and data signing
+- Blockchain creation, transfer, and validation mechanisms
+- Double-spend attack detection and security protection
+- Real-time network status visualization
+- Interactive control and parameter adjustment
 
-## 架构
+## Architecture
 
-### 整体架构
+### Overall Architecture
 
-系统采用单页面应用（SPA）架构，主要包含以下层次：
+The system uses a Single Page Application (SPA) architecture, primarily consisting of the following layers:
 
 ```
 ┌─────────────────────────────────────────┐
-│              用户界面层                    │
+│              User Interface Layer           │
 │  ┌─────────────┬─────────────┬─────────────┐ │
-│  │  控制面板    │   主面板     │   日志面板   │ │
+│  │ Control Panel │   Main Panel    │   Log Panel     │ │
 │  └─────────────┴─────────────┴─────────────┘ │
 ├─────────────────────────────────────────┤
-│              业务逻辑层                    │
+│              Business Logic Layer           │
 │  ┌─────────────┬─────────────┬─────────────┐ │
-│  │ 网络管理器   │ 区块链管理器  │  验证引擎   │ │
+│  │ Network Manager│ Blockchain Manager│ Validation Engine│ │
 │  └─────────────┴─────────────┴─────────────┘ │
 ├─────────────────────────────────────────┤
-│              数据模型层                    │
+│              Data Model Layer               │
 │  ┌─────────────┬─────────────┬─────────────┐ │
-│  │    节点      │   虚拟用户   │   区块链    │ │
+│  │    Node      │  Virtual User   │   Blockchain    │ │
 │  └─────────────┴─────────────┴─────────────┘ │
 ├─────────────────────────────────────────┤
-│              工具服务层                    │
+│              Utility Service Layer          │
 │  ┌─────────────┬─────────────┬─────────────┐ │
-│  │  密码学服务  │  时间管理器  │  日志系统   │ │
+│  │ Crypto Service│  Timer Manager  │  Logging System │ │
 │  └─────────────┴─────────────┴─────────────┘ │
 └─────────────────────────────────────────┘
 ```
 
-### 模块依赖关系
+### Module Dependency Relationship
 
 ```mermaid
 graph TD
@@ -72,130 +72,130 @@ graph TD
     A --> P[Logger]
 ```
 
-## 组件和接口
+## Components and Interfaces
 
-### 核心组件
+### Core Components
 
-#### 1. App（主应用类）
+#### 1. App (Main Application Class)
 ```javascript
 class App {
     constructor( config )
     
-    // 系统控制
+    // System Control
     Start()
     Pause()
     Resume()
     Stop()
     
-    // 配置管理
+    // Configuration Management
     UpdateCfg( newConfig )
     
-    // 攻击模拟
+    // Attack Simulation
     Attack( userId, chainId )
 }
 ```
 
-#### 2. NetManager（网络管理器）
+#### 2. NetManager (Network Manager)
 ```javascript
 class NetManager {
     constructor( nodeCount, userCount, maxConn, failRate )
     
-    // 网络初始化
+    // Network Initialization
     InitNet()
     
-    // 连接管理
+    // Connection Management
     EstabConn()
     UpdateRate( newRate )
     
-    // 消息传播
+    // Message Propagation
     Broadcast( msg, srcNodeId )
     
-    // 网络状态
+    // Network Status
     GetStatus()
 }
 ```
 
-#### 3. Node（网络节点）
+#### 3. Node (Network Node)
 ```javascript
 class Node {
     constructor( id )
     
-    // 身份验证
+    // Identity Verification
     GenKeyPair()
     VerifyNodeSig( signature, data, publicKey )
     
-    // 连接管理
+    // Connection Management
     ConnectTo( otherNode )
     Disconnect( nodeId )
     
-    // 消息处理
+    // Message Handling
     ReceiveMsg( message )
     ForwardMsg( message, excludeNodeId )
     
-    // 区块验证
+    // Block Validation
     ValidateBlock( block )
     ValidateChain( blockchain, block )
 }
 ```
 
-#### 4. User（虚拟用户）
+#### 4. User (Virtual User)
 ```javascript
 class User {
     constructor( id )
     
-    // 身份管理
+    // Identity Management
     GenKeyPair()
     GetPubKey()
     
-    // 区块链操作
+    // Blockchain Operations
     CreateTransBlock( blockchainId, targetUserId )
     SignData( data )
     
-    // 资产管理
+    // Asset Management
     GetOwnedChains()
     GetTotalAsset()
 }
 ```
 
-#### 5. BlockChain（区块链）
+#### 5. BlockChain
 ```javascript
 class BlockChain {
     constructor( definition, serialNumber )
     
-    // 区块链初始化
+    // Blockchain Initialization
     CreateRootBlock( definition, serialNumber )
     CreateOwnerBlock( ownerId )
     
-    // 区块管理
+    // Block Management
     AddBlock( block )
     GetBlock( blockId )
     GetLatestBlock()
     
-    // 验证
+    // Validation
     ValidateChain()
     DetectFork( newBlock )
     
-    // 属性
+    // Properties
     GetId()
     GetCurOwner()
     GetValue()
 }
 ```
 
-#### 6. Block（区块）
+#### 6. Block
 ```javascript
 class Block {
     constructor( data, prevBlockId, creatorId, timestamp )
     
-    // 区块创建
+    // Block Creation
     GenId()
     SignBlock( privateKey )
     
-    // 验证
+    // Validation
     VerifySig( publicKey )
     VerifyTime( curTime, maxDelay )
     
-    // 属性
+    // Properties
     GetId()
     GetData()
     GetCreator()
@@ -203,163 +203,163 @@ class Block {
 }
 ```
 
-#### 7. Validator（验证引擎）
+#### 7. Validator (Validation Engine)
 ```javascript
 class Validator {
     constructor()
     
-    // 密码学验证
+    // Cryptographic Validation
     VerifySig( block )
     
-    // 区块链完整性验证
+    // Blockchain Integrity Validation
     VerifyChainIntegrity( blockchain, block )
     
-    // 合法性验证
+    // Legality Validation
     ValidateLegality( block, blockchain, network )
     
-    // 接收验证
+    // Reception Validation
     ValidateReception( block, recvTime )
     
-    // 双花检测
+    // Double Spend Detection
     DetectDoubleSpend( block, blockchain )
 }
 ```
 
-### 用户界面组件
+### User Interface Components
 
-#### 8. UIManager（界面管理器）
+#### 8. UIManager (Interface Manager)
 ```javascript
 class UIManager {
     constructor( app )
     
-    // 界面初始化
+    // UI Initialization
     InitUI()
     
-    // 面板管理
+    // Panel Management
     UpdateControlPanel()
     UpdateMainPanel()
     UpdateLogPanel()
     
-    // 交互处理
+    // Interaction Handling
     HandleUserClick( element, data )
     HandleMouseOver( element, data )
     
-    // Base64 验证代码显示
+    // Base64 Validation Code Display
     ShowVerifyCode( base64Data, dataType )
 }
 ```
 
-#### 9. CtrlPanel（控制面板）
+#### 9. CtrlPanel (Control Panel)
 ```javascript
 class CtrlPanel {
     constructor( uiManager )
     
-    // 控制按钮
+    // Control Buttons
     RenderCtrlBtns()
     
-    // 参数设置
+    // Parameter Settings
     RenderSettings()
     RenderChainDef()
     
-    // 运行时控制
+    // Runtime Controls
     RenderRuntimeCtrls()
     RenderTickSlider()
 }
 ```
 
-#### 10. MainPanel（主面板）
+#### 10. MainPanel
 ```javascript
 class MainPanel {
     constructor( uiManager )
     
-    // 用户资产显示
+    // User Asset Display
     RenderUserAssets()
     
-    // 区块链归属显示
+    // Blockchain Ownership Display
     RenderChainOwnership()
     
-    // 详细信息显示
+    // Detailed Information Display
     ShowUserDetails( userId )
     ShowChainDetails( blockchainId )
 }
 ```
 
-#### 11. LogPanel（日志面板）
+#### 11. LogPanel
 ```javascript
 class LogPanel {
     constructor( uiManager )
     
-    // 日志显示
+    // Log Display
     RenderLogs( logs, filter )
     
-    // 分页管理
+    // Pagination Management
     Pagination()
     
-    // 过滤功能
+    // Filtering Functionality
     FilterLogs( { userId: 2, chainId: 4 } )
     //FilterLogsByChain( blockchainId )
 }
 ```
 
-### 服务组件
+### Service Components
 
-#### 12. Crypto（密码学服务）
+#### 12. Crypto (Cryptography Service)
 ```javascript
 class Crypto {
-    // 密钥生成
+    // Key Generation
     static GenKeyPair()
     
-    // 签名和验证
+    // Signing and Verification
     static Sign( data, privateKey )
     static Verify( signature, data, publicKey )
     
-    // 哈希计算
+    // Hash Calculation
     static Sha256( data )
     
-    // Base64 编码
+    // Base64 Encoding
     static ToBase64( data )
     static FromBase64( base64String )
     
-    // 验证代码生成
+    // Validation Code Generation
     static GenVerifyCode( data, dataType )
 }
 ```
 
-#### 13. Timer（时间管理器）
+#### 13. Timer (Time Manager)
 ```javascript
 class Timer {
     constructor()
     
-    // 滴答管理
+    // Tick Management
     Start()
     Pause()
     Resume()
     Stop()
     
-    // 时间控制
+    // Time Control
     SetTickInterval( milliseconds )
     GetCurrentTick()
     
-    // 网络延迟模拟
+    // Network Delay Simulation
     CalcNetDelay()
     CalcBroadcastTime( networkParams )
 }
 ```
 
-#### 14. Logger（日志系统）
+#### 14. Logger (Logging System)
 ```javascript
 class Logger {
     constructor()
     
-    // 日志记录
+    // Log Recording
     Log( type, message, relatedData )
     
-    // 日志查询
+    // Log Querying
     GetLogs( filter, page, pageSize )
     GetLogsByUser( userId )
     GetLogsByChain( blockchainId )
     
-    // 日志类型
+    // Log Types
     // - BLOCK_ADDED
     // - BLOCK_ACCEPTED
     // - BLOCK_REJECTED
@@ -368,11 +368,11 @@ class Logger {
 }
 ```
 
-## 数据模型
+## Data Models
 
-### 核心数据结构
+### Core Data Structures
 
-#### 网络配置
+#### Network Configuration
 ```javascript
 const NetworkConfig = {
     nodeCount: Number,
@@ -384,7 +384,7 @@ const NetworkConfig = {
 }
 ```
 
-#### 区块链定义
+#### Blockchain Definition
 ```javascript
 const ChainDef = {
     desc: String,
@@ -399,21 +399,21 @@ const ChainDef = {
 }
 ```
 
-#### 区块数据结构
+#### Block Data Structure
 ```javascript
 const BlockData = {
-    // 根区块
+    // Root Block
     root: {
         definitionHash: String,
         serialNumber: String
     },
     
-    // 所有权区块
+    // Ownership Block
     ownership: {
         ownerId: String
     },
     
-    // 转移区块
+    // Transfer Block
     transfer: {
         blockchainId: String,
         previousBlockId: String,
@@ -423,7 +423,7 @@ const BlockData = {
 }
 ```
 
-#### 消息格式
+#### Message Format
 ```javascript
 const NetworkMessage = {
     type: String, // 'BLOCK_BROADCAST', 'FORK_WARNING', 'BLACKLIST_UPDATE'
@@ -434,9 +434,9 @@ const NetworkMessage = {
 }
 ```
 
-### 状态管理
+### State Management
 
-#### 全局状态
+#### Global State
 ```javascript
 const GlobalState = {
     isRunning: Boolean,
@@ -461,16 +461,16 @@ const GlobalState = {
 }
 ```
 
-## 错误处理
+## Error Handling
 
-### 错误类型定义
+### Error Type Definitions
 
 ```javascript
 class PlaygroundError extends Error {
     constructor( type, message, details )
 }
 
-// 错误类型
+// Error Types
 const ErrorTypes = {
     CRYPTO_ERROR: 'CRYPTO_ERROR',
     NETWORK_ERROR: 'NETWORK_ERROR',
@@ -480,89 +480,89 @@ const ErrorTypes = {
 }
 ```
 
-### 错误处理策略
+### Error Handling Strategy
 
-1. **密码学错误**：记录错误日志，显示用户友好的错误信息，断开与传来错误区块的节点的连接
-2. **网络错误**：模拟网络故障，按照故障率处理
-3. **验证错误**：拒绝无效区块，记录安全事件，断开与传来错误区块的节点的连接
-4. **配置错误**：阻止系统启动，提示配置修正
-5. **界面错误**：优雅降级，保持核心功能可用
+1.  **Crypto Error**: Log the error, display a user-friendly error message, and disconnect from the node that sent the erroneous block.
+2.  **Network Error**: Simulate network failures according to the failure rate.
+3.  **Validation Error**: Reject invalid blocks, log a security event, and disconnect from the node that sent the erroneous block.
+4.  **Configuration Error**: Prevent the system from starting and prompt for configuration correction.
+5.  **UI Error**: Graceful degradation, keeping core functionality available.
 
-## 测试策略
+## Testing Strategy
 
-### 单元测试
+### Unit Tests
 
-- **密码学服务测试**：验证签名、哈希、密钥生成的正确性
-- **区块链逻辑测试**：测试区块创建、验证、链式结构
-- **网络通信测试**：模拟消息传播、连接管理
-- **验证引擎测试**：测试各种验证场景和边界条件
+- **Cryptography Service Tests**: Verify the correctness of signatures, hashes, and key generation.
+- **Blockchain Logic Tests**: Test block creation, validation, and chain structure.
+- **Network Communication Tests**: Simulate message propagation and connection management.
+- **Validation Engine Tests**: Test various validation scenarios and edge cases.
 
-### 集成测试
+### Integration Tests
 
-- **端到端流程测试**：完整的区块链转移流程
-- **安全机制测试**：双花攻击检测和防护
-- **网络故障测试**：连接中断和恢复场景
-- **性能测试**：大规模网络和高频交易场景
+- **End-to-End Flow Tests**: Complete blockchain transfer process.
+- **Security Mechanism Tests**: Double-spend attack detection and prevention.
+- **Network Failure Tests**: Connection interruption and recovery scenarios.
+- **Performance Tests**: Large-scale network and high-frequency transaction scenarios.
 
-### 用户界面测试
+### User Interface Tests
 
-- **交互功能测试**：点击、悬停、输入等用户操作
-- **数据显示测试**：各种数据格式的正确显示
-- **响应性测试**：不同屏幕尺寸的适配
-- **可访问性测试**：键盘导航和屏幕阅读器支持
+- **Interaction Functionality Tests**: User actions like clicks, hovers, and inputs.
+- **Data Display Tests**: Correct display of various data formats.
+- **Responsiveness Tests**: Adaptation to different screen sizes.
+- **Accessibility Tests**: Keyboard navigation and screen reader support.
 
-## 性能优化
+## Performance Optimization
 
-### 计算优化
+### Computation Optimization
 
-1. **增量验证**：只验证新增区块，缓存已验证的区块链状态
-2. **异步处理**：使用 Web Workers 处理密码学计算
-3. **数据结构优化**：使用 Map 和 Set 提高查找效率
-4. **内存管理**：及时清理不需要的数据和事件监听器
+1.  **Incremental Validation**: Only validate new blocks and cache the state of already validated blockchains.
+2.  **Asynchronous Processing**: Use Web Workers for cryptographic computations.
+3.  **Data Structure Optimization**: Use `Map` and `Set` for efficient lookups.
+4.  **Memory Management**: Promptly clean up unnecessary data and event listeners.
 
-### 渲染优化
+### Rendering Optimization
 
-1. **虚拟滚动**：日志面板使用虚拟滚动处理大量数据
-2. **防抖和节流**：限制高频更新操作
-3. **批量更新**：合并多个 DOM 操作
-4. **CSS 动画**：使用 CSS 而非 JavaScript 实现动画效果
+1.  **Virtual Scrolling**: Use virtual scrolling in the log panel to handle large amounts of data.
+2.  **Debouncing and Throttling**: Limit high-frequency update operations.
+3.  **Batch Updates**: Combine multiple DOM operations.
+4.  **CSS Animations**: Use CSS instead of JavaScript for animations.
 
-### 网络模拟优化
+### Network Simulation Optimization
 
-1. **事件驱动**：使用事件队列管理网络消息
-2. **优先级队列**：高优先级消息（如安全警告）优先处理
-3. **连接池管理**：复用连接对象，减少创建开销
-4. **消息去重**：避免重复处理相同消息
+1.  **Event-Driven**: Use an event queue to manage network messages.
+2.  **Priority Queue**: Prioritize high-priority messages (e.g., security warnings).
+3.  **Connection Pool Management**: Reuse connection objects to reduce creation overhead.
+4.  **Message Deduplication**: Avoid processing the same message multiple times.
 
-## 安全考虑
+## Security Considerations
 
-### 密码学安全
+### Cryptographic Security
 
-1. **密钥管理**：使用 Web Crypto API 生成和管理密钥
-2. **签名验证**：严格验证所有数字签名
-3. **哈希完整性**：使用 SHA-256 确保数据完整性
-4. **随机数生成**：使用密码学安全的随机数生成器
+1.  **Key Management**: Use the Web Crypto API to generate and manage keys.
+2.  **Signature Verification**: Strictly verify all digital signatures.
+3.  **Hash Integrity**: Use SHA-256 to ensure data integrity.
+4.  **Random Number Generation**: Use a cryptographically secure random number generator.
 
-### 网络安全
+### Network Security
 
-1. **消息验证**：验证所有网络消息的来源和完整性
-2. **重放攻击防护**：使用时间戳和序列号防止重放
-3. **拒绝服务防护**：限制消息频率和大小
-4. **恶意节点检测**：监控异常行为并及时隔离
+1.  **Message Validation**: Verify the source and integrity of all network messages.
+2.  **Replay Attack Prevention**: Use timestamps and sequence numbers to prevent replays.
+3.  **Denial of Service Prevention**: Limit message frequency and size.
+4.  **Malicious Node Detection**: Monitor for abnormal behavior and isolate offending nodes.
 
-### 应用安全
+### Application Security
 
-1. **输入验证**：严格验证所有用户输入
-2. **XSS 防护**：对所有显示内容进行转义
-3. **CSP 策略**：实施内容安全策略
-4. **错误信息安全**：避免泄露敏感信息
+1.  **Input Validation**: Strictly validate all user inputs.
+2.  **XSS Prevention**: Escape all displayed content.
+3.  **CSP Policy**: Implement a Content Security Policy.
+4.  **Error Message Security**: Avoid leaking sensitive information.
 
-## 部署和维护
+## Deployment and Maintenance
 
-### 构建配置
+### Build Configuration
 
 ```javascript
-// webpack.config.js 示例配置
+// webpack.config.js example configuration
 module.exports = {
     entry: './src/index.js',
     output: {
@@ -587,16 +587,16 @@ module.exports = {
 }
 ```
 
-### 监控和调试
+### Monitoring and Debugging
 
-1. **性能监控**：监控关键操作的执行时间
-2. **错误追踪**：记录和分析运行时错误
-3. **用户行为分析**：跟踪用户交互模式
-4. **调试工具**：提供开发者调试接口
+1.  **Performance Monitoring**: Monitor the execution time of critical operations.
+2.  **Error Tracking**: Log and analyze runtime errors.
+3.  **User Behavior Analysis**: Track user interaction patterns.
+4.  **Debugging Tools**: Provide a developer debugging interface.
 
-### 文档和支持
+### Documentation and Support
 
-1. **API 文档**：详细的接口文档和使用示例
-2. **用户手册**：面向最终用户的操作指南
-3. **开发者指南**：代码结构和扩展指南
-4. **故障排除**：常见问题和解决方案
+1.  **API Documentation**: Detailed interface documentation and usage examples.
+2.  **User Manual**: An operational guide for end-users.
+3.  **Developer Guide**: A guide to the code structure and extension.
+4.  **Troubleshooting**: Common issues and solutions.

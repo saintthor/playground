@@ -1,243 +1,243 @@
-# 实现计划
+# Implementation Plan
 
-- [x] 1. 建立项目结构和核心工具类
-  - 创建基本的 HTML 页面结构，包含控制面板、主面板和日志面板
-  - 实现密码学服务类 Crypto，提供密钥生成、签名验证、哈希计算和 Base64 编码功能
-  - 创建时间管理器 Timer 类，实现滴答计数和网络延迟模拟
-  - 编写基础工具类的单元测试
-  - _需求: 2.1, 2.4, 11.4_
+- [x] 1. Establish Project Structure and Core Utility Classes
+  - Create the basic HTML page structure, including the control panel, main panel, and log panel.
+  - Implement the `Crypto` service class, providing key generation, signature verification, hash calculation, and Base64 encoding.
+  - Create the `Timer` class for tick counting and network delay simulation.
+  - Write unit tests for the basic utility classes.
+  - _Requirements: 2.1, 2.4, 11.4_
 
-- [-] 2. 实现数据模型和基础类
-- [x] 2.1 创建 Block 类和基本验证功能
-  - 实现 Block 类的构造函数、ID 生成、签名和基本验证方法
-  - 编写 Block 类的单元测试，验证区块创建和签名功能
-  - 实现区块数据的序列化和反序列化
-  - _需求: 4.3, 5.2, 5.3_
+- [-] 2. Implement Data Models and Base Classes
+- [x] 2.1 Create `Block` Class and Basic Validation
+  - Implement the `Block` class constructor, ID generation, signing, and basic validation methods.
+  - Write unit tests for the `Block` class to verify block creation and signing.
+  - Implement serialization and deserialization of block data.
+  - _Requirements: 4.3, 5.2, 5.3_
 
-- [x] 2.2 实现 BlockChain 类和区块链管理
-  - 创建 BlockChain 类，实现根区块和所有权区块的创建
-  - 实现区块链的区块添加、查询和验证功能
-  - 编写 BlockChain 类的单元测试，测试区块链的完整性
-  - 实现分叉检测的基础逻辑
-  - _需求: 4.1, 4.2, 4.3, 4.4_
+- [x] 2.2 Implement `BlockChain` Class and Management
+  - Create the `BlockChain` class, implementing the creation of root and ownership blocks.
+  - Implement block addition, querying, and validation for the blockchain.
+  - Write unit tests for the `BlockChain` class to test its integrity.
+  - Implement the basic logic for fork detection.
+  - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [x] 2.3 创建 User 类和身份管理
-  - 实现 User 类的密钥对生成和公钥标识功能
-  - 实现转移区块的创建和签名功能
-  - 编写 User 类的单元测试，验证身份验证和区块创建
-  - 实现用户资产查询和管理功能
-  - _需求: 2.1, 2.2, 2.3, 5.1_
+- [x] 2.3 Create `User` Class and Identity Management
+  - Implement key pair generation and public key identification for the `User` class.
+  - Implement the creation and signing of transfer blocks.
+  - Write unit tests for the `User` class to verify identity and block creation.
+  - Implement user asset querying and management.
+  - _Requirements: 2.1, 2.2, 2.3, 5.1_
 
-- [-] 3. 实现网络层和节点通信
-- [x] 3.1 创建 Node 类和基本网络功能
-  - 实现 Node 类的构造函数和密钥对生成
-  - 实现节点间的连接建立和签名验证
-  - 编写 Node 类的单元测试，测试节点身份验证
-  - 实现基本的消息接收和转发功能
-  - _需求: 3.1, 3.2_
+- [-] 3. Implement Network Layer and Node Communication
+- [x] 3.1 Create `Node` Class and Basic Network Functions
+  - Implement the `Node` class constructor and key pair generation.
+  - Implement connection establishment and signature verification between nodes.
+  - Write unit tests for the `Node` class to test identity verification.
+  - Implement basic message receiving and forwarding.
+  - _Requirements: 3.1, 3.2_
 
-- [x] 3.2 实现 NetManager 类和网络管理
-  - 创建 NetManager 类，实现网络初始化和连接管理
-  - 实现消息广播和网络状态查询功能
-  - 编写 NetManager 类的单元测试，测试网络连接和消息传播
-  - 实现连接故障率模拟和动态调整
-  - _需求: 1.1, 3.3, 3.4_
+- [x] 3.2 Implement `NetManager` Class and Network Management
+  - Create the `NetManager` class, implementing network initialization and connection management.
+  - Implement message broadcasting and network status querying.
+  - Write unit tests for the `NetManager` class to test network connections and message propagation.
+  - Implement connection failure rate simulation and dynamic adjustment.
+  - _Requirements: 1.1, 3.3, 3.4_
 
-- [x] 3.3 实现消息路由和网络延迟模拟
-  - 创建消息路由系统，实现消息的优先级处理
-  - 实现网络延迟模拟，支持 1-9 个滴答的传输时间
-  - 编写网络延迟和消息路由的单元测试
-  - 实现全网广播时间的计算功能
-  - _需求: 8.2, 8.4_
+- [x] 3.3 Implement Message Routing and Network Delay Simulation
+  - Create a message routing system with priority handling.
+  - Implement network delay simulation, supporting a transmission time of 1-9 ticks.
+  - Write unit tests for network delay and message routing.
+  - Implement the calculation of the total network broadcast time.
+  - _Requirements: 8.2, 8.4_
 
-- [x] 4. 实现区块验证引擎
-- [x] 4.1 创建 Validator 类的密码学验证功能
-  - 实现区块的密码学签名验证
-  - 实现区块链完整性验证，从当前区块向上验证到根区块
-  - 编写密码学验证的单元测试
-  - 实现验证结果的缓存机制，避免重复验证
-  - _需求: 6.1, 6.2_
+- [x] 4. Implement Block Validation Engine
+- [x] 4.1 Create Cryptographic Validation in `Validator`
+  - Implement cryptographic signature verification for blocks.
+  - Implement blockchain integrity verification, validating from the current block up to the root.
+  - Write unit tests for cryptographic validation.
+  - Implement a caching mechanism for validation results to avoid redundant checks.
+  - _Requirements: 6.1, 6.2_
 
-- [x] 4.2 实现区块合法性验证
-  - 实现添加者状态验证（黑名单检查）
-  - 实现区块链所有权验证
-  - 实现区块位置冲突检测
-  - 编写合法性验证的单元测试
-  - _需求: 6.3, 6.4, 6.5, 6.6_
+- [x] 4.2 Implement Block Legality Validation
+  - Implement creator status validation (blacklist check).
+  - Implement blockchain ownership verification.
+  - Implement block position conflict detection.
+  - Write unit tests for legality validation.
+  - _Requirements: 6.3, 6.4, 6.5, 6.6_
 
-- [x] 4.3 实现双花攻击检测和安全机制
-  - 实现双花攻击的检测逻辑
-  - 实现用户黑名单管理和分叉警告广播
-  - 编写双花攻击检测的单元测试
-  - 实现高优先级安全消息的处理
-  - _需求: 7.1, 7.2, 7.3, 7.4_
+- [x] 4.3 Implement Double-Spend Attack Detection and Security
+  - Implement the logic for detecting double-spend attacks.
+  - Implement user blacklist management and fork warning broadcasts.
+  - Write unit tests for double-spend attack detection.
+  - Implement handling for high-priority security messages.
+  - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-- [x] 5. 实现接收验证和确认机制
-- [x] 5.1 实现时间验证和拒绝机制
-  - 实现区块接收时间验证，检查是否超过全网广播时间的两倍
-  - 实现拒绝区块的创建和广播功能
-  - 编写时间验证的单元测试
-  - 实现全网广播时间的动态计算
-  - _需求: 8.1, 8.2, 8.3_
+- [x] 5. Implement Reception Validation and Confirmation
+- [x] 5.1 Implement Time Validation and Rejection
+  - Implement block reception time validation, checking if it exceeds twice the network broadcast time.
+  - Implement the creation and broadcasting of rejection blocks.
+  - Write unit tests for time validation.
+  - Implement dynamic calculation of the network broadcast time.
+  - _Requirements: 8.1, 8.2, 8.3_
 
-- [x] 5.2 实现确认等待和冲突检测
-  - 实现确认等待期的管理（全网广播时间的四倍）
-  - 实现等待期内的冲突区块和警告检测
-  - 编写确认机制的单元测试
-  - 实现区块链转移的最终确认
-  - _需求: 8.4, 8.5_
+- [x] 5.2 Implement Confirmation Wait and Conflict Detection
+  - Implement management of the confirmation waiting period (four times the network broadcast time).
+  - Implement detection of conflicting blocks and warnings during the waiting period.
+  - Write unit tests for the confirmation mechanism.
+  - Implement the final confirmation of blockchain transfers.
+  - _Requirements: 8.4, 8.5_
 
-- [-] 6. 实现区块链定义和初始化系统
-- [x] 6.1 创建区块链定义解析器
-  - 实现区块链定义文件的解析功能
-  - 实现序列号范围和面值对应关系的处理
-  - 编写定义文件解析的单元测试
-  - 实现定义文件的 SHA256 哈希计算
-  - _需求: 4.1_
+- [-] 6. Implement Blockchain Definition and Initialization
+- [x] 6.1 Create Blockchain Definition Parser
+  - Implement the parsing of the blockchain definition file.
+  - Implement the handling of serial number ranges and their corresponding denominations.
+  - Write unit tests for the definition file parser.
+  - Implement SHA256 hash calculation for the definition file.
+  - _Requirements: 4.1_
 
-- [x] 6.2 实现区块链批量创建和初始化
-  - 实现根据定义文件批量创建区块链的功能
-  - 实现随机分配区块链所有权的逻辑
-  - 编写区块链初始化的单元测试
-  - 实现区块链标识符的生成和管理
-  - _需求: 4.2, 4.3, 4.4_
+- [x] 6.2 Implement Batch Blockchain Creation and Initialization
+  - Implement the batch creation of blockchains based on the definition file.
+  - Implement the logic for randomly assigning blockchain ownership.
+  - Write unit tests for blockchain initialization.
+  - Implement the generation and management of blockchain identifiers.
+  - _Requirements: 4.2, 4.3, 4.4_
 
-- [x] 7. 实现用户界面基础框架
-- [x] 7.1 创建 UIManager 和基本界面结构
-  - 实现 UIManager 类的基本框架和界面初始化
-  - 创建控制面板、主面板和日志面板的基本 HTML 结构
-  - 实现界面的响应式布局和基本样式
-  - 编写界面组件的基础测试
-  - _需求: 9.1_
+- [x] 7. Implement UI Base Framework
+- [x] 7.1 Create `UIManager` and Basic UI Structure
+  - Implement the basic framework and UI initialization for the `UIManager` class.
+  - Create the basic HTML structure for the control panel, main panel, and log panel.
+  - Implement a responsive layout and basic styling for the UI.
+  - Write basic tests for the UI components.
+  - _Requirements: 9.1_
 
-- [x] 7.2 实现 CtrlPanel 控制面板功能
-  - 实现开始、暂停、继续、结束按钮的功能
-  - 实现网络参数设置界面（节点数、用户数、连接数、故障率、支付速率）
-  - 实现区块链定义文件的编辑界面
-  - 编写控制面板的交互测试
-  - _需求: 11.1, 11.2, 1.1, 1.3_
+- [x] 7.2 Implement `CtrlPanel` Functionality
+  - Implement the functionality for the start, pause, resume, and stop buttons.
+  - Implement the UI for setting network parameters (node count, user count, connections, failure rate, payment rate).
+  - Implement the UI for editing the blockchain definition file.
+  - Write interaction tests for the control panel.
+  - _Requirements: 11.1, 11.2, 1.1, 1.3_
 
-- [x] 7.3 实现运行时控制和滴答时间调节
-  - 实现运行时参数调整功能（连接数、故障率）
-  - 实现滴答时间滑块控制（3秒到无限制）
-  - 实现分叉攻击模拟的控制界面
-  - 编写运行时控制的功能测试
-  - _需求: 11.3, 11.4, 11.5, 1.4_
+- [x] 7.3 Implement Runtime Control and Tick Time Adjustment
+  - Implement runtime adjustment of parameters (connections, failure rate).
+  - Implement the tick time slider control (3 seconds to unlimited).
+  - Implement the control interface for simulating fork attacks.
+  - Write functional tests for runtime controls.
+  - _Requirements: 11.3, 11.4, 11.5, 1.4_
 
-- [-] 8. 实现主面板数据显示功能
-- [x] 8.1 实现用户资产和区块链归属显示
-  - 实现所有虚拟用户的资产总额显示
-  - 实现所有区块链当前归属的显示
-  - 实现数据的实时更新和刷新机制
-  - 编写数据显示的功能测试
-  - _需求: 9.4_
+- [-] 8. Implement Main Panel Data Display
+- [x] 8.1 Implement User Asset and Blockchain Ownership Display
+  - Implement the display of total asset value for all virtual users.
+  - Implement the display of the current ownership of all blockchains.
+  - Implement a real-time update and refresh mechanism for the data.
+  - Write functional tests for the data display.
+  - _Requirements: 9.4_
 
-- [x] 8.2 实现交互式详细信息查看
-  - 实现点击用户查看其拥有区块链的功能
-  - 实现点击区块链查看其所有区块的功能
-  - 实现相关日志的过滤显示
-  - 编写交互功能的用户界面测试
-  - _需求: 10.1, 10.2_
+- [x] 8.2 Implement Interactive Detailed Information View
+  - Implement the feature to view all blockchains owned by a user upon clicking.
+  - Implement the feature to view all blocks of a blockchain upon clicking.
+  - Implement filtered display of relevant logs.
+  - Write UI tests for the interactive features.
+  - _Requirements: 10.1, 10.2_
 
-- [-] 9. 实现日志系统和面板
-- [x] 9.1 创建 Logger 类和日志记录功能
-  - 实现 Logger 类的基本日志记录功能
-  - 实现不同类型日志的分类管理（添加、接受、拒绝、警告、拉黑）
-  - 编写日志系统的单元测试
-  - 实现日志的时间戳和相关数据记录
-  - _需求: 9.2_
+- [-] 9. Implement Logging System and Panel
+- [x] 9.1 Create `Logger` Class and Logging Functionality
+  - Implement the basic logging functionality for the `Logger` class.
+  - Implement categorized management of different log types (add, accept, reject, warn, blacklist).
+  - Write unit tests for the logging system.
+  - Implement timestamping and recording of related data for logs.
+  - _Requirements: 9.2_
 
-- [x] 9.2 实现 LogPanel 日志显示和分页
-  - 实现日志面板的显示功能，支持最近100条日志
-  - 实现日志的分页和历史查看功能
-  - 实现日志的过滤和搜索功能
-  - 编写日志面板的功能测试
-  - _需求: 9.3, 10.1, 10.2_
+- [x] 9.2 Implement `LogPanel` Display and Pagination
+  - Implement the display for the log panel, supporting the latest 100 logs.
+  - Implement pagination and history viewing for logs.
+  - Implement filtering and searching for logs.
+  - Write functional tests for the log panel.
+  - _Requirements: 9.3, 10.1, 10.2_
 
-- [x] 9.3 实现日志交互和详细信息显示
-  - 实现点击日志查看相关区块链和用户信息的功能
-  - 实现日志与主面板的联动显示
-  - 编写日志交互的集成测试
-  - _需求: 10.3_
+- [x] 9.3 Implement Log Interaction and Detailed Info Display
+  - Implement the feature to view related blockchain and user info upon clicking a log.
+  - Implement linked display between the log panel and the main panel.
+  - Write integration tests for log interaction.
+  - _Requirements: 10.3_
 
-- [-] 10. 实现 Base64 数据验证功能
-- [x] 10.1 实现 Base64 数据的缩略显示和悬停功能
-  - 实现所有 Base64 数据的缩略显示
-  - 实现鼠标悬停查看完整内容的功能
-  - 实现数据选中和高亮显示
-  - 编写 Base64 显示的用户界面测试
-  - _需求: 2.5, 10.4_
+- [-] 10. Implement Base64 Data Validation
+- [x] 10.1 Implement Shortened Display and Hover for Base64 Data
+  - Implement shortened display for all Base64 data.
+  - Implement the feature to view the full content on hover.
+  - Implement data selection and highlighting.
+  - Write UI tests for the Base64 display.
+  - _Requirements: 2.5, 10.4_
 
-- [x] 10.2 实现验证代码生成和显示功能
-  - 实现选中 Base64 数据时显示验证代码的功能
-  - 实现针对不同数据类型（签名、哈希）生成相应验证代码
-  - 实现验证代码的直接运行功能
-  - 编写验证代码生成的功能测试
-  - _需求: 11.1, 11.2, 11.3_
+- [x] 10.2 Implement Validation Code Generation and Display
+  - Implement the feature to display validation code when Base64 data is selected.
+  - Implement the generation of corresponding validation code for different data types (signature, hash).
+  - Implement the feature to run the validation code directly.
+  - Write functional tests for validation code generation.
+  - _Requirements: 11.1, 11.2, 11.3_
 
-- [x] 11. 实现支付速率和自动转账功能
-- [x] 11.1 实现支付速率控制系统
-  - 实现根据支付速率参数控制虚拟用户转账频率的功能
-  - 实现每个滴答中随机选择用户进行转账的逻辑
-  - 编写支付速率控制的单元测试
-  - 实现转账目标用户的随机选择算法
-  - _需求: 1.3_
+- [x] 11. Implement Payment Rate and Auto-Transfer
+- [x] 11.1 Implement Payment Rate Control System
+  - Implement the feature to control the transfer frequency of virtual users based on the payment rate parameter.
+  - Implement the logic for randomly selecting users to make transfers in each tick.
+  - Write unit tests for the payment rate control.
+  - Implement the algorithm for randomly selecting transfer target users.
+  - _Requirements: 1.3_
 
-- [x] 11.2 实现自动转账和网络活动模拟
-  - 实现虚拟用户的自动转账决策逻辑
-  - 实现转账区块的自动创建和广播
-  - 编写自动转账的集成测试
-  - 实现网络活动的统计和监控
-  - _需求: 5.1, 5.4_
+- [x] 11.2 Implement Auto-Transfer and Network Activity Simulation
+  - Implement the automatic transfer decision logic for virtual users.
+  - Implement the automatic creation and broadcasting of transfer blocks.
+  - Write integration tests for auto-transfer.
+  - Implement statistics and monitoring of network activity.
+  - _Requirements: 5.1, 5.4_
 
-- [-] 12. 集成测试和系统优化
-- [x] 12.1 实现端到端的区块链转移流程测试
-  - 编写完整的区块链转移流程集成测试
-  - 测试从创建转移区块到最终确认的完整过程
-  - 验证网络传播、验证和确认机制的正确性
-  - 测试多个并发转移的处理
-  - _需求: 5.1, 5.2, 5.3, 5.4, 6.1-6.6, 8.1-8.5_
+- [-] 12. Integration Testing and System Optimization
+- [x] 12.1 Implement End-to-End Blockchain Transfer Flow Testing
+  - Write integration tests for the complete blockchain transfer flow.
+  - Test the entire process from creating a transfer block to final confirmation.
+  - Verify the correctness of network propagation, validation, and confirmation.
+  - Test the handling of multiple concurrent transfers.
+  - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.1-6.6, 8.1-8.5_
 
-- [x] 12.2 实现安全机制和攻击检测的集成测试
-  - 编写双花攻击检测的完整测试场景
-  - 测试分叉警告的广播和处理机制
-  - 验证用户黑名单和安全防护的有效性
-  - 测试各种攻击场景下系统的稳定性
-  - _需求: 7.1, 7.2, 7.3, 7.4_
+- [x] 12.2 Implement Security and Attack Detection Integration Testing
+  - Write complete test scenarios for double-spend attack detection.
+  - Test the broadcasting and handling of fork warnings.
+  - Verify the effectiveness of the user blacklist and security measures.
+  - Test the system's stability under various attack scenarios.
+  - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-- [x] 12.3 实现性能优化和大规模网络测试
-  - 优化密码学计算的性能，实现异步处理
-  - 优化界面渲染性能，实现虚拟滚动和批量更新
-  - 测试大规模网络（多节点、多用户）的性能表现
-  - 实现内存管理和资源清理机制
-  - _需求: 所有性能相关需求_
+- [x] 12.3 Implement Performance Optimization and Large-Scale Network Testing
+  - Optimize the performance of cryptographic calculations with asynchronous processing.
+  - Optimize UI rendering performance with virtual scrolling and batch updates.
+  - Test the performance of a large-scale network (many nodes, many users).
+  - Implement memory management and resource cleanup.
+  - _Requirements: All performance-related requirements_
 
-- [x] 13. 完善用户体验和错误处理
-- [x] 13.1 实现完整的错误处理和用户反馈
-  - 实现各种错误情况的优雅处理和用户提示
-  - 实现系统状态的实时监控和异常恢复
-  - 编写错误处理的测试用例
-  - 实现调试信息和开发者工具
-  - _需求: 所有错误处理相关需求_
+- [x] 13. Enhance User Experience and Error Handling
+- [x] 13.1 Implement Complete Error Handling and User Feedback
+  - Implement graceful handling and user notifications for various error conditions.
+  - Implement real-time monitoring of the system state and exception recovery.
+  - Write test cases for error handling.
+  - Implement debugging information and developer tools.
+  - _Requirements: All error handling-related requirements_
 
-- [x] 13.2 实现最终的界面优化和用户体验改进
-  - 优化界面的响应性和交互体验
-  - 实现完整的键盘导航和可访问性支持
-  - 完善所有 Base64 数据的验证代码功能
-  - 进行最终的用户体验测试和优化
-  - _需求: 9.1-9.4, 10.1-10.4, 11.1-11.5_
+- [x] 13.2 Implement Final UI Optimization and UX Improvements
+  - Optimize the responsiveness and interactive experience of the UI.
+  - Implement full keyboard navigation and accessibility support.
+  - Complete the validation code functionality for all Base64 data.
+  - Conduct final user experience testing and optimization.
+  - _Requirements: 9.1-9.4, 10.1-10.4, 11.1-11.5_
 
-- [-] 14. 系统集成和最终测试
-- [x] 14.1 进行完整系统的集成测试
-  - 测试所有功能模块的协同工作
-  - 验证系统在各种配置下的稳定性
-  - 测试长时间运行的系统稳定性
-  - 验证所有需求的完整实现
-  - _需求: 所有需求_
+- [-] 14. System Integration and Final Testing
+- [x] 14.1 Conduct Full System Integration Testing
+  - Test the collaborative work of all functional modules.
+  - Verify the system's stability under various configurations.
+  - Test the long-term stability of the system.
+  - Verify the complete implementation of all requirements.
+  - _Requirements: All requirements_
 
-- [x] 14.2 完成文档和部署准备
-  - 完善代码注释和技术文档
-  - 创建用户使用手册和操作指南
-  - 准备生产环境的构建配置
-  - 进行最终的代码审查和质量检查
-  - _需求: 部署和维护相关需求_
+- [x] 14.2 Complete Documentation and Deployment Preparation
+  - Complete code comments and technical documentation.
+  - Create a user manual and operational guide.
+  - Prepare the build configuration for the production environment.
+  - Conduct a final code review and quality check.
+  - _Requirements: Deployment and maintenance-related requirements_

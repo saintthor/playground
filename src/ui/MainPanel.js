@@ -65,8 +65,8 @@ class MainPanel {
             <div class="main-panel-tabs">
                 <div class="tab-header">
                     <div class="tab-actions">
-                        <button class="btn btn-primary btn-sm" id="send-btn" data-text="tranfer" onclick="window.mainPanel.Transfer()">发送</button>
-                        <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">攻击</button>
+                        <button class="btn btn-primary btn-sm" id="send-btn" data-text="tranfer" onclick="window.mainPanel.Transfer()">${GetText('transfer')}</button>
+                        <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">${GetText('attack')}</button>
                     </div>
                     <div class="tab-buttons">
                         <button class="tab-button" data-tab="help">${GetText('help_tab')}</button>
@@ -870,6 +870,17 @@ class MainPanel {
             );
         }
         return [];
+    }
+    
+    onLanguageChanged( language )
+    {
+        console.log( 'MainPanal 处理语言变更:', language );
+        
+        //this.render();
+        //this.tabManager.helpTabContent.onLanguageChanged( language );
+        //this.tabManager.loadNetworkTabContent();
+        //this.tabManager.loadUsersTabContent();
+        //this.tabManager.loadChainsTabContent();
     }
     
     /**

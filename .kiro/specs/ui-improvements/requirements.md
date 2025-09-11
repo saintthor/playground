@@ -1,117 +1,117 @@
-# UI 改进需求文档
+# UI Improvement Requirements
 
-## 介绍
+## Introduction
 
-这是对现有 P2P 区块链 Playground 的用户界面改进，主要解决网络图显示问题、界面重绘性能问题、日志显示问题等，以提供更好的用户体验和性能。
+This document outlines UI improvements for the P2P Blockchain Playground, addressing issues with network graph display, UI repaint performance, and log display to enhance user experience and performance.
 
-## 需求
+## Requirements
 
-### 需求 1
+### Requirement 1
 
-**用户故事：** 作为用户，我希望哈希值验证能够通过浮动窗口显示，以便更直观地查看验证信息。
+**User Story:** As a user, I want hash value validation to be displayed in a floating window for a more intuitive view of the validation information.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 用户鼠标悬停在哈希值上超过1秒 THEN 系统 SHALL 显示一个浮动的验证窗口
-2. WHEN 浮动窗口显示 THEN 系统 SHALL 包含完整的哈希值和验证代码
-3. WHEN 用户鼠标离开哈希值区域 THEN 系统 SHALL 隐藏浮动窗口
-4. WHEN 用户点击浮动窗口内的复制按钮 THEN 系统 SHALL 成功复制验证代码到剪贴板
+1.  WHEN the user hovers over a hash value for more than 1 second, THEN the system SHALL display a floating validation window.
+2.  WHEN the floating window is displayed, THEN it SHALL contain the full hash value and validation code.
+3.  WHEN the user's mouse leaves the hash value area, THEN the system SHALL hide the floating window.
+4.  WHEN the user clicks the copy button within the floating window, THEN the system SHALL successfully copy the validation code to the clipboard.
 
-### 需求 2
+### Requirement 2
 
-**用户故事：** 作为用户，我希望验证代码的复制功能能够正常工作，以便我可以在控制台中运行验证。
+**User Story:** As a user, I want the copy functionality for validation code to work correctly so I can run the validation in the console.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 用户点击"复制代码"按钮 THEN 系统 SHALL 成功将验证代码复制到剪贴板
-2. WHEN 用户点击"复制到剪贴板"按钮 THEN 系统 SHALL 成功将控制台代码复制到剪贴板
-3. WHEN 复制操作完成 THEN 系统 SHALL 显示复制成功的反馈信息
-4. WHEN 复制操作失败 THEN 系统 SHALL 显示错误信息并提供备选方案
+1.  WHEN the user clicks the "Copy Code" button, THEN the system SHALL successfully copy the validation code to the clipboard.
+2.  WHEN the user clicks the "Copy to Clipboard" button, THEN the system SHALL successfully copy the console code to the clipboard.
+3.  WHEN the copy operation is complete, THEN the system SHALL display a success feedback message.
+4.  WHEN the copy operation fails, THEN the system SHALL display an error message and provide an alternative.
 
-### 需求 3
+### Requirement 3
 
-**用户故事：** 作为用户，我希望看到正确的 SHA256 哈希值，以便验证数据的完整性。
+**User Story:** As a user, I want to see the correct SHA256 hash values to verify data integrity.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 系统生成哈希值 THEN 系统 SHALL 确保使用正确的 SHA256 算法
-2. WHEN 显示哈希值 THEN 系统 SHALL 显示完整的64字符十六进制字符串
-3. WHEN 哈希值过短或格式不正确 THEN 系统 SHALL 重新计算或显示错误信息
-4. WHEN 验证哈希值 THEN 系统 SHALL 提供原始数据和计算过程的详细信息
+1.  WHEN the system generates a hash value, THEN it SHALL ensure the correct SHA256 algorithm is used.
+2.  WHEN displaying a hash value, THEN it SHALL display the full 64-character hexadecimal string.
+3.  WHEN a hash value is too short or incorrectly formatted, THEN the system SHALL recalculate it or display an error message.
+4.  WHEN validating a hash value, THEN the system SHALL provide detailed information about the original data and the calculation process.
 
-### 需求 4
+### Requirement 4
 
-**用户故事：** 作为用户，我希望主面板的布局更加合理，以便更好地查看网络状态和用户信息。
+**User Story:** As a user, I want the main panel layout to be more rational for a better view of the network status and user information.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 显示主面板 THEN 系统 SHALL 将用户区域放置在 P2P 网络图的下方
-2. WHEN 显示网络图 THEN 系统 SHALL 移除网络图上方所有占用高度的 DOM 元素
-3. WHEN 调整网络图 THEN 系统 SHALL 将网络图宽度扩展到 100%
-4. WHEN 重新设计布局 THEN 系统 SHALL 确保所有内容在不同屏幕尺寸下都能正常显示
+1.  WHEN displaying the main panel, THEN the system SHALL place the user area below the P2P network graph.
+2.  WHEN displaying the network graph, THEN the system SHALL remove all DOM elements above the graph that take up vertical space.
+3.  WHEN adjusting the network graph, THEN the system SHALL expand its width to 100%.
+4.  WHEN redesigning the layout, THEN the system SHALL ensure all content displays correctly on different screen sizes.
 
-### 需求 5
+### Requirement 5
 
-**用户故事：** 作为用户，我希望网络图能够显示所有节点，以便完整了解网络拓扑。
+**User Story:** As a user, I want the network graph to display all nodes to get a complete understanding of the network topology.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 显示网络图 THEN 系统 SHALL 显示所有配置的网络节点
-2. WHEN 节点数量较多 THEN 系统 SHALL 使用适当的布局算法确保所有节点都可见
-3. WHEN 节点连接发生变化 THEN 系统 SHALL 实时更新网络图中的连接状态
-4. WHEN 网络图空间不足 THEN 系统 SHALL 提供缩放或滚动功能以查看所有节点
+1.  WHEN displaying the network graph, THEN the system SHALL display all configured network nodes.
+2.  WHEN there are many nodes, THEN the system SHALL use an appropriate layout algorithm to ensure all nodes are visible.
+3.  WHEN node connections change, THEN the system SHALL update the connection status in the network graph in real-time.
+4.  WHEN there is insufficient space in the network graph, THEN the system SHALL provide zoom or scroll functionality to view all nodes.
 
-### 需求 6
+### Requirement 6
 
-**用户故事：** 作为用户，我希望网络图能够正确显示节点之间的连接，以便了解完整的网络拓扑结构。
+**User Story:** As a user, I want the network graph to correctly display connections between nodes to understand the complete network topology.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 系统启动后 THEN 网络图 SHALL 显示所有节点和它们之间的连接线（边）
-2. WHEN 节点建立连接 THEN 系统 SHALL 在网络图中绘制连接线
-3. WHEN 连接断开 THEN 系统 SHALL 从网络图中移除对应的连接线
-4. WHEN 网络状态变化 THEN 系统 SHALL 只更新变化的连接，而不是重绘整个网络图
+1.  WHEN the system starts, THEN the network graph SHALL display all nodes and the connections (edges) between them.
+2.  WHEN nodes establish a connection, THEN the system SHALL draw a connecting line in the network graph.
+3.  WHEN a connection is broken, THEN the system SHALL remove the corresponding connecting line from the network graph.
+4.  WHEN the network status changes, THEN the system SHALL only update the changed connections, not redraw the entire graph.
 
-### 需求 7
+### Requirement 7
 
-**用户故事：** 作为用户，我希望界面更新时只重绘发生变化的部分，以便获得更好的性能和用户体验。
+**User Story:** As a user, I want only the changed parts of the interface to be redrawn for better performance and user experience.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 用户状态发生变化 THEN 系统 SHALL 只更新该用户的显示区域
-2. WHEN 区块链状态发生变化 THEN 系统 SHALL 只更新该区块链的显示区域
-3. WHEN 网络连接状态变化 THEN 系统 SHALL 只更新相关的连接线，不重绘整个网络图
-4. WHEN 数据更新 THEN 系统 SHALL 避免全局重绘，使用增量更新策略
+1.  WHEN a user's status changes, THEN the system SHALL only update that user's display area.
+2.  WHEN a blockchain's status changes, THEN the system SHALL only update that blockchain's display area.
+3.  WHEN a network connection's status changes, THEN the system SHALL only update the relevant connecting lines, not redraw the entire graph.
+4.  WHEN data is updated, THEN the system SHALL avoid global repaints and use an incremental update strategy.
 
-### 需求 8
+### Requirement 8
 
-**用户故事：** 作为用户，我希望日志按照时间顺序正确排列，以便追踪事件的发生顺序。
+**User Story:** As a user, I want the logs to be correctly ordered by time to track the sequence of events.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 新日志产生 THEN 系统 SHALL 将新日志添加到日志列表的底部
-2. WHEN 显示日志列表 THEN 系统 SHALL 按照时间顺序从上到下排列（最早的在上面，最新的在下面）
-3. WHEN 日志列表更新 THEN 系统 SHALL 自动滚动到最新的日志条目
-4. WHEN 用户手动滚动日志 THEN 系统 SHALL 暂停自动滚动功能
+1.  WHEN a new log is generated, THEN the system SHALL add it to the bottom of the log list.
+2.  WHEN displaying the log list, THEN the system SHALL arrange it chronologically from top to bottom (oldest at the top, newest at the bottom).
+3.  WHEN the log list is updated, THEN the system SHALL automatically scroll to the newest log entry.
+4.  WHEN the user manually scrolls the logs, THEN the system SHALL pause the auto-scrolling feature.
 
-### 需求 9
+### Requirement 9
 
-**用户故事：** 作为用户，我希望日志的显示更加紧凑和易读，以便在有限的空间内查看更多信息。
+**User Story:** As a user, I want the log display to be more compact and readable to view more information in a limited space.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 显示日志条目 THEN 系统 SHALL 将时间戳与日志消息显示在同一行
-2. WHEN 设置日志背景色 THEN 系统 SHALL 使用较浅的背景色以提高可读性
-3. WHEN 显示日志时间 THEN 系统 SHALL 使用紧凑的时间格式，不占用独立行
-4. WHEN 日志条目过多 THEN 系统 SHALL 减少每条日志的垂直高度以显示更多内容
+1.  WHEN displaying a log entry, THEN the system SHALL show the timestamp and the log message on the same line.
+2.  WHEN setting the log background color, THEN the system SHALL use a lighter background color for better readability.
+3.  WHEN displaying the log time, THEN the system SHALL use a compact time format that does not occupy a separate line.
+4.  WHEN there are too many log entries, THEN the system SHALL reduce the vertical height of each log entry to display more content.
 
-### 需求 10
+### Requirement 10
 
-**用户故事：** 作为用户，我希望界面响应更加流畅，以便获得更好的交互体验。
+**User Story:** As a user, I want the interface to be more responsive for a better interactive experience.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 用户进行界面交互 THEN 系统 SHALL 在200毫秒内响应用户操作
-2. WHEN 显示浮动窗口 THEN 系统 SHALL 使用平滑的动画过渡效果
-3. WHEN 更新网络图 THEN 系统 SHALL 使用增量更新而非完全重绘
-4. WHEN 处理大量数据 THEN 系统 SHALL 使用虚拟化技术保持界面流畅性
+1.  WHEN the user interacts with the interface, THEN the system SHALL respond to the user's action within 200 milliseconds.
+2.  WHEN displaying a floating window, THEN the system SHALL use a smooth animation transition effect.
+3.  WHEN updating the network graph, THEN the system SHALL use incremental updates instead of a full repaint.
+4.  WHEN handling large amounts of data, THEN the system SHALL use virtualization techniques to keep the interface smooth.

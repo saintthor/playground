@@ -1,146 +1,146 @@
-# 需求文档
+# Requirements Document
 
-## 介绍
+## Introduction
 
-这是一个 P2P 网络区块链演示 playground，用于展示分布式网络中区块链的传输、验证和安全机制。系统模拟包含 m 个节点和 n 个虚拟用户的网络环境，支持区块链和区块树两种数据结构的传输。系统根据玩家设定的定义文件一次性创建所有区块链，虚拟用户可以转移区块链，系统会自动处理网络传播、验证和安全检查。玩家（访问网页的真人）可以观察和控制整个网络的运行。
+This is a P2P network blockchain demonstration playground designed to showcase the transfer, validation, and security mechanisms of blockchains in a distributed network. The system simulates a network environment with m nodes and n virtual users, supporting the transfer of both blockchain and block tree data structures. The system creates all blockchains at once based on a definition file set by the player. Virtual users can transfer blockchains, and the system automatically handles network propagation, validation, and security checks. The player (the real person visiting the webpage) can observe and control the entire network's operation.
 
-## 需求
+## Requirements
 
-### 需求 1
+### Requirement 1
 
-**用户故事：** 作为玩家，我希望能够配置 P2P 网络参数，以便创建不同规模和特性的网络环境进行测试。
+**User Story:** As a player, I want to be able to configure P2P network parameters to create and test network environments of different scales and characteristics.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 玩家启动系统 THEN 系统 SHALL 提供配置界面允许设置节点数量、虚拟用户数量、节点连接数和连接故障率
-2. WHEN 玩家设置序列号范围和面值对应关系 THEN 系统 SHALL 根据配置生成相应数量和面值的区块链
-3. WHEN 玩家设置支付速率参数 THEN 系统 SHALL 根据该百分比在每个滴答中让相应比例的虚拟用户向他人转送区块链钞票
-4. WHEN 玩家修改滴答时间设置 THEN 系统 SHALL 调整网络传输和处理的时间基准
-5. WHEN 玩家在运行时调整网络参数 THEN 系统 SHALL 实时更新网络连接状态和故障率
+1.  WHEN the player starts the system, THEN the system SHALL provide a configuration interface to set the number of nodes, virtual users, node connections, and connection failure rate.
+2.  WHEN the player sets the serial number ranges and their corresponding denominations, THEN the system SHALL generate the appropriate number and value of blockchains.
+3.  WHEN the player sets the payment rate parameter, THEN the system SHALL have a corresponding percentage of virtual users transfer blockchain banknotes to others in each tick.
+4.  WHEN the player modifies the tick time setting, THEN the system SHALL adjust the time base for network transmission and processing.
+5.  WHEN the player adjusts network parameters at runtime, THEN the system SHALL update the network connection status and failure rate in real-time.
 
-### 需求 2
+### Requirement 2
 
-**用户故事：** 作为虚拟用户，我希望拥有唯一的密钥对身份标识，以便在网络中安全地进行区块链操作。
+**User Story:** As a virtual user, I want to have a unique key pair for identity verification to securely perform blockchain operations on the network.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 系统初始化 THEN 系统 SHALL 为每个虚拟用户生成唯一的公私钥对
-2. WHEN 系统初始化 THEN 系统 SHALL 为每个节点生成唯一的公私钥对
-3. WHEN 虚拟用户进行区块操作 THEN 系统 SHALL 使用私钥对操作数据进行签名
-4. WHEN 显示虚拟用户或节点标识 THEN 系统 SHALL 使用 Base64 编码的公钥作为标识符
-5. WHEN Base64 数据显示在界面上 THEN 系统 SHALL 提供缩略显示和鼠标悬停查看完整内容的功能
+1.  WHEN the system initializes, THEN it SHALL generate a unique public-private key pair for each virtual user.
+2.  WHEN the system initializes, THEN it SHALL generate a unique public-private key pair for each node.
+3.  WHEN a virtual user performs a block operation, THEN the system SHALL use the private key to sign the operation data.
+4.  WHEN displaying a virtual user or node identifier, THEN the system SHALL use the Base64 encoded public key as the identifier.
+5.  WHEN Base64 data is displayed on the interface, THEN the system SHALL provide a shortened view and a way to see the full content on hover.
 
-### 需求 3
+### Requirement 3
 
-**用户故事：** 作为网络节点，我希望能够与其他节点建立安全连接，以便参与 P2P 网络通信。
+**User Story:** As a network node, I want to be able to establish secure connections with other nodes to participate in P2P network communication.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 节点尝试连接其他节点 THEN 系统 SHALL 验证对方节点的签名
-2. WHEN 节点连接验证成功 THEN 系统 SHALL 建立连接并使用公钥标识对方节点
-3. WHEN 节点数量超过最大连接数限制 THEN 系统 SHALL 限制每个节点的连接数量
-4. WHEN 网络连接发生故障 THEN 系统 SHALL 根据设定的故障率模拟连接中断
+1.  WHEN a node attempts to connect to another node, THEN the system SHALL verify the other node's signature.
+2.  WHEN the node connection is successfully verified, THEN the system SHALL establish the connection and use the public key to identify the other node.
+3.  WHEN the number of connections exceeds the maximum limit, THEN the system SHALL limit the number of connections for each node.
+4.  WHEN a network connection fails, THEN the system SHALL simulate a connection interruption based on the set failure rate.
 
-### 需求 4
+### Requirement 4
 
-**用户故事：** 作为系统，我希望能够根据定义文件创建区块链，以便建立标准化的数字资产系统。
+**User Story:** As the system, I want to be able to create blockchains from a definition file to establish a standardized digital asset system.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 系统启动 THEN 系统 SHALL 读取区块链定义文件并解析序列号范围和面值对应关系
-2. WHEN 创建根区块 THEN 系统 SHALL 在根区块中包含定义文件的 SHA256 值和数字序列号
-3. WHEN 根区块创建完成 THEN 系统 SHALL 使用根区块的 SHA256 值作为区块链标识
-4. WHEN 根区块创建后 THEN 系统 SHALL 自动添加第二区块并随机指定一个虚拟用户为区块链主人
+1.  WHEN the system starts, THEN it SHALL read the blockchain definition file and parse the serial number ranges and their corresponding denominations.
+2.  WHEN creating a root block, THEN the system SHALL include the SHA256 hash of the definition file and the digital serial number in the root block.
+3.  WHEN the root block is created, THEN the system SHALL use the SHA256 hash of the root block as the blockchain identifier.
+4.  WHEN the root block is created, THEN the system SHALL automatically add a second block and randomly assign a virtual user as the blockchain owner.
 
-### 需求 5
+### Requirement 5
 
-**用户故事：** 作为区块链拥有者（虚拟用户），我希望能够将区块链转移给其他虚拟用户，以便实现数字资产的流通。
+**User Story:** As a blockchain owner (virtual user), I want to be able to transfer a blockchain to another virtual user to enable the circulation of digital assets.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 虚拟用户是区块链当前主人 THEN 系统 SHALL 允许该虚拟用户创建转送区块
-2. WHEN 创建转送区块 THEN 系统 SHALL 在区块中包含区块链标识、上级区块标识、目标虚拟用户公钥和添加时间
-3. WHEN 转送区块创建 THEN 系统 SHALL 使用添加者的签名作为区块标识
-4. WHEN 转送区块完成 THEN 系统 SHALL 向网络广播新区块
+1.  WHEN a virtual user is the current owner of a blockchain, THEN the system SHALL allow that user to create a transfer block.
+2.  WHEN creating a transfer block, THEN the system SHALL include the blockchain identifier, the parent block identifier, the target virtual user's public key, and the timestamp in the block.
+3.  WHEN a transfer block is created, THEN the system SHALL use the creator's signature as the block identifier.
+4.  WHEN the transfer block is complete, THEN the system SHALL broadcast the new block to the network.
 
-### 需求 6
+### Requirement 6
 
-**用户故事：** 作为网络节点，我希望能够验证接收到的区块，以便确保网络数据的完整性和合法性。
+**User Story:** As a network node, I want to be able to validate received blocks to ensure the integrity and legality of the network data.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 节点接收到新区块广播 THEN 系统 SHALL 首先验证区块的密码学签名
-2. WHEN 密码学验证通过 THEN 系统 SHALL 验证当前区块向上直到根区块的所有区块链关系和归属转移关系，对于以前验证过保存的数据可以省略
-3. WHEN 区块链关系验证通过 THEN 系统 SHALL 验证区块的合法性
-3. WHEN 验证区块添加者状态 THEN 系统 SHALL 确认添加者未被列入黑名单
-4. WHEN 验证区块链所有权 THEN 系统 SHALL 确认添加者为当前区块链主人
-5. WHEN 验证区块位置 THEN 系统 SHALL 确认同一位置没有其他区块
-6. WHEN 存在分叉 THEN 系统 SHALL 验证新区块是否添加在认可的分叉上
+1.  WHEN a node receives a new block broadcast, THEN the system SHALL first verify the block's cryptographic signature.
+2.  WHEN the cryptographic verification passes, THEN the system SHALL verify all blockchain relationships and ownership transfers up to the root block, skipping previously verified and saved data.
+3.  WHEN the blockchain relationship verification passes, THEN the system SHALL verify the block's legality.
+4.  WHEN verifying the block creator's status, THEN the system SHALL confirm the creator is not on the blacklist.
+5.  WHEN verifying blockchain ownership, THEN the system SHALL confirm the creator is the current owner of the blockchain.
+6.  WHEN verifying the block's position, THEN the system SHALL confirm there are no other blocks at the same position.
+7.  WHEN a fork exists, THEN the system SHALL verify that the new block is added to an approved fork.
 
-### 需求 7
+### Requirement 7
 
-**用户故事：** 作为网络安全系统，我希望能够检测和处理双花攻击，以便维护网络的安全性。
+**User Story:** As a network security system, I want to be able to detect and handle double-spend attacks to maintain network security.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 检测到同一位置有多个区块 THEN 系统 SHALL 识别为双花攻击
-2. WHEN 确认双花攻击 THEN 系统 SHALL 将攻击者加入黑名单
-3. WHEN 发现分叉事件 THEN 系统 SHALL 以高优先级广播警告消息
-4. WHEN 广播分叉警告 THEN 系统 SHALL 在消息中包含所有冲突的区块信息
+1.  WHEN multiple blocks are detected at the same position, THEN the system SHALL identify it as a double-spend attack.
+2.  WHEN a double-spend attack is confirmed, THEN the system SHALL add the attacker to a blacklist.
+3.  WHEN a fork event is detected, THEN the system SHALL broadcast a warning message with high priority.
+4.  WHEN broadcasting a fork warning, THEN the system SHALL include information about all conflicting blocks in the message.
 
-### 需求 8
+### Requirement 8
 
-**用户故事：** 作为区块链接收者，我希望系统能够验证转移给我的区块链，以便确保接收的资产是合法的。
+**User Story:** As a blockchain recipient, I want the system to validate the blockchain transferred to me to ensure the received asset is legitimate.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 新区块的目标虚拟用户是本节点虚拟用户 THEN 系统 SHALL 启动接收验证流程
-2. WHEN 进行时间验证 THEN 系统 SHALL 检查区块添加时间到接收时间不超过全网广播时间的两倍
-3. WHEN 时间验证失败 THEN 系统 SHALL 添加拒绝区块并广播
-4. WHEN 时间验证通过 THEN 系统 SHALL 继续广播新区块并等待确认期
-5. WHEN 在等待期内未收到冲突区块或警告 THEN 系统 SHALL 确认接收区块链
+1.  WHEN the target virtual user of a new block is a virtual user on the current node, THEN the system SHALL start the reception validation process.
+2.  WHEN performing time validation, THEN the system SHALL check that the time from block creation to reception does not exceed twice the network broadcast time.
+3.  WHEN time validation fails, THEN the system SHALL add a rejection block and broadcast it.
+4.  WHEN time validation passes, THEN the system SHALL continue to broadcast the new block and wait for a confirmation period.
+5.  WHEN no conflicting blocks or warnings are received during the waiting period, THEN the system SHALL confirm the reception of the blockchain.
 
-### 需求 9
+### Requirement 9
 
-**用户故事：** 作为玩家，我希望有直观的界面显示网络状态和操作日志，以便监控和分析系统运行情况。
+**User Story:** As a player, I want an intuitive interface that displays the network status and operation logs to monitor and analyze the system's operation.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 系统运行 THEN 界面 SHALL 显示控制面板、主面板和日志面板三个部分
-2. WHEN 有新的操作发生 THEN 日志面板 SHALL 记录区块添加、接受、拒绝、警告、拉黑等操作
-3. WHEN 日志条目超过100条 THEN 系统 SHALL 只显示最近100条，支持手动翻页查看历史
-4. WHEN 在主面板 THEN 系统 SHALL 显示所有虚拟用户的资产总额和区块链归属情况
+1.  WHEN the system is running, THEN the interface SHALL display three sections: a control panel, a main panel, and a log panel.
+2.  WHEN a new operation occurs, THEN the log panel SHALL record operations such as block additions, acceptances, rejections, warnings, and blacklistings.
+3.  WHEN the number of log entries exceeds 100, THEN the system SHALL only display the most recent 100 entries, with support for manual pagination to view history.
+4.  WHEN in the main panel, THEN the system SHALL display the total asset value of all virtual users and the ownership of all blockchains.
 
-### 需求 10
+### Requirement 10
 
-**用户故事：** 作为玩家，我希望能够交互式地查看详细信息，以便深入了解特定虚拟用户或区块链的状态。
+**User Story:** As a player, I want to be able to interactively view detailed information to deeply understand the status of a specific virtual user or blockchain.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 点击某个虚拟用户 THEN 系统 SHALL 显示该虚拟用户拥有的所有区块链，日志只显示相关条目
-2. WHEN 点击某条区块链 THEN 系统 SHALL 显示其中的所有区块，日志只显示相关条目
-3. WHEN 点击某条日志 THEN 系统 SHALL 显示与之相关的区块链和虚拟用户信息
-4. WHEN 鼠标悬停在 Base64 数据上 THEN 系统 SHALL 显示完整的数据内容
+1.  WHEN a virtual user is clicked, THEN the system SHALL display all blockchains owned by that user, and the logs SHALL only show relevant entries.
+2.  WHEN a blockchain is clicked, THEN the system SHALL display all blocks within it, and the logs SHALL only show relevant entries.
+3.  WHEN a log entry is clicked, THEN the system SHALL display information about the related blockchain and virtual user.
+4.  WHEN hovering over Base64 data, THEN the system SHALL display the full data content.
 
-### 需求 11
+### Requirement 11
 
-**用户故事：** 作为玩家，我希望能够验证 Base64 数据的真实性，以便了解密码学验证的具体实现过程。
+**User Story:** As a player, I want to be able to verify the authenticity of Base64 data to understand the specific implementation of cryptographic validation.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 玩家选中任何 Base64 格式的数据 THEN 系统 SHALL 显示一段 JavaScript 代码，表示验证这个数据（签名或哈希）的方法
-2. WHEN 显示验证代码 THEN 系统 SHALL 提供直接运行代码的功能
-3. WHEN 玩家需要外部验证 THEN 系统 SHALL 允许玩家复制代码到浏览器 console 中运行
-4. WHEN 验证代码运行 THEN 系统 SHALL 显示验证结果和相关的密码学信息
+1.  WHEN the player selects any Base64 formatted data, THEN the system SHALL display a JavaScript code snippet showing how to verify this data (signature or hash).
+2.  WHEN the verification code is displayed, THEN the system SHALL provide a feature to run the code directly.
+3.  WHEN the player needs external verification, THEN the system SHALL allow the player to copy the code to the browser console to run it.
+4.  WHEN the verification code is run, THEN the system SHALL display the validation result and related cryptographic information.
 
-### 需求 12
+### Requirement 12
 
-**用户故事：** 作为 playground 操作者，我希望能够控制系统的运行状态，以便进行各种测试场景。
+**User Story:** As a playground operator, I want to be able to control the system's running state to conduct various testing scenarios.
 
-#### 验收标准
+#### Acceptance Criteria
 
-1. WHEN 在控制面板 THEN 系统 SHALL 提供开始、暂停/继续、结束按钮
-2. WHEN 运行开始前 THEN 系统 SHALL 允许设置网络参数和编辑区块链定义文件
-3. WHEN 运行开始后 THEN 系统 SHALL 允许调整节点连接数和连接故障率
-4. WHEN 调整滴答时间滑块 THEN 系统 SHALL 改变滴答与真实时间的对应关系（最慢3秒，最快无限制）
-5. WHEN 玩家发出分叉攻击指令 THEN 系统 SHALL 让指定虚拟用户实施分叉攻击以测试安全性
+1.  WHEN in the control panel, THEN the system SHALL provide start, pause/resume, and stop buttons.
+2.  WHEN before the run starts, THEN the system SHALL allow setting network parameters and editing the blockchain definition file.
+3.  WHEN after the run starts, THEN the system SHALL allow adjusting the number of node connections and the connection failure rate.
+4.  WHEN adjusting the tick time slider, THEN the system SHALL change the correspondence between ticks and real-time (slowest 3 seconds, fastest unlimited).
+5.  WHEN the player issues a fork attack command, THEN the system SHALL have the specified virtual user carry out a fork attack to test security.
