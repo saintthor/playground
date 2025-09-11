@@ -259,6 +259,16 @@ class Text {
             en: 'Stop'
         });
         
+        this.textMap.set('transfer', {
+            cn: '发送',
+            en: 'Transfer'
+        });
+        
+        this.textMap.set('attack', {
+            cn: '攻击',
+            en: 'Attack'
+        });
+        
         // 主面板标签页
         this.textMap.set('network_tab', {
             cn: '网络',

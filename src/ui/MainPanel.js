@@ -876,7 +876,7 @@ class MainPanel {
     {
         console.log( 'MainPanal 处理语言变更:', language );
         
-        //this.render();
+        this.render();
         //this.tabManager.helpTabContent.onLanguageChanged( language );
         //this.tabManager.loadNetworkTabContent();
         //this.tabManager.loadUsersTabContent();

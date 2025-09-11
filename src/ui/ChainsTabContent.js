@@ -28,7 +28,7 @@ class ChainsTabContent {
         }
         
         if (!chainData || chainData.size === 0) {
-            container.innerHTML = '<p class="text-muted">${' + GetText(“sys_not_started”) + '}</p>';
+            container.innerHTML = '<p class="text-muted">${GetText("sys_not_started")}</p>';
             this.chainsGridInitialized = false;
             return;
         }
@@ -456,7 +456,7 @@ class ChainsTabContent {
         
         const container = document.getElementById('chains-container');
         if (container) {
-            container.innerHTML = '<p class="text-muted">${' + GetText(“sys_not_started”) + '}</p>';
+            container.innerHTML = '<p class="text-muted">${GetText("sys_not_started")}';
         }
     }
     
