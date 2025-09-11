@@ -23,6 +23,7 @@ class HelpTabContent {
             console.error('帮助内容容器未找到');
             return;
         }
+        lang = lang || window.Text.language;
         console.log( 'renderHelpContent', lang );
         if (!this.isInitialized) {
             const helpHTML = lang == 'en' ? this.genEnHelpHTML() : this.generateHelpHTML();
@@ -562,7 +563,7 @@ class HelpTabContent {
         }
         
         // 确保内容已渲染
-        this.renderHelpContent( window.Text.language );
+        this.renderHelpContent();
         
         // 滚动到指定章节
         setTimeout(() => {

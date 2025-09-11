@@ -32,11 +32,11 @@ class NetworkTabContent {
         
         if( !allPeers ) {
             statsContainer.innerHTML = `
-                <span class="network-stat">${GetText('node_label')}: 0</span>
-                <span class="network-stat">${GetText('connections_label')}: 0</span>
-                <span class="network-stat">${GetText('failures_label')}: 0</span>
+                <span class="network-stat" data-text="node_label">${GetText('node_label')}: 0</span>
+                <span class="network-stat" data-text="connections_label">${GetText('connections_label')}: 0</span>
+                <span class="network-stat" data-text="failures_label">${GetText('failures_label')}: 0</span>
             `;
-            visualContainer.innerHTML = `<p class="text-muted">${GetText('no_network_data_to_display')}</p>`;
+            visualContainer.innerHTML = `<p class="text-muted" data-text="no_network_data_to_display">${GetText('no_network_data_to_display')}</p>`;
             this.networkGraphInitialized = false;
             return;
         }
@@ -53,14 +53,14 @@ class NetworkTabContent {
         // 更新统计信息
         const ConnNum = nodeCount > 0 ? [...allPeers.values()].map( p => p.Connections.size ).reduce(( a, b ) => a + b ) / 2 : 0;
         statsContainer.innerHTML = `
-            <span class="network-stat">${GetText('node_label')}: ${ nodeCount }</span>
-            <span class="network-stat">${GetText('connections_label')}: ${ ConnNum || 0 }</span>
-            <span class="network-stat">${GetText('failures_label')}: </span>
+            <span class="network-stat" data-text="node_label">${GetText('node_label')}: ${ nodeCount }</span>
+            <span class="network-stat" data-text="connections_label">${GetText('connections_label')}: ${ ConnNum || 0 }</span>
+            <span class="network-stat" data-text="failures_label">${GetText('failures_label')}: </span>
         `;
         
         // 如果节点数为0，显示系统未启动状态
         if (nodeCount === 0) {
-            visualContainer.innerHTML = `<p class="text-muted">${GetText('sys_not_started')}</p>`;
+            visualContainer.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
             this.networkGraphInitialized = false;
             return;
         }
@@ -125,7 +125,7 @@ class NetworkTabContent {
         // 检查D3是否可用
         if (typeof d3 === 'undefined') {
             console.error(GetText('d3_not_loaded'));
-            container.innerHTML = `<div class="network-placeholder">${GetText('d3_not_loaded_placeholder')}</div>`;
+            container.innerHTML = `<div class="network-placeholder" data-text="d3_not_loaded_placeholder">${GetText('d3_not_loaded_placeholder')}</div>`;
             return;
         }
         
@@ -325,7 +325,7 @@ class NetworkTabContent {
             const nodeData = this.getNodeData(nodeId);
             
             if (!nodeData) {
-                detailsContainer.innerHTML = `<p class="text-muted">${GetText('no_node_selected')}</p>`;
+                detailsContainer.innerHTML = `<p class="text-muted" data-text="no_node_selected">${GetText('no_node_selected')}</p>`;
                 return;
             }
             
@@ -340,7 +340,7 @@ class NetworkTabContent {
             
         } catch (error) {
             console.error('显示节点详情失败:', error);
-            detailsContainer.innerHTML = `<p class="text-danger">${GetText('error_showing_node_details')}</p>`;
+            detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_node_details">${GetText('error_showing_node_details')}</p>`;
         }
     }
     
@@ -451,8 +451,8 @@ class NetworkTabContent {
         return `
             <div class="node-details">
                 <div class="node-details-header">
-                    <h5>${GetText('node_details_title')} ${nodeData.nodeName}</h5>
-                    <span class="node-id">${GetText('chain_id_label')} ${nodeId}</span>
+                    <h5 data-text="node_details_title">${GetText('node_details_title')} ${nodeData.nodeName}</h5>
+                    <span class="node-id" data-text="chain_id_label">${GetText('chain_id_label')} ${nodeId}</span>
                 </div>
                 
                 <!--div class="node-stats">

@@ -65,14 +65,14 @@ class MainPanel {
             <div class="main-panel-tabs">
                 <div class="tab-header">
                     <div class="tab-actions">
-                        <button class="btn btn-primary btn-sm" id="send-btn" data-text="tranfer" onclick="window.mainPanel.Transfer()">${GetText('transfer')}</button>
+                        <button class="btn btn-primary btn-sm" id="send-btn" data-text="transfer" onclick="window.mainPanel.Transfer()">${GetText('transfer')}</button>
                         <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">${GetText('attack')}</button>
                     </div>
                     <div class="tab-buttons">
-                        <button class="tab-button" data-tab="help">${GetText('help_tab')}</button>
-                        <button class="tab-button active" data-tab="network">${GetText('network_tab')}</button>
-                        <button class="tab-button" data-tab="users">${GetText('users_tab')}</button>
-                        <button class="tab-button" data-tab="chains">${GetText('chains_tab')}</button>
+                        <button class="tab-button" data-tab="help" data-text="help_tab">${GetText('help_tab')}</button>
+                        <button class="tab-button active" data-tab="network" data-text="network_tab">${GetText('network_tab')}</button>
+                        <button class="tab-button" data-tab="users" data-text="users_tab">${GetText('users_tab')}</button>
+                        <button class="tab-button" data-tab="chains" data-text="chains_tab">${GetText('chains_tab')}</button>
                     </div>
                 </div>
                 
@@ -88,15 +88,15 @@ class MainPanel {
                             <div class="network-layout">
                                 <div class="network-stats-panel">
                                     <div class="network-stats" id="network-stats">
-                                        <span class="network-stat" data-text="nodes_count">${GetText('node')}: 0</span>
-                                        <span class="network-stat" data-text="connections_count">${GetText('connection')}: 0</span>
-                                        <span class="network-stat" data-text="failures_count">${GetText('failures')}: 0</span>
+                                        <span class="network-stat" data-text="node">${GetText('node')}: 0</span>
+                                        <span class="network-stat" data-text="connection">${GetText('connection')}: 0</span>
+                                        <span class="network-stat" data-text="failures">${GetText('failures')}: 0</span>
                                     </div>
                                 </div>
                                 <div class="network-graph-panel">
                                     <div class="network-visual" id="network-visual">
                                         <div id="d3-network-container" style="width: 100%; height: 100%;">
-                                            <p class="text-muted">${GetText('sys_not_started')}</p>
+                                            <p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -104,7 +104,7 @@ class MainPanel {
                         </div>
                         <div class="tab-section-lower">
                             <div class="node-details-container" id="node-details-container">
-                                <p class="text-muted">${GetText('click_node_prompt')}</p>
+                                <p class="text-muted" data-text="click_node_prompt">${GetText('click_node_prompt')}</p>
                             </div>
                         </div>
                     </div>
@@ -112,12 +112,12 @@ class MainPanel {
                     <div class="tab-pane" id="users-tab">
                         <div class="tab-section-upper">
                             <div class="users-container" id="users-container">
-                                <p class="text-muted">${GetText('sys_not_started')}</p>
+                                <p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>
                             </div>
                         </div>
                         <div class="tab-section-lower">
                             <div class="user-details-container" id="user-details-container">
-                                <p class="text-muted">${GetText('click_user')}</p>
+                                <p class="text-muted" data-text="click_user">${GetText('click_user')}</p>
                             </div>
                         </div>
                     </div>
@@ -125,12 +125,12 @@ class MainPanel {
                     <div class="tab-pane" id="chains-tab">
                         <div class="tab-section-upper">
                             <div class="chains-container" id="chains-container">
-                                <p class="text-muted">${GetText('sys_not_started')}</p>
+                                <p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>
                             </div>
                         </div>
                         <div class="tab-section-lower">
                             <div class="chain-details-container" id="chain-details-container">
-                                <p class="text-muted">${GetText('click_chain')}</p>
+                                <p class="text-muted" data-text="click_chain">${GetText('click_chain')}</p>
                             </div>
                         </div>
                     </div>
@@ -876,8 +876,8 @@ class MainPanel {
     {
         console.log( 'MainPanal 处理语言变更:', language );
         
-        this.render();
-        //this.tabManager.helpTabContent.onLanguageChanged( language );
+        //this.render();
+        this.tabManager.helpTabContent.onLanguageChanged( language );
         //this.tabManager.loadNetworkTabContent();
         //this.tabManager.loadUsersTabContent();
         //this.tabManager.loadChainsTabContent();
