@@ -39,7 +39,15 @@ class LogPanel {
             return;
         }
         
-        container.innerHTML = `
+        // Always render the full content, let CSS handle visibility
+        // The minimized state is controlled by CSS display properties
+        const panelContent = container.querySelector('.panel-content');
+        if (!panelContent) {
+            console.error('日志面板内容容器未找到');
+            return;
+        }
+        
+        panelContent.innerHTML = `
             <div class="log-header">
                 <h3 data-text="log_panel">系统日志</h3>
                 <div class="log-controls">
@@ -99,6 +107,7 @@ class LogPanel {
     }
     
     bindEvents() {
+        // Always bind events since content is always rendered (CSS controls visibility)
         const clearBtn = document.getElementById('clear-logs');
         const exportBtn = document.getElementById('export-logs');
         

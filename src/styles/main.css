@@ -43,7 +43,7 @@ body {
 .app-main {
     flex: 1;
     display: grid;
-    grid-template-columns: 300px 1fr 350px;
+    grid-template-columns: 300px 1fr 60px;
     grid-template-rows: 1fr;
     gap: 1rem;
     padding: 1rem;
@@ -53,6 +53,16 @@ body {
 
 /* 控制面板最小化时的布局 */
 .app-main:has(.control-panel.minimized) {
+    grid-template-columns: 60px 1fr 60px;
+}
+
+/* 日志面板展开时的布局 */
+.app-main:has(.log-panel:not(.minimized)) {
+    grid-template-columns: 300px 1fr 350px;
+}
+
+/* 控制面板最小化且日志面板展开时的布局 */
+.app-main:has(.control-panel.minimized):has(.log-panel:not(.minimized)) {
     grid-template-columns: 60px 1fr 350px;
 }
 
@@ -171,6 +181,37 @@ body {
     min-width: 60px;
     width: 60px;
     cursor: pointer;
+}
+
+.log-panel.minimized .panel-content {
+    display: none;
+}
+
+.log-panel.minimized h2 {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.log-panel.minimized:hover {
+    min-width: 320px;
+    width: 320px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.log-panel.minimized:hover .panel-content {
+    display: flex;
+}
+
+.log-panel.minimized:hover h2 {
+    writing-mode: horizontal-tb;
+    text-orientation: initial;
+    padding: 1rem;
+    text-align: left;
+    font-size: 1.1rem;
 }
 
 /* 响应式设计 */
@@ -4844,6 +4885,7 @@ small.text-muted {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    min-height: 0;
 }
 
 .node-details-container .text-muted {

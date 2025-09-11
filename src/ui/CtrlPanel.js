@@ -241,6 +241,9 @@ class CtrlPanel {
 
         // 自动隐藏控制面板
         this.minimizeControlPanel();
+        
+        // 恢复日志面板
+        this.expandLogPanel();
     }
 
     handlePause() {
@@ -756,6 +759,16 @@ console.log('Result:', decoded);`;
         const controlPanel = document.getElementById('control-panel');
         if (controlPanel) {
             controlPanel.classList.add('minimized');
+        }
+    }
+
+    /**
+     * 恢复日志面板
+     */
+    expandLogPanel() {
+        const logPanel = document.getElementById('log-panel');
+        if (logPanel) {
+            logPanel.classList.remove('minimized');
         }
     }
 
