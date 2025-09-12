@@ -54,6 +54,11 @@ class Peer
         this.BroadcastTicks = Math.floor( Math.log( this.All.size ) / Math.log( minConns ) * 4 ) + 5;
     };
     
+    static ChkBlackList( userId )
+    {
+        return [...this.All.values()].map( p => p.BlackList.has( userId ) ? p.Id : -1 ).filter( Id => Id > 0 );
+    };
+    
     static async Update( currTick, minConnNum, breakRate = 0.1 )
     {
         //console.log( 'Peer.Update', currTick, minConnNum );
@@ -272,7 +277,7 @@ class Peer
             const PrevOwner = Prev.OwnerId;
             if( this.BlackList.has( PrevOwner ))
             {
-                throw "previous owner blacklisted."
+                throw "sender in blacklist."
             }
             const OtherChild = this.GetChild( Prev );
             if( OtherChild )
@@ -280,10 +285,6 @@ class Peer
                 this.BlackList.add( PrevOwner );
                 this.OnDoubleSpend( PrevOwner, block, OtherChild );
                 throw "double spending."
-            }
-            if( this.BlackList.has( PrevOwner ))
-            {
-                throw  "sender in blacklist.";
             }
         }
     }

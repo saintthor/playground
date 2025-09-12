@@ -252,10 +252,13 @@ class UsersTabContent {
      */
     generateUserDetailsHTML(userId, userData, userChainIds) {
         const userChains = [...userChainIds].map( cid => BlockChain.All.get( cid )).filter( c => c );
+        const BlackListedPeers = Peer.ChkBlackList( userId );
+        console.log( userId, BlackListedPeers );
         return `
             <div class="user-details">
                 <div class="user-details-header">
-                    <h5 data-text="user_details_title">${GetText('user_details_title')} ${this.truncateKey(userId)}</h5>
+                    <h5><span data-text="user_details_title">${GetText('user_details_title')}</span> ${this.truncateKey(userId)}</h5>
+                ${ BlackListedPeers.length > 0 ? ( '<span data-text="blist_by_peers">' + GetText( 'blist_by_peers' ) + '</span>' + BlackListedPeers.join( ', ' ) ) : '' }
                 </div>
                 
                 <div class="user-basic-info">

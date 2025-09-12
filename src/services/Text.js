@@ -664,6 +664,11 @@ class Text {
             en: 'Users View'
         });
         
+        this.textMap.set('blist_by_peers', {
+            cn: '用户被这些节点拉黑：',
+            en: 'Blacklisted by these Peers:'
+        });
+        
         this.textMap.set('help_blockchain_view', {
             cn: '区块链视图',
             en: 'Blockchain View'
