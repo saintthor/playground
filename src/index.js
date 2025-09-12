@@ -527,7 +527,7 @@ class App {
         this.uiManager.panels.log.AddLog( { dida: -1, peer: 'all', content: 'peers connected to others.', category: 'node' } );
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all', content: 'sent blockchains.', category: 'blockchain' } );
         
-        
+        this.uiManager.panels.log.switchTab( 'all' );
         // 生成模拟区块链数据
         //const chainDefinition = this.parseChainDefinition(config.chainDefinition);
         //let chainCounter = 1;

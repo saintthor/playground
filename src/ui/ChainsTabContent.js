@@ -356,8 +356,11 @@ class ChainsTabContent {
                         ${chainData.BlockNum ? chainData.BlockList.map( block => `
                             <div class="block-item ${block.Index === 0 ? 'root-block' : ''}">
                                 <div class="block-header">
-                                    <span class="block-index">#${block.Index}</span>
-                                    <span class="block-type" data-text="${block.Index === 0 ? 'root_block' : 'payment_block'}">${block.Index === 0 ? GetText('root_block') : GetText('payment_block')}</span>
+                                    <span>
+                                        <span class="block-index">#${block.Index}</span><br>
+                                        <span class="block-type" data-text="${block.Index === 0 ? 'root_block' : 'payment_block'}">${block.Index === 0 ? GetText('root_block') : GetText('payment_block')}</span>
+                                    </span>
+                                    <span class="detail-info-value" title="Id">${block.Id}</span>
                                 </div>
                                 <div class="block-content">
                                     <!--div class="block-field">

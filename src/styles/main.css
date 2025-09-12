@@ -175,6 +175,17 @@ body {
 /* 日志面板样式 */
 .log-panel {
     min-width: 320px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.log-panel .panel-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
 }
 
 .log-panel.minimized {
@@ -4122,10 +4133,13 @@ small.text-muted {
 
 .block-type {
     font-size: 0.8rem;
-    padding: 2px 6px;
+    padding: 2px;
     border-radius: 3px;
     background: #d4edda;
     color: #155724;
+    width: 6rem;
+    display:block;
+    margin-right: 1rem;
 }
 
 .block-item.root-block .block-type {
@@ -6408,43 +6422,85 @@ body.resizing .resize-handle {
     display: none !important;
 }
 
+/* Log panel hierarchy styles */
+.log-header {
+    flex-shrink: 0;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.log-tabs {
+    flex-shrink: 0;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
 .log-content {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    height: 100%;
 }
 
 .log-content .tab-content {
     flex: 1;
+    position: relative;
+    min-height: 0;
+    height: 100%;
 }
 
 .log-content .tab-pane {
-    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: none;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .log-content .tab-pane.active {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 0;
 }
 
 .log-list {
     flex: 1;
-    overflow-y: scroll !important;
+    overflow-y: auto !important;
     overflow-x: hidden;
     padding: 0.5rem;
-    max-height: 100%;
     box-sizing: border-box;
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+    min-height: 0;
+    height: 100%;
 }
 
 .log-entry {
-    padding: 0.5rem;
-    margin-bottom: 0.25rem;
+    padding: 0.5rem !important;
+    margin-bottom: 0.25rem !important;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    border-left: 3px solid #dee2e6;
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+    border-left: 3px solid #dee2e6 !important;
+    background: #f8f9fa !important;
+    color: #495057 !important;
+    display: block !important;
+    height: auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .log-entry.info {
@@ -6468,13 +6524,19 @@ body.resizing .resize-handle {
 }
 
 .log-timestamp {
-    color: #6c757d;
-    font-size: 0.75rem;
-    margin-right: 0.5rem;
+    color: #6c757d !important;
+    font-size: 0.75rem !important;
+    margin-right: 0.5rem !important;
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .log-message {
-    color: #495057;
+    color: #495057 !important;
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .log-placeholder {

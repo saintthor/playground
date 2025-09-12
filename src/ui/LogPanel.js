@@ -18,6 +18,10 @@ class LogPanel {
         try {
             this.render();
             this.bindEvents();
+            
+            // 立即设置活跃标签页，不要等待
+            this.switchTab( 'all' );
+            
             this.isInitialized = true;
             
             // 处理待处理的日志
@@ -25,7 +29,7 @@ class LogPanel {
                 this.AddLog( log );
             });
             this.pendingLogs = [];
-            setTimeout(() => this.switchTab( 'all' ), 500 );
+            
             console.log('LogPanel 初始化完成');
         } catch (error) {
             console.error('LogPanel 初始化失败:', error);
@@ -132,7 +136,7 @@ class LogPanel {
     
     AddLog( log ) // keys: dida, peer, user, blockchain, block, content, category, level
     {
-        //console.log( 'AddLog', log );
+        console.log( 'AddLog called with:', log );
         if( !this.isInitialized )
         {
             this.pendingLogs.push( log );
@@ -158,7 +162,6 @@ class LogPanel {
      */
     switchTab(tabName) {
         // 更新标签页按钮状态
-        console.log( 'switchTab', tabName );
         const tabButtons = document.querySelectorAll('#log-tabs .nav-link');
         tabButtons.forEach(button => {
             button.classList.remove('active');
@@ -189,7 +192,10 @@ class LogPanel {
         const currentTab = this.currentTab || 'all';
         const logList = document.getElementById(`${currentTab}-logs-list`);
         
-        if (!logList) return;
+        if (!logList) {
+            console.error( 'refreshCurrentTab: logList not found for:', currentTab );
+            return;
+        }
         
         // 清空当前显示
         logList.innerHTML = '';
@@ -274,11 +280,12 @@ class LogPanel {
 
     renderLogEntry(logEntry) {
         // 添加到所有日志标签页
-        //console.log( 'renderLogEntry', logEntry );
+        
         this.addToLogList('all-logs-list', logEntry);
         
         // 根据日志分类添加到对应标签页
         const category = this.getLogCategory(logEntry);
+        
         if (category !== 'all') {
             this.addToLogList(`${category}-logs-list`, logEntry);
         }
@@ -290,9 +297,11 @@ class LogPanel {
      * @param {Object} logEntry - 日志条目
      */
     addToLogList(listId, logEntry) {
-        //console.log( 'addToLogList', listId, logEntry );
         const logList = document.getElementById(listId);
-        if (!logList) return;
+        if (!logList) {
+            console.error( 'Log list element not found:', listId );
+            return;
+        }
         
         // 移除占位符
         const placeholder = logList.querySelector('.log-placeholder');
@@ -309,13 +318,11 @@ class LogPanel {
         const Pairs = [['Peer', logEntry.peer?.toString()], ['User', logEntry.user], ['Block', logEntry.block],
             ['Blockchain', logEntry.blockchain]].filter(( [k, v] ) => v ).map(( [k, v] ) => k + ':' + v.slice( 0, 8 ));
         const key = '[' + Pairs.join( ',' ) + ']';
-        //console.log( key, logEntry );
         logElement.className = `log-entry`;
         logElement.innerHTML = `
-            <span class="log-timestamp">${logEntry.dida}</span>
-            <span class="log-message">${key + ' ' + logEntry.content}</span>
+            <span class="log-timestamp">${logEntry.dida || 'N/A'}</span>
+            <span class="log-message">${key + ' ' + (logEntry.content || 'No content')}</span>
         `;
-        //console.log( 'createLogElement', logElement.innerHTML );
         return logElement;
     }
 

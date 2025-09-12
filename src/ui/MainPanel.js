@@ -23,7 +23,7 @@ class MainPanel {
             this.render();
             this.initTabMgr();
             this.isInitialized = true;
-            console.log( 'MainPanel 初始化完成' );
+            //console.log( 'MainPanel 初始化完成' );
         }
         catch( error )
         {
@@ -599,6 +599,7 @@ class MainPanel {
             this.stopRealTimeUpdate();
         }
         
+        this.tabManager.switchTab( 'network' );
         this.updateInterval = setInterval(() => {
             this.requestDataUpdate();
         }, 1000); // 每秒更新一次
