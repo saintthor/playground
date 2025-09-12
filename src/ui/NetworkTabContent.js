@@ -343,6 +343,11 @@ class NetworkTabContent {
             console.error('显示节点详情失败:', error);
             detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_node_details">${GetText('error_showing_node_details')}</p>`;
         }
+        
+        if( this.tabManager && this.tabManager.resizeManager )
+        {
+            setTimeout(() => this.tabManager.resizeManager.applyRatio( 'network', this.tabManager.resizeManager.getTabRatio( 'network' )), 0 );
+        }
     }
     
     /**

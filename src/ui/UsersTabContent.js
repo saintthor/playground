@@ -179,6 +179,11 @@ class UsersTabContent {
             console.error('显示用户详情失败:', error);
             detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_user_details">${GetText('error_showing_user_details')}</p>`;
         }
+        
+        if( this.tabManager && this.tabManager.resizeManager )
+        {
+            setTimeout(() => this.tabManager.resizeManager.applyRatio( 'users', this.tabManager.resizeManager.getTabRatio( 'users' )), 0 );
+        }
     }
     
     /**
