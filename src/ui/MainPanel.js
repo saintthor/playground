@@ -87,11 +87,6 @@ class MainPanel {
                         <div class="tab-section-upper">
                             <div class="network-layout">
                                 <div class="network-stats-panel">
-                                    <div class="network-stats" id="network-stats">
-                                        <span class="network-stat" data-text="node">${GetText('node')}: 0</span>
-                                        <span class="network-stat" data-text="connection">${GetText('connection')}: 0</span>
-                                        <span class="network-stat" data-text="failures">${GetText('failures')}: 0</span>
-                                    </div>
                                 </div>
                                 <div class="network-graph-panel">
                                     <div class="network-visual" id="network-visual">
@@ -255,9 +250,6 @@ class MainPanel {
             const html = `
                 <div class="network-graph-display">
                     <div class="network-stats">
-                        <span class="network-stat">${GetText('node')}: ${nodeCount}</span>
-                        <span class="network-stat">${GetText('connection')}: ${networkData.activeConnections || 0}</span>
-                        <span class="network-stat">${GetText('failures')}: ${failedConnections}</span>
                     </div>
                     <div class="network-visual">
                         <div id="d3-network-container" style="width: 100%; height: 100%;"></div>

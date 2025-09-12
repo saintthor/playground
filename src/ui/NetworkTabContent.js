@@ -17,6 +17,7 @@ class NetworkTabContent {
         this.networkSimulation = null;
         this.ConnsJson = null;
         this.NodeColors = new Map();
+        this.ShowedMsgs = new Set();
         
         console.log('NetworkTabContent 初始化完成');
     }
@@ -31,11 +32,11 @@ class NetworkTabContent {
         const visualContainer = document.getElementById('d3-network-container');
         
         if( !allPeers ) {
-            statsContainer.innerHTML = `
-                <span class="network-stat" data-text="node_label">${GetText('node_label')}: 0</span>
-                <span class="network-stat" data-text="connections_label">${GetText('connections_label')}: 0</span>
-                <span class="network-stat" data-text="failures_label">${GetText('failures_label')}: 0</span>
-            `;
+            //statsContainer.innerHTML = `
+                //<span class="network-stat" data-text="node_label">${GetText('node_label')}: 0</span>
+                //<span class="network-stat" data-text="connections_label">${GetText('connections_label')}: 0</span>
+                //<span class="network-stat" data-text="failures_label">${GetText('failures_label')}: 0</span>
+            //`;
             visualContainer.innerHTML = `<p class="text-muted" data-text="no_network_data_to_display">${GetText('no_network_data_to_display')}</p>`;
             this.networkGraphInitialized = false;
             return;
@@ -52,11 +53,11 @@ class NetworkTabContent {
         
         // 更新统计信息
         const ConnNum = nodeCount > 0 ? [...allPeers.values()].map( p => p.Connections.size ).reduce(( a, b ) => a + b ) / 2 : 0;
-        statsContainer.innerHTML = `
-            <span class="network-stat" data-text="node_label">${GetText('node_label')}: ${ nodeCount }</span>
-            <span class="network-stat" data-text="connections_label">${GetText('connections_label')}: ${ ConnNum || 0 }</span>
-            <span class="network-stat" data-text="failures_label">${GetText('failures_label')}: </span>
-        `;
+        //statsContainer.innerHTML = `
+            //<span class="network-stat" data-text="node_label">${GetText('node_label')}: ${ nodeCount }</span>
+            //<span class="network-stat" data-text="connections_label">${GetText('connections_label')}: ${ ConnNum || 0 }</span>
+            //<span class="network-stat" data-text="failures_label">${GetText('failures_label')}: </span>
+        //`;
         
         // 如果节点数为0，显示系统未启动状态
         if (nodeCount === 0) {
@@ -452,7 +453,6 @@ class NetworkTabContent {
             <div class="node-details">
                 <div class="node-details-header">
                     <h5 data-text="node_details_title">${GetText('node_details_title')} ${nodeData.nodeName}</h5>
-                    <span class="node-id" data-text="node_id_label">${GetText('node_id_label')} ${nodeId}</span>
                 </div>
                 
                 <!--div class="node-stats">
@@ -554,6 +554,21 @@ class NetworkTabContent {
         }
     }
     
+    ShowMessage( msg )
+    {
+        console.log( 'ShowMessage', msg.Id );
+        if( this.ShowedMsgs.has( msg.Id ))
+        {
+            return;
+        }
+        const MsgContainer = document.querySelector( '.network-stats-panel' );
+        const MsgIcon = document.createElement( 'div' );
+        MsgIcon.innerHTML = `<div class="msgicon" style="background-color:${ msg.color }">&emsp;</div>
+                            <span>${ msg.type }</span>`;
+        MsgIcon.title = JSON.stringify( msg );
+        MsgContainer.appendChild( MsgIcon );
+        this.ShowedMsgs.add( msg.Id );
+    }
     /**
      * 重置网络图
      */
@@ -567,13 +582,13 @@ class NetworkTabContent {
         const statsContainer = document.getElementById('network-stats');
         const visualContainer = document.getElementById('d3-network-container');
         
-        if (statsContainer) {
-            statsContainer.innerHTML = `
-                <span class="network-stat" data-text="node_label">${GetText('node_label')}: 0</span>
-                <span class="network-stat" data-text="connections_label">${GetText('connections_label')}: 0</span>
-                <span class="network-stat" data-text="failures_label">${GetText('failures_label')}: 0</span>
-            `;
-        }
+        //if (statsContainer) {
+            //statsContainer.innerHTML = `
+                //<span class="network-stat" data-text="node_label">${GetText('node_label')}: 0</span>
+                //<span class="network-stat" data-text="connections_label">${GetText('connections_label')}: 0</span>
+                //<span class="network-stat" data-text="failures_label">${GetText('failures_label')}: 0</span>
+            //`;
+        //}
         
         if (visualContainer) {
             visualContainer.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;

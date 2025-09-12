@@ -136,7 +136,7 @@ class LogPanel {
     
     AddLog( log ) // keys: dida, peer, user, blockchain, block, content, category, level
     {
-        console.log( 'AddLog called with:', log );
+        //console.log( 'AddLog called with:', log );
         if( !this.isInitialized )
         {
             this.pendingLogs.push( log );

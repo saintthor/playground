@@ -10,7 +10,7 @@ class Peer
         this.Users = new Map();
         this.LocalBlocks = new Map();
         this.Connections = new Map();
-        this.RecvedMsgs = new Set();
+        this.RecvedMsgs = new Map();
         this.BlackList = new Set();
         this.Messages = new Map();      //on the way
         this.WaitList = [];
@@ -72,7 +72,7 @@ class Peer
                             window.LogPanel.AddLog( { dida: currTick, peer: p.Id, block: w[0].Id, content: 'new block trusted.', category: 'peer' } );
                             w[0].Status = 0;
                         }
-                        console.log( 'Update WaitList', p.Id, w );
+                        //console.log( 'Update WaitList', p.Id, w );
                         Trusted.push( p.Id );
                         return false;
                     }
@@ -86,6 +86,7 @@ class Peer
                 if( tick <= currTick )
                 {
                     window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: msg.Id.slice( 0, 11 ) + ' message received.', category: 'peer' } );
+                    msg.SaveAt = currTick;
                     if( await p.Receive( msg, neighborId ))
                     {
                         console.log( p.Id, 'received', msg.Id );
@@ -142,6 +143,8 @@ class Peer
             n.AddMessage( msg, this.Id, currTick + t );
             window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: ( sourceId ? 'start broadcasting.' : 'continue broadcasting.' ) + msg.Id.slice( 0, 16 ), category: 'peer' } );
         } );
+        
+        sourceId || window.app.NetWorkPanal.ShowMessage( msg );
     };
 
     async Receive( message, neighborId )
@@ -154,7 +157,8 @@ class Peer
         {
             return false;
         }
-        this.RecvedMsgs.add( message.Id );
+        
+        this.RecvedMsgs.set( message.Id, message );
         
         if( message.type === 'NewBlock' )
         {
@@ -286,7 +290,8 @@ class Peer
     
     OnDoubleSpend( preOwner, block, block0 )
     {
-        const AlarmMsg = { Id: "Alarm" + preOwner, type: "Alarm", blocks: [block.TransData(), block0.TransData()],
+        const AlarmMsg = { Id: "Alarm" + preOwner.slice( 0, 13 ) + this.Id + block.Id.slice( 0, 13 ),
+                            type: "Alarm", blocks: [block.TransData(), block0.TransData()],
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         this.Broadcast( AlarmMsg, window.app.Tick );
         this.WaitList = this.WaitList.filter(( [b, t] ) => b.Id != block.Id && b.Id != block0.Id );

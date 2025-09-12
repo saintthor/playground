@@ -436,7 +436,7 @@ class ResizeManager {
                 // 计算精确的像素高度，确保总和等于可用高度
                 const upperHeight = Math.round(availableHeight * ratio);
                 const lowerHeight = availableHeight - upperHeight; // 确保精确互补
-                console.log( upperHeight, lowerHeight, availableHeight, containerHeight, upperSection, lowerSection );
+                //console.log( upperHeight, lowerHeight, availableHeight, containerHeight, upperSection, lowerSection );
                 // 直接设置像素高度，避免百分比计算误差
                 upperSection.style.height = `${upperHeight}px`;
                 lowerSection.style.height = `${lowerHeight}px`;

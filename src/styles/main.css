@@ -22,7 +22,7 @@ body {
 
 /* 头部样式 */
 .app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #d67eea 0%, #764ba2 100%);
     color: white;
     padding: 1rem 2rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -629,7 +629,7 @@ body {
 }
 
 .network-stats-panel {
-    width: 120px;
+    width: 150px;
     flex-shrink: 0;
     background: #f8f9fa;
     border: 1px solid #e9ecef;
@@ -638,6 +638,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    overflow-y: scroll;
 }
 
 .network-graph-panel {
@@ -831,7 +832,7 @@ body {
 
 /* 帮助图标样式 */
 .help-icon {
-    background: #17a2b8;
+    background: #a217b8;
     color: white;
     border: none;
     border-radius: 50%;
@@ -3451,7 +3452,14 @@ small.text-muted {
 }
 
 
-
+.msgicon {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+}
 
 
 .user-id, .chain-id {
