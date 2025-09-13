@@ -241,7 +241,13 @@ class Peer
         if( block.Index >= 1 && this.Users.has( block.OwnerId ))
         {
             //console.log( 'Receive find owner', block.OwnerId.slice( 0, 9 ), block.RootId.slice( 0, 9 ));
-            BlockChain.All.get( block.RootId ).Update( this.Users.get( block.OwnerId ), block );
+            const Receiver = this.Users.get( block.OwnerId )
+            BlockChain.All.get( block.RootId ).Update( Receiver, block );
+            
+            if( block.Index > 1 )
+            {
+                Receiver.StartWait( block.Id, window.app.Tick + 200 );
+            }
         }
     }
     

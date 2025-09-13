@@ -791,6 +791,7 @@ class App {
     updateTick() {
         this.currentTick++;
         Peer.Update( this.currentTick, this.config.maxConnections, this.config.failureRate );
+        User.WaitTrusted( this.currentTick );
         
         // 更新转账状态 - 随机改变一些用户和区块链的转账状态
         if (this.currentTick % 10 === 50) { // 每10个滴答更新一次状态

@@ -174,7 +174,7 @@ class BlockChain
     
     Update( owner, block )
     {
-        block.Index > 1 && window.LogPanel.AddLog( { dida: window.app.Tick, blockchain: this.Id, block: block.Id, content: 'blockchain transfer accepted by ' + owner.Id.slice( 0, 8 ), category: 'blockchain' } );
+        block.Index > 1 && window.LogPanel.AddLog( { dida: window.app.Tick, blockchain: this.Id, block: block.Id, content: 'blockchain transfer accepted by one peer of ' + owner.Id.slice( 0, 8 ), category: 'blockchain' } );
         if( this.owner )
         {
             this.owner.SetOwnChains( this.Id, false );

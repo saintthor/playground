@@ -68,6 +68,7 @@ class User
     {
         this.OwnChains = new Set();
         this.Peers = new Map();
+        this.Waiting = new Map();
         this.ChainNum = 0;
         this.LastSend = null;
         return ( async () =>
@@ -188,5 +189,30 @@ class User
         let block = await new Block( prevIdx + 1, dida, data, prevId );
         block.Id = await this.Sign( block.Hash );
         return block;
+    };
+    
+    StartWait( blockId, tick )
+    {
+        this.Waiting.set( blockId, tick );
+    };
+    
+    static WaitTrusted( tick )
+    {
+        [...this.All.values()].forEach( u =>
+        {
+            [...u.Waiting.entries()].forEach(( [k, v] ) =>
+            {
+                //console.log( 'WaitTrusted', k, v );
+                if( [...u.Peers.values()].map( p => p.LocalBlocks.get( k )).every( b => b && b.Status === 0 ))
+                {
+                    window.LogPanel.AddLog( { dida: tick, user: u.Id, block: k, content: 'Receiver trusts the transfer well.', category: 'user' } );
+                    u.Waiting.delete( k );
+                }
+                else if( v < tick )
+                {
+                    u.Waiting.delete( k );
+                }
+            } );
+        } );
     };
 }
