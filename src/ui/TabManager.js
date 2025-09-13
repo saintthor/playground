@@ -125,7 +125,7 @@ class TabManager {
             
             // 记录切换完成时间
             const switchTime = performance.now() - this.switchStartTime;
-            console.log(`标签页切换完成: ${previousTab} -> ${tabName}, 耗时: ${switchTime.toFixed(2)}ms`);
+            //console.log(`标签页切换完成: ${previousTab} -> ${tabName}, 耗时: ${switchTime.toFixed(2)}ms`);
             
             // 如果切换时间超过100ms，记录警告
             if (switchTime > 100) {

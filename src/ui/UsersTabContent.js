@@ -105,7 +105,7 @@ class UsersTabContent {
             
             // 切换日志面板到用户日志
             if (this.app && this.app.logPanel) {
-                this.app.logPanel.switchToCategory('user');
+                this.app.logPanel.switchToCategory( 'user', userId );
             }
             
             // 保存选中状态到标签页管理器

@@ -854,6 +854,8 @@ body {
     transform: scale(1.1);
 }
 
+.hide { display: none; }
+
 .system-controls-header {
     display: flex;
     align-items: center;

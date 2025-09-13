@@ -105,6 +105,9 @@ class LogPanel {
                             <div class="log-placeholder" data-text="no_blockchain_logs">暂无区块链日志</div>
                         </div>
                     </div>
+                    <div class="tab-pane" id="filter-logs-content">
+                        <div class="log-list" id="filter-logs-list"></div>
+                    </div>
                 </div>
             </div>
         `;
@@ -211,7 +214,7 @@ class LogPanel {
             logList.innerHTML = `<div class="log-placeholder">${placeholder}</div>`;
         } else {
             filteredLogs.forEach(log => {
-                const logElement = this.createLogElement(log);
+                const logElement = this.createLogElement( log, currentTab.slice( 0, 1 ));
                 logList.appendChild(logElement);
             });
         }
@@ -272,9 +275,25 @@ class LogPanel {
      * 切换到指定的日志标签页（供外部调用）
      * @param {string} category - 日志分类 (node, user, blockchain)
      */
-    switchToCategory(category) {
-        if (['node', 'user', 'blockchain'].includes(category)) {
-            this.switchTab(category);
+    switchToCategory( category, itemId )
+    {
+        if( ['node', 'user', 'blockchain'].includes( category ))
+        {
+            this.switchTab( category );
+            const tabPane = document.querySelector( '#log-tab-content .active' );
+            tabPane.classList.remove( 'active' );
+        
+            document.getElementById( `filter-logs-content` ).classList.add( 'active' );
+            const FilterList = document.getElementById( `filter-logs-list` );
+            FilterList.innerHTML = '';
+            tabPane.querySelectorAll( '.log-entry' ).forEach( div =>
+            {
+                console.log( div );
+                if( div.childNodes[5].innerText == itemId )
+                {
+                    FilterList.appendChild( div );
+                }
+            } );
         }
     }
 
@@ -309,11 +328,14 @@ class LogPanel {
             placeholder.remove();
         }
         
-        const logElement = this.createLogElement(logEntry);
+        const logElement = this.createLogElement( logEntry, listId.slice( 0, 1 ));
         logList.appendChild(logElement);
     }
 
-    createLogElement(logEntry) {
+    createLogElement( logEntry, listName )
+    {
+        const KeyId = { a: '', u: logEntry.user, n: logEntry.peer?.toString(), b: logEntry.blockchain }[listName];
+        //console.log( KeyId, listName, logEntry );
         const logElement = document.createElement('div');
         const Pairs = [['Peer', logEntry.peer?.toString()], ['User', logEntry.user], ['Block', logEntry.block],
             ['Blockchain', logEntry.blockchain]].filter(( [k, v] ) => v ).map(( [k, v] ) => k + ':' + v.slice( 0, 8 ));
@@ -322,6 +344,7 @@ class LogPanel {
         logElement.innerHTML = `
             <span class="log-timestamp">${logEntry.dida || 'N/A'}</span>
             <span class="log-message">${key + ' ' + (logEntry.content || 'No content')}</span>
+            <span class="hide">${ KeyId }</span>
         `;
         return logElement;
     }

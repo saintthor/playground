@@ -225,8 +225,6 @@ class NetworkTabContent {
         
         // 存储连接数据以便后续更新
         this.networkSimulation = simulation;
-        
-        console.log(`网络图渲染完成: ${nodes.length} 个节点, ${conns.length} 个连接`);
     }
     
     /**
@@ -243,7 +241,7 @@ class NetworkTabContent {
             
             // 切换日志面板到节点日志
             if (this.app && this.app.logPanel) {
-                this.app.logPanel.switchToCategory('node');
+                this.app.logPanel.switchToCategory( 'node', nodeId );
             }
             
             // 保存选中状态到标签页管理器
@@ -561,8 +559,9 @@ class NetworkTabContent {
     
     ShowMessage( msg )
     {
-        console.log( 'ShowMessage', msg.Id );
-        if( this.ShowedMsgs.has( msg.Id ))
+        const MsgId = ( msg.from || '' ) + msg.Id;
+        console.log( 'ShowMessage', MsgId );
+        if( this.ShowedMsgs.has( MsgId ))
         {
             return;
         }
@@ -572,7 +571,7 @@ class NetworkTabContent {
                             <span>${ msg.type }</span>`;
         MsgIcon.title = JSON.stringify( msg );
         MsgContainer.appendChild( MsgIcon );
-        this.ShowedMsgs.add( msg.Id );
+        this.ShowedMsgs.add( MsgId );
     }
     /**
      * 重置网络图

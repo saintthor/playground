@@ -115,7 +115,7 @@ class ChainsTabContent {
             
             // 切换日志面板到区块链日志
             if (this.app && this.app.logPanel) {
-                this.app.logPanel.switchToCategory('blockchain');
+                this.app.logPanel.switchToCategory( 'blockchain', chainId );
             }
             
             // 保存选中状态到标签页管理器

@@ -94,7 +94,7 @@ class Peer
                     msg.SaveAt = currTick;
                     if( await p.Receive( msg, neighborId ))
                     {
-                        console.log( p.Id, 'received', msg.Id );
+                        //console.log( p.Id, 'received', msg.Id );
                         Reached.push( [p.Id, msg.color] );
                         p.Broadcast( msg, currTick, neighborId );
                     }
@@ -291,7 +291,7 @@ class Peer
     
     OnDoubleSpend( preOwner, block, block0 )
     {
-        const AlarmMsg = { Id: "Alarm" + preOwner.slice( 0, 13 ) + this.Id + block.Id.slice( 0, 13 ),
+        const AlarmMsg = { Id: "Alarm" + preOwner.slice( 0, 13 ) + block.Id.slice( 0, 13 ), from: this.Id,
                             type: "Alarm", blocks: [block.TransData(), block0.TransData()],
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         this.Broadcast( AlarmMsg, window.app.Tick );
