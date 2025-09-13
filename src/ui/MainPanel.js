@@ -90,6 +90,7 @@ class MainPanel {
                                 </div>
                                 <div class="network-graph-panel">
                                     <div class="network-visual" id="network-visual">
+                                        <button class="clearbtn" data-text="clear_colors" onclick="window.app.NetWorkPanal.ClearAll()">${GetText('clear_colors')}</button>
                                         <div id="d3-network-container" style="width: 100%; height: 100%;">
                                             <p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>
                                         </div>

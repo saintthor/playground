@@ -289,6 +289,11 @@ class NetworkTabContent {
         this.selectedNode = nodeId;
     }
     
+    ClearAll()
+    {
+        document.getElementById( 'd3-network-container' ).querySelectorAll( `circle` ).forEach( c => c.setAttribute( 'fill', '#007bff' ));
+    }
+    
     UpdateTrans( reached, trusted )
     {
         //console.log( 'UpdateTrans', reached, trusted );
@@ -307,7 +312,6 @@ class NetworkTabContent {
         
         AlterNodes.forEach( id => networkContainer.querySelector( `[data-node-id="${id}"] circle` )?.setAttribute( 'fill', this.NodeColors.get( id )));
     }
-    
     /**
      * 显示节点详情
      * @param {number} nodeId - 节点ID

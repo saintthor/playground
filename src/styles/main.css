@@ -856,6 +856,8 @@ body {
 
 .hide { display: none; }
 
+.clearbtn { position: absolute; top: 5px; left: 5px; padding: 4px; z-index: 99; }
+
 .system-controls-header {
     display: flex;
     align-items: center;

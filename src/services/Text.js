@@ -770,6 +770,11 @@ class Text {
             en: 'Stop Button'
         });
         
+        this.textMap.set('clear_colors', {
+            cn: '清除节点颜色',
+            en: 'Clear Colors'
+        });
+        
         this.textMap.set('help_stop_button_desc', {
             cn: '完全停止模拟并重置系统状态。停止后可以修改配置重新开始。',
             en: 'Completely stop simulation and reset system state. Configuration can be modified and restarted after stopping.'
