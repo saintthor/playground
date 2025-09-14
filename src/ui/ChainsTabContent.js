@@ -1,6 +1,6 @@
 /**
- * ChainsTabContent - 区块链标签页内容组件
- * 管理区块链标签页的显示和交互
+ * ChainsTabContent - Chains Tab Content Component
+ * Manages the display and interaction of the chains tab.
  */
 class ChainsTabContent {
     constructor(tabManager) {
@@ -8,19 +8,17 @@ class ChainsTabContent {
         this.mainPanel = tabManager.mainPanel;
         this.app = tabManager.mainPanel.app;
         
-        // 区块链相关状态
         this.selectedChain = null;
         this.chainsGridInitialized = false;
         
-        console.log('ChainsTabContent 初始化完成');
+        console.log('ChainsTabContent initialized');
     }
     
     /**
-     * 渲染区块链网格
-     * @param {Map} chainData - 区块链数据
+     * Renders the chains grid.
+     * @param {Map} chainData - The chain data.
      */
     renderChainsGrid(chainData) {
-        //console.log( chainData.size, BlockChain.All.size );
         const container = document.getElementById('chains-container');
         if (!container) {
             console.error(GetText('chains_container_not_found'));
@@ -34,7 +32,6 @@ class ChainsTabContent {
         }
         
         this.AllChains = chainData;
-        // 检查是否已经有区块链网格，如果没有则创建
         let chainsGrid = container.querySelector('.chains-grid');
         if (!chainsGrid) {
             chainsGrid = document.createElement('div');
@@ -44,24 +41,20 @@ class ChainsTabContent {
             this.chainsGridInitialized = true;
         }
         
-        // 只更新发生变化的区块链卡片
         for (const [chainId, chain] of chainData) {
             let chainCard = chainsGrid.querySelector(`[data-chain-id="${chainId}"]`);
             const isTransferring = chain.isTransferring || false;
             
             if( !chainCard )
             {
-                // 创建新的区块链卡片
                 chainCard = document.createElement( 'div' );
                 chainCard.className = `chain-card ${ isTransferring ? 'transferring' : '' }`;
                 chainCard.setAttribute( 'data-chain-id', chainId );
                 
-                // 显示区块链ID的前6个字符
                 const chainIdPreview = this.generateChainIdPreview( chainId );
                 chainCard.innerHTML = `<span class="chain-id-preview">${ chainIdPreview }</span>`;
                 chainsGrid.appendChild( chainCard );
                 
-                // 添加点击事件监听器
                 chainCard.addEventListener( 'click', () => 
                 {
                     this.handleChainClick( chainId );
@@ -69,7 +62,6 @@ class ChainsTabContent {
             } 
             else 
             {
-                // 更新转移状态样式
                 if( isTransferring && !chainCard.classList.contains( 'transferring' ) )
                 {
                     chainCard.classList.add( 'transferring' );
@@ -81,7 +73,6 @@ class ChainsTabContent {
             }
         }
         
-        // 移除不存在的区块链卡片
         const existingCards = chainsGrid.querySelectorAll('.chain-card');
         existingCards.forEach(card => {
             const chainId = card.getAttribute('data-chain-id');
@@ -90,11 +81,9 @@ class ChainsTabContent {
             }
         });
         
-        console.log(`区块链网格渲染完成: ${chainData.size} 个区块链`);
+        console.log(`Chains grid rendered: ${chainData.size} chains`);
         
-        // 触发ResizeManager重新应用比例，确保高度设置正确
         if (this.tabManager && this.tabManager.resizeManager) {
-            // 使用setTimeout确保DOM更新完成后再应用比例
             setTimeout(() => {
                 this.tabManager.resizeManager.applyRatio('chains', this.tabManager.resizeManager.getTabRatio('chains'));
             }, 0);
@@ -102,49 +91,43 @@ class ChainsTabContent {
     }
     
     /**
-     * 处理区块链点击事件
-     * @param {string} chainId - 区块链ID
+     * Handles a chain click event.
+     * @param {string} chainId - The ID of the clicked chain.
      */
     handleChainClick(chainId) {
         try {
-            // 更新选中状态
             this.updateChainSelection(chainId);
             
-            // 显示区块链详情
             this.showChainDetails(chainId);
             
-            // 切换日志面板到区块链日志
             if (this.app && this.app.logPanel) {
                 this.app.logPanel.switchToCategory( 'blockchain', chainId );
             }
             
-            // 保存选中状态到标签页管理器
             this.tabManager.handleStateChange('chains', {
                 selectedChain: chainId
             });
             
-            console.log('区块链点击处理完成:', chainId);
+            console.log('Chain click handled:', chainId);
             
         } catch (error) {
-            console.error('处理区块链点击失败:', error);
+            console.error('Failed to handle chain click:', error);
         }
     }
     
     /**
-     * 更新区块链选中状态
-     * @param {string} chainId - 区块链ID
+     * Updates the chain selection.
+     * @param {string} chainId - The ID of the selected chain.
      */
     updateChainSelection(chainId) {
         const chainsContainer = document.getElementById('chains-container');
         if (!chainsContainer) return;
         
-        // 清除之前的选中状态
         const previousSelected = chainsContainer.querySelectorAll('.chain-card.selected');
         previousSelected.forEach(card => {
             card.classList.remove('selected');
         });
         
-        // 设置新的选中状态
         const selectedCard = chainsContainer.querySelector(`[data-chain-id="${chainId}"]`);
         if (selectedCard) {
             selectedCard.classList.add('selected');
@@ -154,8 +137,8 @@ class ChainsTabContent {
     }
     
     /**
-     * 显示区块链详情
-     * @param {string} chainId - 区块链ID
+     * Shows the chain details.
+     * @param {string} chainId - The ID of the chain.
      */
     showChainDetails(chainId) {
         const detailsContainer = document.getElementById('chain-details-container');
@@ -165,7 +148,6 @@ class ChainsTabContent {
         }
         
         try {
-            // 获取区块链数据
             const chainData = this.AllChains.get( chainId );
             
             if (!chainData) {
@@ -173,29 +155,25 @@ class ChainsTabContent {
                 return;
             }
             
-            // 获取区块链拥有者信息
             const ownerData = chainData.Owner;
             
-            // 生成区块链详情HTML
             const detailsHTML = this.generateChainDetailsHTML(chainId, chainData, ownerData);
             detailsContainer.innerHTML = detailsHTML;
             
-            // 添加has-content类以启用滚动条
             detailsContainer.classList.add('has-content');
             
-            // 强制重新计算布局以确保滚动条正确显示
             this.forceLayoutRecalculation();
             
-            console.log('区块链详情显示完成:', chainId);
+            console.log('Chain details shown:', chainId);
             
         } catch (error) {
-            console.error('显示区块链详情失败:', error);
+            console.error('Failed to show chain details:', error);
             detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_chain_details">${GetText('error_showing_chain_details')}</p>`;
         }
     }
     
     /**
-     * 强制重新计算布局，确保滚动条正确显示
+     * Forces layout recalculation to ensure scrollbars are displayed correctly.
      */
     forceLayoutRecalculation()
     {
@@ -209,11 +187,9 @@ class ChainsTabContent {
             
             if( upperSection && lowerSection )
             {
-                // 触发重新计算布局
                 upperSection.offsetHeight;
                 lowerSection.offsetHeight;
                 
-                // 如果有ResizeManager，使用当前比例重新应用布局
                 if( window.resizeManager && window.resizeManager.tabRatios )
                 {
                     const currentRatio = window.resizeManager.tabRatios.chains || 0.6;
@@ -226,62 +202,18 @@ class ChainsTabContent {
         }
         catch( error )
         {
-            console.error( '强制布局重新计算失败:', error );
+            console.error( 'Failed to force layout recalculation:', error );
         }
     }
 
     /**
-     * 获取区块链数据
-     * @param {string} chainId - 区块链ID
-     * @returns {Object} - 区块链数据
-     */
-    //getChainData(chainId) {
-        //try {
-            
-            //const chainData = this.app.AllChains.get(chainId);
-            //if (!chainData) {
-                //console.warn('区块链数据未找到:', chainId);
-                //return null;
-            //}
-            
-            //return chainData;
-            
-        //} catch (error) {
-            //console.error('获取区块链数据失败:', error);
-            //return null;
-        //}
-    //}
-    
-    /**
-     * 获取区块链拥有者数据
-     * @param {string} ownerId - 拥有者ID
-     * @returns {Object} - 拥有者数据
-     */
-    //getChainOwnerData(ownerId) {
-        //try {
-            //if (!ownerId || !this.app || !this.app.mockUsers) {
-                //return null;
-            //}
-            
-            //const ownerData = this.app.mockUsers.get(ownerId);
-            //return ownerData;
-            
-        //} catch (error) {
-            //console.error('获取区块链拥有者数据失败:', error);
-            //return null;
-        //}
-    //}
-    
-    /**
-     * 生成区块链详情HTML
-     * @param {string} chainId - 区块链ID
-     * @param {Object} chainData - 区块链数据
-     * @param {Object} ownerData - 拥有者数据
-     * @returns {string} - 区块链详情HTML
+     * Generates the HTML for the chain details.
+     * @param {string} chainId - The ID of the chain.
+     * @param {Object} chainData - The data for the chain.
+     * @param {Object} ownerData - The data for the owner.
+     * @returns {string} - The HTML for the chain details.
      */
     generateChainDetailsHTML(chainId, chainData, ownerData) {
-        //const rootBlock = chainData.blocks && chainData.blocks[0] ? chainData.blocks[0] : null;
-        
         return `
             <div class="chain-details">
                 <div class="chain-details-header">
@@ -296,10 +228,6 @@ class ChainsTabContent {
                             <span class="detail-info-label" data-text="chain_id_root_hash_label">${GetText('chain_id_root_hash_label')}</span>
                             <span class="detail-info-value crypto-hash" title="${chainId}">${this.truncateHash(chainData.Id)}</span>
                         </div>
-                        <!--div class="detail-info-item">
-                            <span class="detail-info-label">显示编号:</span>
-                            <span class="detail-info-value">链${chainData.displayNumber || '?'}</span>
-                        </div-->
                         <div class="detail-info-item">
                             <span class="detail-info-label" data-text="owner_public_key_label">${GetText('owner_public_key_label')}</span>
                             <span class="detail-info-value crypto-key" title="${ownerData.Id || GetText('unknown')}">${this.truncateKey(ownerData.Id || GetText('unknown'))}</span>
@@ -319,10 +247,6 @@ class ChainsTabContent {
                             <span class="detail-info-label" data-text="block_count_label">${GetText('block_count_label')}</span>
                             <span class="detail-info-value">${chainData.BlockNum }</span>
                         </div>
-                        <!--div class="detail-info-item">
-                            <span class="detail-info-label">状态:</span>
-                            <span class="detail-info-value ${chainData.isTransferring ? 'transferring' : ''}">${chainData.isTransferring ? '转移中' : '正常'}</span>
-                        </div-->
                     </div>
                 </div>
                 
@@ -331,16 +255,11 @@ class ChainsTabContent {
                     <h6 data-text="root_block_info_title">${GetText('root_block_info_title')}</h6>
                     <div class="block-info">
                         <div class="detail-info-grid">
-                            <!--div class="detail-info-item">
-                                <span class="detail-info-label">滴答时间:</span>
-                                <span class="detail-info-value">滴答 ${chainData.Root.Tick || GetText('unknown')}</span>
-                            </div-->
                             <div class="detail-info-item">
                                 <span class="detail-info-label" data-text="chain_root_block_id_label">${GetText('chain_root_block_id_label')}</span>
                                 <span class="detail-info-value crypto-hash" title="${chainData.Id || GetText('unknown')}">${chainData.Id || GetText('unknown')}</span>
                             </div>
                             <div class="detail-info-item">
-                                <!--span class="detail-info-label">数据</span-->
                                 <span class="detail-info-value">
                                     <pre style="font-size: 0.8rem; margin: 0; white-space: pre-wrap;">${chainData.Root.Content || GetText('unknown')}</pre>
                                 </span>
@@ -363,23 +282,14 @@ class ChainsTabContent {
                                     <span class="detail-info-value" title="Id">${block.Id}</span>
                                 </div>
                                 <div class="block-content">
-                                    <!--div class="block-field">
-                                        <span class="field-label">类型:</span>
-                                        <span class="field-label">时间:</span>
-                                        <span class="field-value">${block.Tick || GetText('unknown')} 滴答</span>
-                                        <span class="field-value">${block.type || GetText('unknown')}</span>
-                                    </div-->
                                     <div class="block-field">
-                                        <!--span class="field-label">数据</span-->
                                         <span class="field-value crypto-hash"}">
                                             <pre style="font-size: 0.7rem; margin: 0; white-space: pre-wrap;">${block.Content || GetText('unknown')}</pre>
                                         </span>
                                     </div>
-                                    <!--div class="block-field">
-                                    </div-->
                                     ${block.previousHash ? `
                                     <div class="block-field">
-                                        <span class="field-label">前区块哈希:</span>
+                                        <span class="field-label" data-text="previous_hash">${GetText('previous_hash')}:</span>
                                         <span class="field-value crypto-hash" title="${block.PrevId}">${this.truncateHash(block.PrevId)}</span>
                                     </div>
                                     ` : ''}
@@ -393,8 +303,8 @@ class ChainsTabContent {
     }
     
     /**
-     * 更新区块链详情
-     * @param {Object} chainData - 区块链数据
+     * Updates the chain details.
+     * @param {Object} chainData - The chain data.
      */
     updateChainDetails(chainData) {
         if (this.selectedChain !== null) {
@@ -403,7 +313,7 @@ class ChainsTabContent {
     }
     
     /**
-     * 清除选中状态
+     * Clears the selection.
      */
     clearSelection() {
         this.selectedChain = null;
@@ -417,8 +327,8 @@ class ChainsTabContent {
     }
     
     /**
-     * 获取当前选中的区块链
-     * @returns {string|null} - 选中的区块链ID
+     * Gets the currently selected chain.
+     * @returns {string|null} - The ID of the selected chain.
      */
     GetSelected()
     {
@@ -429,16 +339,15 @@ class ChainsTabContent {
         return this.selectedChain;
     }
     /**
-     * 设置选中的区块链
-     * @param {string|null} chainId - 区块链ID
-     * @param {boolean} triggerLogSwitch - 是否触发日志面板切换，默认为true
+     * Sets the selected chain.
+     * @param {string|null} chainId - The ID of the chain.
+     * @param {boolean} triggerLogSwitch - Whether to trigger the log panel switch.
      */
     setSelectedChain(chainId, triggerLogSwitch = true) {
         if (chainId !== null) {
             if (triggerLogSwitch) {
                 this.handleChainClick(chainId);
             } else {
-                // 只更新选中状态和显示详情，不触发日志面板切换
                 this.updateChainSelection(chainId);
                 this.showChainDetails(chainId);
                 this.tabManager.handleStateChange('chains', {
@@ -451,7 +360,7 @@ class ChainsTabContent {
     }
     
     /**
-     * 重置区块链网格
+     * Resets the chains grid.
      */
     resetChainsGrid() {
         this.chainsGridInitialized = false;
@@ -464,9 +373,9 @@ class ChainsTabContent {
     }
     
     /**
-     * 生成区块链ID预览（前6个字符）
-     * @param {string} chainId - 区块链ID
-     * @returns {string} - 前6个字符
+     * Generates a preview of the chain ID.
+     * @param {string} chainId - The ID of the chain.
+     * @returns {string} - The first 6 characters of the chain ID.
      */
     generateChainIdPreview(chainId) {
         if (!chainId || chainId === GetText('not_set') || chainId === GetText('unknown')) return GetText('unknown');
@@ -475,9 +384,9 @@ class ChainsTabContent {
     }
     
     /**
-     * 截断密钥显示
-     * @param {string} key - 密钥
-     * @returns {string} - 截断后的密钥
+     * Truncates a key for display.
+     * @param {string} key - The key.
+     * @returns {string} - The truncated key.
      */
     truncateKey(key) {
         if (!key || key === GetText('not_set') || key === GetText('unknown')) return key;
@@ -486,9 +395,9 @@ class ChainsTabContent {
     }
     
     /**
-     * 截断哈希值显示
-     * @param {string} hash - 哈希值
-     * @returns {string} - 截断后的哈希值
+     * Truncates a hash for display.
+     * @param {string} hash - The hash.
+     * @returns {string} - The truncated hash.
      */
     truncateHash(hash) {
         if (!hash || hash === GetText('unknown')) return hash;
@@ -497,28 +406,25 @@ class ChainsTabContent {
     }
     
     /**
-     * 销毁区块链标签页内容
+     * Destroys the chains tab content.
      */
     destroy() {
         try {
-            // 清理状态
             this.selectedChain = null;
             this.chainsGridInitialized = false;
             
-            console.log('ChainsTabContent 已销毁');
+            console.log('ChainsTabContent destroyed');
             
         } catch (error) {
-            console.error('ChainsTabContent 销毁失败:', error);
+            console.error('ChainsTabContent destruction failed:', error);
         }
     }
 }
 
-// 导出 ChainsTabContent 类
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = ChainsTabContent;
 }
 
-// ES6 导出
 if (typeof window !== 'undefined') {
     window.ChainsTabContent = ChainsTabContent;
 }

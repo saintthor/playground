@@ -205,7 +205,7 @@ class User
                 //console.log( 'WaitTrusted', k, v );
                 if( [...u.Peers.values()].map( p => p.LocalBlocks.get( k )).every( b => b && b.Status === 0 ))
                 {
-                    window.LogPanel.AddLog( { dida: tick, user: u.Id, block: k, content: 'Receiver trusts the transfer well.', category: 'user' } );
+                    window.LogPanel.AddLog( { dida: tick, user: u.Id, block: k, content: 'Receiver trusts. Transfer completes.', category: 'user' } );
                     u.Waiting.delete( k );
                 }
                 else if( v < tick )

@@ -1,26 +1,17 @@
-/**
- * HelpTabContent - 帮助标签页内容组件
- * 管理帮助标签页的显示和交互
- */
+
 class HelpTabContent {
     constructor(tabManager) {
         this.tabManager = tabManager;
         this.mainPanel = tabManager.mainPanel;
         this.app = tabManager.mainPanel.app;
         
-        // 帮助内容初始化状态
         this.isInitialized = false;
-        
-        console.log('HelpTabContent 初始化完成');
     }
     
-    /**
-     * 渲染帮助内容
-     */
     renderHelpContent( lang ) {
         const container = document.getElementById('help-content');
         if (!container) {
-            console.error('帮助内容容器未找到');
+            console.error('Help content container not found');
             return;
         }
         lang = lang || window.Text.language;
@@ -30,10 +21,7 @@ class HelpTabContent {
             container.innerHTML = helpHTML;
             this.isInitialized = true;
             
-            // 添加目录导航事件
             this.setupNavigationEvents();
-            
-            console.log('帮助内容渲染完成');
         }
     }
     
@@ -503,9 +491,6 @@ class HelpTabContent {
         `;
     }
     
-    /**
-     * 设置导航事件
-     */
     setupNavigationEvents() {
         const navLinks = document.querySelectorAll('.help-nav-link');
         navLinks.forEach(link => {
@@ -517,10 +502,6 @@ class HelpTabContent {
         });
     }
     
-    /**
-     * 滚动到指定章节
-     * @param {string} sectionId - 章节ID
-     */
     scrollToSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (section) {
@@ -529,84 +510,50 @@ class HelpTabContent {
                 block: 'start'
             });
             
-            // 高亮当前章节
             this.highlightSection(sectionId);
         }
     }
     
-    /**
-     * 高亮当前章节
-     * @param {string} sectionId - 章节ID
-     */
     highlightSection(sectionId) {
-        // 移除之前的高亮
         const prevActive = document.querySelector('.help-nav-link.active');
         if (prevActive) {
             prevActive.classList.remove('active');
         }
         
-        // 添加新的高亮
         const currentLink = document.querySelector(`[href="#${sectionId}"]`);
         if (currentLink) {
             currentLink.classList.add('active');
         }
     }
     
-    /**
-     * 显示帮助页面并滚动到指定章节
-     * @param {string} sectionId - 章节ID
-     */
     showHelpSection(sectionId) {
-        // 切换到帮助标签页
         if (this.tabManager) {
             this.tabManager.switchTab('help');
         }
         
-        // 确保内容已渲染
         this.renderHelpContent();
         
-        // 滚动到指定章节
         setTimeout(() => {
             this.scrollToSection(sectionId);
         }, 100);
     }
     
-    /**
-     * 语言变更处理
-     * @param {string} language - 新的语言代码
-     */
     onLanguageChanged(language) {
-        console.log('HelpTabContent 处理语言变更:', language);
-        
-        // 重新渲染帮助内容
         if (this.isInitialized) {
             this.isInitialized = false;
             this.renderHelpContent(language);
         }
     }
     
-    /**
-     * 销毁帮助标签页内容
-     */
     destroy() {
-        try {
-            // 清理状态
             this.isInitialized = false;
-            
-            console.log('HelpTabContent 已销毁');
-            
-        } catch (error) {
-            console.error('HelpTabContent 销毁失败:', error);
-        }
     }
 }
 
-// 导出 HelpTabContent 类
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = HelpTabContent;
 }
 
-// ES6 导出
 if (typeof window !== 'undefined') {
     window.HelpTabContent = HelpTabContent;
 }

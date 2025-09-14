@@ -1,40 +1,37 @@
 /**
- * Validator 类 - 区块验证引擎
+ * Validator Class - Block Validation Engine
  * 
- * 根据需求 6.1, 6.2 实现：
- * - 区块的密码学签名验证
- * - 区块链完整性验证，从当前区块向上验证到根区块
- * - 验证结果的缓存机制，避免重复验证
+ * Implements requirements 6.1, 6.2:
+ * - Cryptographic signature verification of blocks
+ * - Blockchain integrity verification, from the current block up to the root block
+ * - Caching mechanism for verification results to avoid redundant validations
  */
 
 import { Crypto } from './Crypto.js';
 
 export class Validator {
     constructor() {
-        // 验证结果缓存
         this.verificationCache = new Map(); // blockId -> verification result
         this.chainIntegrityCache = new Map(); // chainId -> integrity result
         
-        // 缓存过期时间（毫秒）
-        this.cacheExpireTime = 5 * 60 * 1000; // 5分钟
+        this.cacheExpireTime = 5 * 60 * 1000; // 5 minutes
         
-        // 清理过期缓存的定时器
         this.cleanupInterval = setInterval(() => {
             this.cleanupExpiredCache();
-        }, 60 * 1000); // 每分钟清理一次
+        }, 60 * 1000);
     }
 
     /**
-     * 验证区块的密码学签名
-     * @param {Block} block - 要验证的区块
-     * @returns {Promise<Object>} 验证结果对象
+     * Verifies the cryptographic signature of a block.
+     * @param {Block} block - The block to verify.
+     * @returns {Promise<Object>} The verification result object.
      */
     async verifySig(block) {
         if (!block) {
             return {
                 isValid: false,
                 error: 'BLOCK_NULL',
-                message: '区块为空'
+                message: 'Block is null'
             };
         }
 
@@ -43,11 +40,10 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'BLOCK_ID_MISSING',
-                message: '区块ID缺失'
+                message: 'Block ID is missing'
             };
         }
 
-        // 检查缓存
         const cacheKey = `sig_${blockId}`;
         const cachedResult = this.getFromCache(cacheKey);
         if (cachedResult) {
@@ -55,7 +51,6 @@ export class Validator {
         }
 
         try {
-            // 验证区块签名
             const signature = block.getSignature();
             const creatorId = block.getCreator();
             
@@ -63,7 +58,7 @@ export class Validator {
                 const result = {
                     isValid: false,
                     error: 'SIGNATURE_MISSING',
-                    message: '区块签名缺失'
+                    message: 'Block signature is missing'
                 };
                 this.setCache(cacheKey, result);
                 return result;
@@ -73,26 +68,24 @@ export class Validator {
                 const result = {
                     isValid: false,
                     error: 'CREATOR_MISSING',
-                    message: '区块创建者缺失'
+                    message: 'Block creator is missing'
                 };
                 this.setCache(cacheKey, result);
                 return result;
             }
 
-            // 对于系统区块（根区块），使用特殊验证逻辑
             if (creatorId === 'system') {
                 const result = await this.verifySystemBlock(block);
                 this.setCache(cacheKey, result);
                 return result;
             }
 
-            // 验证普通区块的签名
             const isValidSignature = await Crypto.verify(signature, blockId, creatorId);
             
             const result = {
                 isValid: isValidSignature,
                 error: isValidSignature ? null : 'SIGNATURE_INVALID',
-                message: isValidSignature ? '签名验证成功' : '签名验证失败',
+                message: isValidSignature ? 'Signature verification successful' : 'Signature verification failed',
                 blockId: blockId,
                 creatorId: creatorId
             };
@@ -104,7 +97,7 @@ export class Validator {
             const result = {
                 isValid: false,
                 error: 'VERIFICATION_ERROR',
-                message: `签名验证过程中发生错误: ${error.message}`,
+                message: `An error occurred during signature verification: ${error.message}`,
                 details: error
             };
             this.setCache(cacheKey, result);
@@ -113,53 +106,50 @@ export class Validator {
     }
 
     /**
-     * 验证系统区块（根区块）
-     * @param {Block} block - 系统区块
-     * @returns {Promise<Object>} 验证结果
+     * Verifies a system block (root block).
+     * @param {Block} block - The system block.
+     * @returns {Promise<Object>} The verification result.
      */
     async verifySystemBlock(block) {
         const blockData = block.getData();
         
-        // 验证根区块的基本结构
         if (blockData.type !== 'root') {
             return {
                 isValid: false,
                 error: 'INVALID_SYSTEM_BLOCK',
-                message: '系统区块类型不正确'
+                message: 'Incorrect system block type'
             };
         }
 
-        // 验证根区块必须包含定义哈希和序列号
         if (!blockData.definitionHash || !blockData.serialNumber) {
             return {
                 isValid: false,
                 error: 'INVALID_ROOT_BLOCK_DATA',
-                message: '根区块数据不完整'
+                message: 'Incomplete root block data'
             };
         }
 
-        // 系统区块默认认为是有效的（在实际应用中可能需要更复杂的验证）
         return {
             isValid: true,
             error: null,
-            message: '系统区块验证成功',
+            message: 'System block verification successful',
             blockId: block.getId(),
             creatorId: 'system'
         };
     }
 
     /**
-     * 验证区块链完整性，从当前区块向上验证到根区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @param {Block} currentBlock - 当前区块（可选，默认为最新区块）
-     * @returns {Promise<Object>} 验证结果对象
+     * Verifies the integrity of a blockchain, from the current block up to the root block.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @param {Block} currentBlock - The current block (optional, defaults to the latest block).
+     * @returns {Promise<Object>} The verification result object.
      */
     async verifyChainIntegrity(blockchain, currentBlock = null) {
         if (!blockchain) {
             return {
                 isValid: false,
                 error: 'BLOCKCHAIN_NULL',
-                message: '区块链为空'
+                message: 'Blockchain is null'
             };
         }
 
@@ -168,21 +158,19 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'CHAIN_ID_MISSING',
-                message: '区块链ID缺失'
+                message: 'Blockchain ID is missing'
             };
         }
 
-        // 确定要验证的区块
         const blockToVerify = currentBlock || blockchain.getLatestBlock();
         if (!blockToVerify) {
             return {
                 isValid: false,
                 error: 'NO_BLOCKS',
-                message: '区块链中没有区块'
+                message: 'No blocks in the blockchain'
             };
         }
 
-        // 检查缓存
         const cacheKey = `integrity_${chainId}_${blockToVerify.getId()}`;
         const cachedResult = this.getFromCache(cacheKey);
         if (cachedResult) {
@@ -194,16 +182,14 @@ export class Validator {
             const verifiedBlocks = new Set();
             let currentBlockInPath = blockToVerify;
 
-            // 从当前区块向上追溯到根区块
             while (currentBlockInPath) {
                 const blockId = currentBlockInPath.getId();
                 
-                // 避免循环引用
                 if (verifiedBlocks.has(blockId)) {
                     const result = {
                         isValid: false,
                         error: 'CIRCULAR_REFERENCE',
-                        message: '检测到区块链中的循环引用',
+                        message: 'Circular reference detected in the blockchain',
                         verificationPath: verificationPath
                     };
                     this.setCache(cacheKey, result);
@@ -218,13 +204,12 @@ export class Validator {
                     timestamp: currentBlockInPath.getTime()
                 });
 
-                // 验证当前区块的签名
                 const sigVerification = await this.verifySig(currentBlockInPath);
                 if (!sigVerification.isValid) {
                     const result = {
                         isValid: false,
                         error: 'SIGNATURE_VERIFICATION_FAILED',
-                        message: `区块 ${blockId} 签名验证失败: ${sigVerification.message}`,
+                        message: `Signature verification failed for block ${blockId}: ${sigVerification.message}`,
                         failedBlock: blockId,
                         verificationPath: verificationPath,
                         signatureError: sigVerification
@@ -233,13 +218,12 @@ export class Validator {
                     return result;
                 }
 
-                // 验证区块的基本完整性
                 const basicValidation = await currentBlockInPath.validateBasic();
                 if (!basicValidation) {
                     const result = {
                         isValid: false,
                         error: 'BASIC_VALIDATION_FAILED',
-                        message: `区块 ${blockId} 基本验证失败`,
+                        message: `Basic validation failed for block ${blockId}`,
                         failedBlock: blockId,
                         verificationPath: verificationPath
                     };
@@ -247,19 +231,17 @@ export class Validator {
                     return result;
                 }
 
-                // 如果是根区块，验证完成
                 const blockData = currentBlockInPath.getData();
                 if (blockData.type === 'root') {
                     break;
                 }
 
-                // 获取前一个区块
                 const prevBlockId = currentBlockInPath.getPrevBlockId();
                 if (!prevBlockId) {
                     const result = {
                         isValid: false,
                         error: 'MISSING_PREVIOUS_BLOCK_ID',
-                        message: `非根区块 ${blockId} 缺少前一个区块ID`,
+                        message: `Non-root block ${blockId} is missing a previous block ID`,
                         failedBlock: blockId,
                         verificationPath: verificationPath
                     };
@@ -272,7 +254,7 @@ export class Validator {
                     const result = {
                         isValid: false,
                         error: 'PREVIOUS_BLOCK_NOT_FOUND',
-                        message: `找不到前一个区块 ${prevBlockId}`,
+                        message: `Previous block ${prevBlockId} not found`,
                         failedBlock: blockId,
                         missingBlock: prevBlockId,
                         verificationPath: verificationPath
@@ -284,7 +266,6 @@ export class Validator {
                 currentBlockInPath = prevBlock;
             }
 
-            // 验证区块链的逻辑完整性
             const logicalValidation = this.validateChainLogic(verificationPath, blockchain);
             if (!logicalValidation.isValid) {
                 const result = {
@@ -301,7 +282,7 @@ export class Validator {
             const result = {
                 isValid: true,
                 error: null,
-                message: '区块链完整性验证成功',
+                message: 'Blockchain integrity verification successful',
                 chainId: chainId,
                 verificationPath: verificationPath,
                 verifiedBlockCount: verificationPath.length
@@ -314,7 +295,7 @@ export class Validator {
             const result = {
                 isValid: false,
                 error: 'INTEGRITY_VERIFICATION_ERROR',
-                message: `区块链完整性验证过程中发生错误: ${error.message}`,
+                message: `An error occurred during blockchain integrity verification: ${error.message}`,
                 details: error
             };
             this.setCache(cacheKey, result);
@@ -323,53 +304,46 @@ export class Validator {
     }
 
     /**
-     * 验证区块链的逻辑完整性
-     * @param {Array} verificationPath - 验证路径
-     * @param {BlockChain} blockchain - 区块链实例
-     * @returns {Object} 验证结果
+     * Validates the logical integrity of a blockchain.
+     * @param {Array} verificationPath - The verification path.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @returns {Object} The verification result.
      */
     validateChainLogic(verificationPath, blockchain) {
         if (!verificationPath || verificationPath.length === 0) {
             return {
                 isValid: false,
-                message: '验证路径为空'
+                message: 'Verification path is empty'
             };
         }
 
-        // 验证必须以根区块开始（路径是从最新到最旧）
         const rootBlock = verificationPath[verificationPath.length - 1];
         if (rootBlock.blockType !== 'root') {
             return {
                 isValid: false,
-                message: '区块链必须以根区块开始'
+                message: 'Blockchain must start with a root block'
             };
         }
 
-        // 验证区块链的所有权转移逻辑
         let currentOwner = null;
         
-        // 从根区块开始验证（反向遍历路径）
         for (let i = verificationPath.length - 1; i >= 0; i--) {
             const blockInfo = verificationPath[i];
             
             if (blockInfo.blockType === 'root') {
-                // 根区块不改变所有权
                 continue;
             } else if (blockInfo.blockType === 'ownership') {
-                // 所有权区块设置初始所有者
                 const block = blockchain.getBlock(blockInfo.blockId);
                 const blockData = block.getData();
                 currentOwner = blockData.ownerId;
             } else if (blockInfo.blockType === 'transfer') {
-                // 转移区块必须由当前所有者创建
                 if (currentOwner && blockInfo.creator !== currentOwner) {
                     return {
                         isValid: false,
-                        message: `转移区块 ${blockInfo.blockId} 的创建者不是当前所有者`
+                        message: `Creator of transfer block ${blockInfo.blockId} is not the current owner`
                     };
                 }
                 
-                // 更新所有者
                 const block = blockchain.getBlock(blockInfo.blockId);
                 const blockData = block.getData();
                 currentOwner = blockData.targetUserId;
@@ -378,22 +352,22 @@ export class Validator {
 
         return {
             isValid: true,
-            message: '区块链逻辑验证成功',
+            message: 'Blockchain logic verification successful',
             finalOwner: currentOwner
         };
     }
 
     /**
-     * 批量验证多个区块的签名
-     * @param {Array<Block>} blocks - 要验证的区块数组
-     * @returns {Promise<Object>} 批量验证结果
+     * Batch verifies the signatures of multiple blocks.
+     * @param {Array<Block>} blocks - The array of blocks to verify.
+     * @returns {Promise<Object>} The batch verification result.
      */
     async batchVerifySignatures(blocks) {
         if (!Array.isArray(blocks)) {
             return {
                 isValid: false,
                 error: 'INVALID_INPUT',
-                message: '输入必须是区块数组'
+                message: 'Input must be an array of blocks'
             };
         }
 
@@ -422,9 +396,9 @@ export class Validator {
     }
 
     /**
-     * 设置缓存
-     * @param {string} key - 缓存键
-     * @param {Object} value - 缓存值
+     * Sets a value in the cache.
+     * @param {string} key - The cache key.
+     * @param {Object} value - The value to cache.
      */
     setCache(key, value) {
         this.verificationCache.set(key, {
@@ -434,9 +408,9 @@ export class Validator {
     }
 
     /**
-     * 从缓存获取值
-     * @param {string} key - 缓存键
-     * @returns {Object|null} 缓存值或null
+     * Gets a value from the cache.
+     * @param {string} key - The cache key.
+     * @returns {Object|null} The cached value or null.
      */
     getFromCache(key) {
         const cached = this.verificationCache.get(key);
@@ -444,7 +418,6 @@ export class Validator {
             return null;
         }
 
-        // 检查是否过期
         if (Date.now() - cached.timestamp > this.cacheExpireTime) {
             this.verificationCache.delete(key);
             return null;
@@ -454,7 +427,7 @@ export class Validator {
     }
 
     /**
-     * 清理过期的缓存
+     * Cleans up expired cache entries.
      */
     cleanupExpiredCache() {
         const now = Date.now();
@@ -471,12 +444,12 @@ export class Validator {
         });
 
         if (keysToDelete.length > 0) {
-            console.log(`清理了 ${keysToDelete.length} 个过期的验证缓存`);
+            console.log(`Cleaned up ${keysToDelete.length} expired verification cache entries`);
         }
     }
 
     /**
-     * 清空所有缓存
+     * Clears all caches.
      */
     clearCache() {
         this.verificationCache.clear();
@@ -484,8 +457,8 @@ export class Validator {
     }
 
     /**
-     * 获取缓存统计信息
-     * @returns {Object} 缓存统计
+     * Gets cache statistics.
+     * @returns {Object} Cache statistics.
      */
     getCacheStats() {
         return {
@@ -496,34 +469,34 @@ export class Validator {
     }
 
     /**
-     * 估算缓存内存使用量
-     * @returns {number} 估算的内存使用量（字节）
+     * Estimates the memory usage of the cache.
+     * @returns {number} The estimated memory usage in bytes.
      */
     estimateCacheMemoryUsage() {
         let totalSize = 0;
         
         for (const [key, cached] of this.verificationCache) {
-            totalSize += key.length * 2; // 字符串大小（UTF-16）
+            totalSize += key.length * 2;
             totalSize += JSON.stringify(cached.value).length * 2;
-            totalSize += 8; // timestamp
+            totalSize += 8;
         }
         
         return totalSize;
     }
 
     /**
-     * 验证区块的合法性
-     * @param {Block} block - 要验证的区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @param {Object} networkState - 网络状态（包含黑名单等信息）
-     * @returns {Promise<Object>} 验证结果对象
+     * Validates the legality of a block.
+     * @param {Block} block - The block to validate.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @param {Object} networkState - The network state (including blacklist, etc.).
+     * @returns {Promise<Object>} The validation result object.
      */
     async validateLegality(block, blockchain, networkState = {}) {
         if (!block) {
             return {
                 isValid: false,
                 error: 'BLOCK_NULL',
-                message: '区块为空'
+                message: 'Block is null'
             };
         }
 
@@ -531,7 +504,7 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'BLOCKCHAIN_NULL',
-                message: '区块链为空'
+                message: 'Blockchain is null'
             };
         }
 
@@ -539,7 +512,6 @@ export class Validator {
         const creatorId = block.getCreator();
         const blockData = block.getData();
 
-        // 检查缓存
         const cacheKey = `legality_${blockId}_${blockchain.getId()}`;
         const cachedResult = this.getFromCache(cacheKey);
         if (cachedResult) {
@@ -547,13 +519,12 @@ export class Validator {
         }
 
         try {
-            // 1. 验证添加者状态（黑名单检查）
             const blacklistCheck = this.validateCreatorStatus(creatorId, networkState);
             if (!blacklistCheck.isValid) {
                 const result = {
                     isValid: false,
                     error: 'CREATOR_BLACKLISTED',
-                    message: `区块创建者 ${creatorId} 已被列入黑名单`,
+                    message: `Block creator ${creatorId} is blacklisted`,
                     blockId: blockId,
                     creatorId: creatorId,
                     details: blacklistCheck
@@ -562,7 +533,6 @@ export class Validator {
                 return result;
             }
 
-            // 2. 验证区块链所有权
             const ownershipCheck = await this.validateBlockchainOwnership(block, blockchain);
             if (!ownershipCheck.isValid) {
                 const result = {
@@ -577,7 +547,6 @@ export class Validator {
                 return result;
             }
 
-            // 3. 验证区块位置冲突
             const positionCheck = this.validateBlockPosition(block, blockchain);
             if (!positionCheck.isValid) {
                 const result = {
@@ -592,7 +561,6 @@ export class Validator {
                 return result;
             }
 
-            // 4. 验证分叉合法性（如果存在分叉）
             const forkCheck = this.validateForkLegality(block, blockchain, networkState);
             if (!forkCheck.isValid) {
                 const result = {
@@ -609,7 +577,7 @@ export class Validator {
             const result = {
                 isValid: true,
                 error: null,
-                message: '区块合法性验证成功',
+                message: 'Block legality verification successful',
                 blockId: blockId,
                 creatorId: creatorId,
                 validationDetails: {
@@ -627,7 +595,7 @@ export class Validator {
             const result = {
                 isValid: false,
                 error: 'LEGALITY_VALIDATION_ERROR',
-                message: `区块合法性验证过程中发生错误: ${error.message}`,
+                message: `An error occurred during block legality validation: ${error.message}`,
                 details: error
             };
             this.setCache(cacheKey, result);
@@ -636,17 +604,16 @@ export class Validator {
     }
 
     /**
-     * 验证创建者状态（黑名单检查）
-     * @param {string} creatorId - 创建者ID
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 验证结果
+     * Validates the creator's status (blacklist check).
+     * @param {string} creatorId - The creator's ID.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The validation result.
      */
     validateCreatorStatus(creatorId, networkState) {
-        // 系统用户总是被允许的
         if (creatorId === 'system') {
             return {
                 isValid: true,
-                message: '系统用户验证通过'
+                message: 'System user validation passed'
             };
         }
 
@@ -656,43 +623,41 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'USER_BLACKLISTED',
-                message: `用户 ${creatorId} 已被列入黑名单`,
+                message: `User ${creatorId} is blacklisted`,
                 creatorId: creatorId
             };
         }
 
         return {
             isValid: true,
-            message: '创建者状态验证通过',
+            message: 'Creator status validation passed',
             creatorId: creatorId
         };
     }
 
     /**
-     * 验证区块链所有权
-     * @param {Block} block - 要验证的区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @returns {Promise<Object>} 验证结果
+     * Validates blockchain ownership.
+     * @param {Block} block - The block to validate.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @returns {Promise<Object>} The validation result.
      */
     async validateBlockchainOwnership(block, blockchain) {
         const blockData = block.getData();
         const creatorId = block.getCreator();
 
-        // 根区块和所有权区块有特殊的所有权规则
         if (blockData.type === 'root') {
             return {
                 isValid: true,
-                message: '根区块所有权验证通过'
+                message: 'Root block ownership validation passed'
             };
         }
 
         if (blockData.type === 'ownership') {
-            // 所有权区块只能在根区块之后添加，且只能有一个
             const rootBlock = blockchain.getRootBlock();
             if (!rootBlock) {
                 return {
                     isValid: false,
-                    message: '找不到根区块，无法添加所有权区块'
+                    message: 'Root block not found, cannot add ownership block'
                 };
             }
 
@@ -700,62 +665,59 @@ export class Validator {
             if (prevBlockId !== rootBlock.getId()) {
                 return {
                     isValid: false,
-                    message: '所有权区块必须直接跟在根区块之后'
+                    message: 'Ownership block must directly follow the root block'
                 };
             }
 
-            // 检查是否已经存在所有权区块
             const existingOwnerBlock = blockchain.getOwnerBlock();
             if (existingOwnerBlock && existingOwnerBlock.getId() !== block.getId()) {
                 return {
                     isValid: false,
-                    message: '区块链已经有所有权区块，不能重复添加'
+                    message: 'Blockchain already has an ownership block, cannot add another'
                 };
             }
 
             return {
                 isValid: true,
-                message: '所有权区块验证通过'
+                message: 'Ownership block validation passed'
             };
         }
 
         if (blockData.type === 'transfer') {
-            // 转移区块必须由当前所有者创建
             const currentOwner = blockchain.getCurrentOwner();
             
             if (!currentOwner) {
                 return {
                     isValid: false,
-                    message: '区块链没有当前所有者，无法进行转移'
+                    message: 'Blockchain has no current owner, cannot transfer'
                 };
             }
 
             if (creatorId !== currentOwner) {
                 return {
                     isValid: false,
-                    message: `只有当前所有者 ${currentOwner} 可以转移区块链，但创建者是 ${creatorId}`
+                    message: `Only the current owner ${currentOwner} can transfer the blockchain, but the creator is ${creatorId}`
                 };
             }
 
-            // 验证目标用户存在且有效
             const targetUserId = blockData.targetUserId;
             if (!targetUserId) {
                 return {
                     isValid: false,
-                    message: '转移区块缺少目标用户ID'
+                    message: 'Transfer block is missing a target user ID'
                 };
             }
 
             if (targetUserId === currentOwner) {
                 return {
                     isValid: false,
-                    message: '不能将区块链转移给自己'
+                    message: 'Cannot transfer the blockchain to oneself'
                 };
             }
 
             return {
                 isValid: true,
-                message: '转移区块所有权验证通过',
+                message: 'Transfer block ownership validation passed',
                 currentOwner: currentOwner,
                 targetOwner: targetUserId
             };
@@ -763,43 +725,40 @@ export class Validator {
 
         return {
             isValid: false,
-            message: `未知的区块类型: ${blockData.type}`
+            message: `Unknown block type: ${blockData.type}`
         };
     }
 
     /**
-     * 验证区块位置冲突
-     * @param {Block} block - 要验证的区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @returns {Object} 验证结果
+     * Validates the block's position.
+     * @param {Block} block - The block to validate.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @returns {Object} The validation result.
      */
     validateBlockPosition(block, blockchain) {
         const blockId = block.getId();
         const prevBlockId = block.getPrevBlockId();
 
-        // 检查区块是否已经存在
         if (blockchain.hasBlock(blockId)) {
             return {
                 isValid: false,
-                message: `区块 ${blockId} 已经存在于区块链中`,
+                message: `Block ${blockId} already exists in the blockchain`,
                 conflictingBlock: blockchain.getBlock(blockId)
             };
         }
 
-        // 对于根区块，不需要检查位置
         const blockData = block.getData();
         if (blockData.type === 'root') {
             return {
                 isValid: true,
-                message: '根区块位置验证通过'
+                message: 'Root block position validation passed'
             };
         }
 
-        // 检查前一个区块是否存在
         if (!prevBlockId) {
             return {
                 isValid: false,
-                message: '非根区块必须指定前一个区块ID'
+                message: 'Non-root block must specify a previous block ID'
             };
         }
 
@@ -807,18 +766,17 @@ export class Validator {
         if (!prevBlock) {
             return {
                 isValid: false,
-                message: `前一个区块 ${prevBlockId} 不存在`
+                message: `Previous block ${prevBlockId} does not exist`
             };
         }
 
-        // 检查是否有其他区块已经占用了这个位置
         const allBlocks = blockchain.getAllBlocks();
         for (const existingBlock of allBlocks) {
             if (existingBlock.getPrevBlockId() === prevBlockId && 
                 existingBlock.getId() !== blockId) {
                 return {
                     isValid: false,
-                    message: `位置冲突：区块 ${existingBlock.getId()} 已经占用了前一个区块 ${prevBlockId} 之后的位置`,
+                    message: `Position conflict: Block ${existingBlock.getId()} already occupies the position after previous block ${prevBlockId}`,
                     conflictingBlock: existingBlock
                 };
             }
@@ -826,17 +784,17 @@ export class Validator {
 
         return {
             isValid: true,
-            message: '区块位置验证通过',
+            message: 'Block position validation passed',
             prevBlockId: prevBlockId
         };
     }
 
     /**
-     * 验证分叉合法性
-     * @param {Block} block - 要验证的区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 验证结果
+     * Validates the legality of a fork.
+     * @param {Block} block - The block to validate.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The validation result.
      */
     validateForkLegality(block, blockchain, networkState) {
         const forkDetection = blockchain.detectFork(block);
@@ -844,23 +802,21 @@ export class Validator {
         if (!forkDetection.isFork) {
             return {
                 isValid: true,
-                message: '没有检测到分叉'
+                message: 'No fork detected'
             };
         }
 
-        // 检查分叉类型
         if (forkDetection.reason === 'DOUBLE_SPEND') {
             return {
                 isValid: false,
                 error: 'DOUBLE_SPEND_DETECTED',
-                message: '检测到双花攻击，区块被拒绝',
+                message: 'Double-spend attack detected, block rejected',
                 forkReason: forkDetection.reason,
                 conflictingBlock: forkDetection.conflictBlock
             };
         }
 
         if (forkDetection.reason === 'POSITION_CONFLICT') {
-            // 检查是否是被认可的分叉
             const approvedForks = networkState.approvedForks || new Set();
             const forkKey = `${block.getPrevBlockId()}_${block.getId()}`;
             
@@ -868,7 +824,7 @@ export class Validator {
                 return {
                     isValid: false,
                     error: 'UNAPPROVED_FORK',
-                    message: '检测到未经认可的分叉',
+                    message: 'Unapproved fork detected',
                     forkReason: forkDetection.reason,
                     conflictingBlock: forkDetection.conflictBlock
                 };
@@ -876,7 +832,7 @@ export class Validator {
 
             return {
                 isValid: true,
-                message: '分叉已被网络认可',
+                message: 'Fork is approved by the network',
                 forkReason: forkDetection.reason,
                 conflictingBlock: forkDetection.conflictBlock
             };
@@ -885,23 +841,23 @@ export class Validator {
         return {
             isValid: false,
             error: 'UNKNOWN_FORK_TYPE',
-            message: `未知的分叉类型: ${forkDetection.reason}`,
+            message: `Unknown fork type: ${forkDetection.reason}`,
             forkReason: forkDetection.reason,
             conflictingBlock: forkDetection.conflictBlock
         };
     }
 
     /**
-     * 批量验证多个区块的合法性
-     * @param {Array<Object>} blockValidationRequests - 验证请求数组，每个包含 {block, blockchain, networkState}
-     * @returns {Promise<Object>} 批量验证结果
+     * Batch validates the legality of multiple blocks.
+     * @param {Array<Object>} blockValidationRequests - The array of validation requests.
+     * @returns {Promise<Object>} The batch validation result.
      */
     async batchValidateLegality(blockValidationRequests) {
         if (!Array.isArray(blockValidationRequests)) {
             return {
                 isValid: false,
                 error: 'INVALID_INPUT',
-                message: '输入必须是验证请求数组'
+                message: 'Input must be an array of validation requests'
             };
         }
 
@@ -932,45 +888,42 @@ export class Validator {
     }
 
     /**
-     * 验证区块接收时间（需求 8.1, 8.2, 8.3）
-     * @param {Block} block - 要验证的区块
-     * @param {number} receiveTime - 接收时间（滴答数）
-     * @param {Object} networkParams - 网络参数
-     * @returns {Object} 时间验证结果
+     * Validates the reception time of a block.
+     * @param {Block} block - The block to validate.
+     * @param {number} receiveTime - The reception time (in ticks).
+     * @param {Object} networkParams - The network parameters.
+     * @returns {Object} The time validation result.
      */
     validateReceptionTime(block, receiveTime, networkParams) {
         if (!block) {
             return {
                 isValid: false,
                 error: 'BLOCK_NULL',
-                message: '区块为空'
+                message: 'Block is null'
             };
         }
 
         const blockTime = block.getTime();
         const blockId = block.getId();
 
-        // 检查区块ID是否有效
         if (!blockId) {
             return {
                 isValid: false,
                 error: 'BLOCK_ID_MISSING',
-                message: '区块ID缺失'
+                message: 'Block ID is missing'
             };
         }
 
-        // 计算全网广播时间
         const broadcastTime = this.calculateBroadcastTime(networkParams);
-        const maxAllowedDelay = broadcastTime * 2; // 全网广播时间的两倍
+        const maxAllowedDelay = broadcastTime * 2;
 
-        // 计算实际延迟
         const actualDelay = receiveTime - blockTime;
 
         if (actualDelay > maxAllowedDelay) {
             return {
                 isValid: false,
                 error: 'TIME_VALIDATION_FAILED',
-                message: `区块接收时间超过允许的最大延迟`,
+                message: `Block reception time exceeds the maximum allowed delay`,
                 blockId: blockId,
                 blockTime: blockTime,
                 receiveTime: receiveTime,
@@ -983,7 +936,7 @@ export class Validator {
 
         return {
             isValid: true,
-            message: '时间验证通过',
+            message: 'Time validation passed',
             blockId: blockId,
             blockTime: blockTime,
             receiveTime: receiveTime,
@@ -994,17 +947,13 @@ export class Validator {
     }
 
     /**
-     * 计算全网广播时间
-     * @param {Object} networkParams - 网络参数
-     * @param {number} networkParams.nodeCount - 节点数量
-     * @param {number} networkParams.avgConnections - 平均连接数
-     * @param {number} networkParams.maxDelay - 最大延迟
-     * @returns {number} 预估全网广播时间（滴答数）
+     * Calculates the network broadcast time.
+     * @param {Object} networkParams - The network parameters.
+     * @returns {number} The estimated network broadcast time in ticks.
      */
     calculateBroadcastTime(networkParams) {
         const { nodeCount, avgConnections, maxDelay } = networkParams;
         
-        // 验证和清理输入参数
         const validNodeCount = Math.max(1, nodeCount || 1);
         const validAvgConnections = Math.max(2, avgConnections || 2);
         const validMaxDelay = Math.max(1, maxDelay || 9);
@@ -1013,8 +962,6 @@ export class Validator {
             return validMaxDelay;
         }
         
-        // 基于网络拓扑计算广播时间
-        // 使用对数模型：log(n) / log(avgConnections) * maxDelay
         const networkDepth = Math.ceil(Math.log(validNodeCount) / Math.log(validAvgConnections));
         const broadcastTime = networkDepth * validMaxDelay;
         
@@ -1022,12 +969,12 @@ export class Validator {
     }
 
     /**
-     * 创建拒绝区块
-     * @param {Block} originalBlock - 被拒绝的原始区块
-     * @param {string} rejectorId - 拒绝者ID
-     * @param {string} reason - 拒绝原因
-     * @param {number} currentTick - 当前滴答数
-     * @returns {Promise<Block>} 拒绝区块
+     * Creates a rejection block.
+     * @param {Block} originalBlock - The original rejected block.
+     * @param {string} rejectorId - The ID of the rejector.
+     * @param {string} reason - The reason for rejection.
+     * @param {number} currentTick - The current tick.
+     * @returns {Promise<Block>} The rejection block.
      */
     async createRejectionBlock(originalBlock, rejectorId, reason, currentTick) {
         const { Block } = await import('../models/Block.js');
@@ -1044,7 +991,7 @@ export class Validator {
 
         const rejectionBlock = new Block(
             rejectionData,
-            null, // 拒绝区块不需要前一个区块ID
+            null,
             rejectorId,
             currentTick
         );
@@ -1054,35 +1001,34 @@ export class Validator {
     }
 
     /**
-     * 验证接收确认（需求 8.4, 8.5）
-     * @param {Block} block - 要确认的区块
-     * @param {number} receiveTime - 接收时间
-     * @param {number} currentTime - 当前时间
-     * @param {Object} networkParams - 网络参数
-     * @param {Array} conflictBlocks - 冲突区块列表
-     * @param {Array} warnings - 警告消息列表
-     * @returns {Object} 确认验证结果
+     * Validates reception confirmation.
+     * @param {Block} block - The block to confirm.
+     * @param {number} receiveTime - The reception time.
+     * @param {number} currentTime - The current time.
+     * @param {Object} networkParams - The network parameters.
+     * @param {Array} conflictBlocks - The list of conflicting blocks.
+     * @param {Array} warnings - The list of warnings.
+     * @returns {Object} The confirmation validation result.
      */
     validateReceptionConfirmation(block, receiveTime, currentTime, networkParams, conflictBlocks = [], warnings = []) {
         if (!block) {
             return {
                 isValid: false,
                 error: 'BLOCK_NULL',
-                message: '区块为空'
+                message: 'Block is null'
             };
         }
 
         const blockId = block.getId();
         const broadcastTime = this.calculateBroadcastTime(networkParams);
-        const confirmationWaitTime = broadcastTime * 4; // 全网广播时间的四倍
+        const confirmationWaitTime = broadcastTime * 4;
         const waitEndTime = receiveTime + confirmationWaitTime;
 
-        // 检查确认等待期是否已结束
         if (currentTime < waitEndTime) {
             return {
                 isValid: false,
                 error: 'CONFIRMATION_PENDING',
-                message: '确认等待期尚未结束',
+                message: 'Confirmation waiting period has not yet ended',
                 blockId: blockId,
                 receiveTime: receiveTime,
                 currentTime: currentTime,
@@ -1092,7 +1038,6 @@ export class Validator {
             };
         }
 
-        // 检查等待期内是否收到冲突区块
         const conflictsInWaitPeriod = conflictBlocks.filter(conflictBlock => {
             if (!conflictBlock || typeof conflictBlock.getTime !== 'function') {
                 return false;
@@ -1105,7 +1050,7 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'CONFLICT_DETECTED',
-                message: '确认等待期内检测到冲突区块',
+                message: 'Conflicting block detected during the confirmation waiting period',
                 blockId: blockId,
                 conflictBlocks: conflictsInWaitPeriod.map(cb => ({
                     blockId: typeof cb.getId === 'function' ? cb.getId() : 'unknown',
@@ -1116,7 +1061,6 @@ export class Validator {
             };
         }
 
-        // 检查等待期内是否收到相关警告
         const warningsInWaitPeriod = warnings.filter(warning => {
             if (!warning || typeof warning.time !== 'number') {
                 return false;
@@ -1131,17 +1075,16 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'WARNING_DETECTED',
-                message: '确认等待期内收到相关警告',
+                message: 'Related warning detected during the confirmation waiting period',
                 blockId: blockId,
                 warnings: warningsInWaitPeriod,
                 warningCount: warningsInWaitPeriod.length
             };
         }
 
-        // 确认成功
         return {
             isValid: true,
-            message: '区块链转移确认成功',
+            message: 'Blockchain transfer confirmation successful',
             blockId: blockId,
             receiveTime: receiveTime,
             confirmationTime: currentTime,
@@ -1151,53 +1094,48 @@ export class Validator {
     }
 
     /**
-     * 检测双花攻击
-     * @param {Block} block - 要检测的区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 检测结果
+     * Detects a double-spend attack.
+     * @param {Block} block - The block to check.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The detection result.
      */
     detectDoubleSpend(block, blockchain, networkState = {}) {
         if (!block || !blockchain) {
             return {
                 isDoubleSpend: false,
                 error: 'INVALID_INPUT',
-                message: '输入参数无效'
+                message: 'Invalid input parameters'
             };
         }
 
         const blockData = block.getData();
         const creatorId = block.getCreator();
 
-        // 只检测转移区块的双花攻击
         if (blockData.type !== 'transfer') {
             return {
                 isDoubleSpend: false,
-                message: '非转移区块，无需检测双花攻击'
+                message: 'Not a transfer block, no need to check for double-spending'
             };
         }
 
         const blockchainId = blockData.blockchainId;
         const targetUserId = blockData.targetUserId;
 
-        // 检查是否存在同一用户对同一区块链的多个转移尝试
         const allBlocks = blockchain.getAllBlocks();
         const conflictingBlocks = [];
 
         for (const existingBlock of allBlocks) {
             const existingData = existingBlock.getData();
             
-            // 跳过当前区块本身
             if (existingBlock.getId() === block.getId()) {
                 continue;
             }
 
-            // 检查是否是同一创建者的转移区块
             if (existingData.type === 'transfer' && 
                 existingBlock.getCreator() === creatorId &&
                 existingData.blockchainId === blockchainId) {
                 
-                // 检查是否转移给不同的目标用户（双花攻击）
                 if (existingData.targetUserId !== targetUserId) {
                     conflictingBlocks.push({
                         block: existingBlock,
@@ -1206,7 +1144,6 @@ export class Validator {
                     });
                 }
 
-                // 检查是否是重复转移（同一目标用户的多次转移）
                 if (existingData.targetUserId === targetUserId) {
                     conflictingBlocks.push({
                         block: existingBlock,
@@ -1225,29 +1162,29 @@ export class Validator {
                 attacker: creatorId,
                 blockchainId: blockchainId,
                 conflictingBlocks: conflictingBlocks,
-                message: `检测到双花攻击：用户 ${creatorId} 尝试多次转移区块链 ${blockchainId}`,
+                message: `Double-spend attack detected: User ${creatorId} attempted to transfer blockchain ${blockchainId} multiple times`,
                 severity: 'HIGH'
             };
         }
 
         return {
             isDoubleSpend: false,
-            message: '未检测到双花攻击'
+            message: 'No double-spend attack detected'
         };
     }
 
     /**
-     * 管理用户黑名单
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 黑名单管理器
+     * Manages the user blacklist.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The blacklist manager.
      */
     getBlacklistManager(networkState) {
         return {
             /**
-             * 将用户加入黑名单
-             * @param {string} userId - 用户ID
-             * @param {string} reason - 加入黑名单的原因
-             * @returns {Object} 操作结果
+             * Adds a user to the blacklist.
+             * @param {string} userId - The user ID.
+             * @param {string} reason - The reason for blacklisting.
+             * @returns {Object} The operation result.
              */
             addToBlacklist: (userId, reason = 'SECURITY_VIOLATION') => {
                 if (!networkState.blacklist) {
@@ -1257,13 +1194,12 @@ export class Validator {
                 if (networkState.blacklist.has(userId)) {
                     return {
                         success: false,
-                        message: `用户 ${userId} 已在黑名单中`
+                        message: `User ${userId} is already on the blacklist`
                     };
                 }
 
                 networkState.blacklist.add(userId);
 
-                // 记录黑名单事件
                 if (!networkState.blacklistEvents) {
                     networkState.blacklistEvents = [];
                 }
@@ -1277,27 +1213,26 @@ export class Validator {
 
                 return {
                     success: true,
-                    message: `用户 ${userId} 已被加入黑名单`,
+                    message: `User ${userId} has been added to the blacklist`,
                     reason: reason
                 };
             },
 
             /**
-             * 从黑名单中移除用户
-             * @param {string} userId - 用户ID
-             * @returns {Object} 操作结果
+             * Removes a user from the blacklist.
+             * @param {string} userId - The user ID.
+             * @returns {Object} The operation result.
              */
             removeFromBlacklist: (userId) => {
                 if (!networkState.blacklist || !networkState.blacklist.has(userId)) {
                     return {
                         success: false,
-                        message: `用户 ${userId} 不在黑名单中`
+                        message: `User ${userId} is not on the blacklist`
                     };
                 }
 
                 networkState.blacklist.delete(userId);
 
-                // 记录移除事件
                 if (!networkState.blacklistEvents) {
                     networkState.blacklistEvents = [];
                 }
@@ -1310,22 +1245,22 @@ export class Validator {
 
                 return {
                     success: true,
-                    message: `用户 ${userId} 已从黑名单中移除`
+                    message: `User ${userId} has been removed from the blacklist`
                 };
             },
 
             /**
-             * 检查用户是否在黑名单中
-             * @param {string} userId - 用户ID
-             * @returns {boolean} 是否在黑名单中
+             * Checks if a user is on the blacklist.
+             * @param {string} userId - The user ID.
+             * @returns {boolean} Whether the user is on the blacklist.
              */
             isBlacklisted: (userId) => {
                 return networkState.blacklist && networkState.blacklist.has(userId);
             },
 
             /**
-             * 获取黑名单统计信息
-             * @returns {Object} 统计信息
+             * Gets blacklist statistics.
+             * @returns {Object} The statistics.
              */
             getStats: () => {
                 return {
@@ -1340,9 +1275,9 @@ export class Validator {
     }
 
     /**
-     * 生成分叉警告消息
-     * @param {Object} forkInfo - 分叉信息
-     * @returns {Object} 警告消息
+     * Generates a fork warning message.
+     * @param {Object} forkInfo - The fork information.
+     * @returns {Object} The warning message.
      */
     generateForkWarning(forkInfo) {
         const warningMessage = {
@@ -1361,25 +1296,25 @@ export class Validator {
 
         switch (forkInfo.reason) {
             case 'DOUBLE_SPEND':
-                warningMessage.message = `检测到双花攻击！用户 ${forkInfo.attacker} 尝试对区块链 ${forkInfo.blockchainId} 进行双花攻击`;
+                warningMessage.message = `Double-spend attack detected! User ${forkInfo.attacker} attempted a double-spend attack on blockchain ${forkInfo.blockchainId}`;
                 warningMessage.severity = 'CRITICAL';
                 warningMessage.recommendedAction = 'BLACKLIST_USER';
                 break;
 
             case 'POSITION_CONFLICT':
-                warningMessage.message = `检测到位置冲突！区块链 ${forkInfo.blockchainId} 存在分叉`;
+                warningMessage.message = `Position conflict detected! Fork exists in blockchain ${forkInfo.blockchainId}`;
                 warningMessage.severity = 'HIGH';
                 warningMessage.recommendedAction = 'INVESTIGATE_FORK';
                 break;
 
             case 'UNAUTHORIZED_TRANSFER':
-                warningMessage.message = `检测到未授权转移！用户 ${forkInfo.attacker} 尝试转移不属于其的区块链 ${forkInfo.blockchainId}`;
+                warningMessage.message = `Unauthorized transfer detected! User ${forkInfo.attacker} attempted to transfer a blockchain they do not own: ${forkInfo.blockchainId}`;
                 warningMessage.severity = 'HIGH';
                 warningMessage.recommendedAction = 'BLACKLIST_USER';
                 break;
 
             default:
-                warningMessage.message = `检测到未知类型的分叉事件：${forkInfo.reason}`;
+                warningMessage.message = `Unknown fork event type detected: ${forkInfo.reason}`;
                 warningMessage.severity = 'MEDIUM';
                 warningMessage.recommendedAction = 'INVESTIGATE';
         }
@@ -1388,16 +1323,16 @@ export class Validator {
     }
 
     /**
-     * 处理高优先级安全消息
-     * @param {Object} securityMessage - 安全消息
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 处理结果
+     * Processes a high-priority security message.
+     * @param {Object} securityMessage - The security message.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The processing result.
      */
     processHighPrioritySecurityMessage(securityMessage, networkState) {
         if (!securityMessage || securityMessage.priority !== 'HIGH') {
             return {
                 processed: false,
-                message: '非高优先级安全消息'
+                message: 'Not a high-priority security message'
             };
         }
 
@@ -1406,9 +1341,7 @@ export class Validator {
 
         switch (securityMessage.type) {
             case 'FORK_WARNING':
-                // 处理分叉警告
                 if (securityMessage.forkDetails.reason === 'DOUBLE_SPEND') {
-                    // 自动将双花攻击者加入黑名单
                     const blacklistResult = blacklistManager.addToBlacklist(
                         securityMessage.forkDetails.attacker,
                         'DOUBLE_SPEND_ATTACK'
@@ -1416,7 +1349,6 @@ export class Validator {
                     results.push(blacklistResult);
                 }
 
-                // 记录安全事件
                 if (!networkState.securityEvents) {
                     networkState.securityEvents = [];
                 }
@@ -1430,13 +1362,12 @@ export class Validator {
 
                 results.push({
                     success: true,
-                    message: '分叉警告已处理',
+                    message: 'Fork warning processed',
                     actions: ['SECURITY_EVENT_LOGGED']
                 });
                 break;
 
             case 'BLACKLIST_REQUEST':
-                // 处理黑名单请求
                 const blacklistResult = blacklistManager.addToBlacklist(
                     securityMessage.targetUser,
                     securityMessage.reason
@@ -1447,7 +1378,7 @@ export class Validator {
             default:
                 results.push({
                     success: false,
-                    message: `未知的安全消息类型: ${securityMessage.type}`
+                    message: `Unknown security message type: ${securityMessage.type}`
                 });
         }
 
@@ -1459,18 +1390,18 @@ export class Validator {
     }
 
     /**
-     * 综合安全验证（包含双花攻击检测）
-     * @param {Block} block - 要验证的区块
-     * @param {BlockChain} blockchain - 区块链实例
-     * @param {Object} networkState - 网络状态
-     * @returns {Promise<Object>} 验证结果
+     * Comprehensive security validation (including double-spend detection).
+     * @param {Block} block - The block to validate.
+     * @param {BlockChain} blockchain - The blockchain instance.
+     * @param {Object} networkState - The network state.
+     * @returns {Promise<Object>} The validation result.
      */
     async validateSecurity(block, blockchain, networkState = {}) {
         if (!block || !blockchain) {
             return {
                 isValid: false,
                 error: 'INVALID_INPUT',
-                message: '输入参数无效'
+                message: 'Invalid input parameters'
             };
         }
 
@@ -1482,7 +1413,6 @@ export class Validator {
         };
 
         try {
-            // 1. 基本合法性验证
             const legalityResult = await this.validateLegality(block, blockchain, networkState);
             results.securityChecks.push({
                 type: 'LEGALITY_CHECK',
@@ -1494,7 +1424,6 @@ export class Validator {
                 results.primaryError = legalityResult;
             }
 
-            // 2. 双花攻击检测
             const doubleSpendResult = this.detectDoubleSpend(block, blockchain, networkState);
             results.securityChecks.push({
                 type: 'DOUBLE_SPEND_CHECK',
@@ -1505,7 +1434,6 @@ export class Validator {
                 results.isValid = false;
                 results.securityViolation = doubleSpendResult;
 
-                // 生成分叉警告
                 const forkWarning = this.generateForkWarning({
                     reason: 'DOUBLE_SPEND',
                     blockchainId: doubleSpendResult.blockchainId,
@@ -1515,12 +1443,10 @@ export class Validator {
 
                 results.warnings.push(forkWarning);
 
-                // 处理高优先级安全消息
                 const securityProcessResult = this.processHighPrioritySecurityMessage(forkWarning, networkState);
                 results.actions.push(securityProcessResult);
             }
 
-            // 3. 区块链完整性验证
             const integrityResult = await this.verifyChainIntegrity(blockchain, block);
             results.securityChecks.push({
                 type: 'INTEGRITY_CHECK',
@@ -1540,16 +1466,16 @@ export class Validator {
             return {
                 isValid: false,
                 error: 'SECURITY_VALIDATION_ERROR',
-                message: `安全验证过程中发生错误: ${error.message}`,
+                message: `An error occurred during security validation: ${error.message}`,
                 details: error
             };
         }
     }
 
     /**
-     * 获取安全统计信息
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 安全统计信息
+     * Gets security statistics.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The security statistics.
      */
     getSecurityStats(networkState) {
         const blacklistManager = this.getBlacklistManager(networkState);
@@ -1572,9 +1498,9 @@ export class Validator {
     }
 
     /**
-     * 按类型分组安全事件
-     * @param {Array} events - 安全事件数组
-     * @returns {Object} 按类型分组的事件
+     * Groups security events by type.
+     * @param {Array} events - The array of security events.
+     * @returns {Object} The grouped events.
      */
     groupSecurityEventsByType(events) {
         const grouped = {};
@@ -1591,51 +1517,43 @@ export class Validator {
     }
 
     /**
-     * 计算缓存命中率
-     * @returns {number} 缓存命中率（百分比）
+     * Calculates the cache hit rate.
+     * @returns {number} The cache hit rate (percentage).
      */
     calculateCacheHitRate() {
-        // 这里可以实现实际的缓存命中率计算
-        // 目前返回模拟值
         return 85.5;
     }
 
     /**
-     * 计算平均验证时间
-     * @returns {number} 平均验证时间（毫秒）
+     * Calculates the average validation time.
+     * @returns {number} The average validation time in milliseconds.
      */
     calculateAverageValidationTime() {
-        // 这里可以实现实际的平均验证时间计算
-        // 目前返回模拟值
         return 12.3;
     }
 
     /**
-     * 获取总验证次数
-     * @returns {number} 总验证次数
+     * Gets the total number of validations.
+     * @returns {number} The total number of validations.
      */
     getTotalValidations() {
-        // 这里可以实现实际的验证次数统计
-        // 目前返回模拟值
         return this.verificationCache.size * 2;
     }
 
     /**
-     * 检查是否有活跃的警告
-     * @param {string} blockchainId - 区块链ID
-     * @param {Object} networkState - 网络状态
-     * @returns {Object} 警告检查结果
+     * Checks for active warnings.
+     * @param {string} blockchainId - The blockchain ID.
+     * @param {Object} networkState - The network state.
+     * @returns {Object} The warning check result.
      */
     checkForActiveWarnings(blockchainId, networkState) {
         const activeWarnings = [];
         const currentTime = Date.now();
-        const warningTimeout = 5 * 60 * 1000; // 5分钟警告有效期
+        const warningTimeout = 5 * 60 * 1000;
 
         if (networkState.forkWarnings) {
             for (const warning of networkState.forkWarnings) {
-                // 检查警告是否仍然有效
                 if (currentTime - warning.timestamp < warningTimeout) {
-                    // 检查警告是否与指定区块链相关
                     if (warning.data && 
                         (warning.data.blockchainId === blockchainId || 
                          warning.data.relatedBlockchainId === blockchainId)) {
@@ -1653,7 +1571,7 @@ export class Validator {
     }
 
     /**
-     * 销毁验证器，清理资源
+     * Destroys the validator and cleans up resources.
      */
     destroy() {
         if (this.cleanupInterval) {

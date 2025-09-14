@@ -1,27 +1,27 @@
 /**
- * Logger 类 - 日志系统
+ * Logger Class - Logging System
  * 
- * 负责记录系统中的各种操作日志，包括区块添加、接受、拒绝、警告、拉黑等
- * 支持日志分类管理、时间戳记录和相关数据存储
+ * Responsible for recording various operation logs in the system, including block additions, acceptances, rejections, warnings, blacklisting, etc.
+ * Supports log classification management, timestamp recording, and related data storage.
  */
 
 export class Logger {
     /**
-     * 日志类型常量
+     * Log type constants
      */
     static LOG_TYPES = {
-        BLOCK_ADDED: 'BLOCK_ADDED',           // 区块添加
-        BLOCK_ACCEPTED: 'BLOCK_ACCEPTED',     // 区块接受
-        BLOCK_REJECTED: 'BLOCK_REJECTED',     // 区块拒绝
-        FORK_WARNING: 'FORK_WARNING',         // 分叉警告
-        USER_BLACKLISTED: 'USER_BLACKLISTED', // 用户拉黑
-        NETWORK_EVENT: 'NETWORK_EVENT',       // 网络事件
-        VALIDATION_ERROR: 'VALIDATION_ERROR', // 验证错误
-        SYSTEM_INFO: 'SYSTEM_INFO'            // 系统信息
+        BLOCK_ADDED: 'BLOCK_ADDED',
+        BLOCK_ACCEPTED: 'BLOCK_ACCEPTED',
+        BLOCK_REJECTED: 'BLOCK_REJECTED',
+        FORK_WARNING: 'FORK_WARNING',
+        USER_BLACKLISTED: 'USER_BLACKLISTED',
+        NETWORK_EVENT: 'NETWORK_EVENT',
+        VALIDATION_ERROR: 'VALIDATION_ERROR',
+        SYSTEM_INFO: 'SYSTEM_INFO'
     };
 
     /**
-     * 日志级别常量
+     * Log level constants
      */
     static LOG_LEVELS = {
         DEBUG: 0,
@@ -32,49 +32,44 @@ export class Logger {
     };
 
     /**
-     * 构造函数
-     * @param {Object} config - 日志配置
-     * @param {number} config.maxLogs - 最大日志条数，默认1000
-     * @param {number} config.logLevel - 日志级别，默认INFO
-     * @param {boolean} config.enableConsole - 是否启用控制台输出，默认true
+     * Constructor
+     * @param {Object} config - Log configuration
+     * @param {number} config.maxLogs - Maximum number of logs, default 1000
+     * @param {number} config.logLevel - Log level, default INFO
+     * @param {boolean} config.enableConsole - Whether to enable console output, default true
      */
     constructor(config = {}) {
         this.maxLogs = config.maxLogs || 1000;
         this.logLevel = config.logLevel || Logger.LOG_LEVELS.INFO;
         this.enableConsole = config.enableConsole !== false;
         
-        // 日志存储
         this.logs = [];
-        this.logIndex = 0; // 用于生成唯一ID
+        this.logIndex = 0; 
         
-        // 日志统计
         this.stats = {
             totalLogs: 0,
             logsByType: new Map(),
             logsByLevel: new Map()
         };
         
-        // 事件监听器
         this.listeners = new Map();
         
-        console.log('Logger 初始化完成');
+        console.log('Logger initialized');
     }
 
     /**
-     * 记录日志
-     * @param {string} type - 日志类型
-     * @param {string} message - 日志消息
-     * @param {Object} relatedData - 相关数据
-     * @param {number} level - 日志级别
-     * @returns {Object} 日志条目
+     * Log a message
+     * @param {string} type - Log type
+     * @param {string} message - Log message
+     * @param {Object} relatedData - Related data
+     * @param {number} level - Log level
+     * @returns {Object} Log entry
      */
     log(type, message, relatedData = {}, level = Logger.LOG_LEVELS.INFO) {
-        // 检查日志级别
         if (level < this.logLevel) {
             return null;
         }
 
-        // 创建日志条目
         const logEntry = {
             id: `log_${++this.logIndex}`,
             type,
@@ -85,40 +80,35 @@ export class Logger {
             relatedData: { ...relatedData }
         };
 
-        // 添加到日志数组
         this.logs.push(logEntry);
         
-        // 维护最大日志数量
         if (this.logs.length > this.maxLogs) {
             this.logs.shift();
         }
 
-        // 更新统计信息
         this.updateStats(type, level);
 
-        // 控制台输出
         if (this.enableConsole) {
             this.consoleOutput(logEntry);
         }
 
-        // 触发事件监听器
         this.notifyListeners('log', logEntry);
 
         return logEntry;
     }
 
     /**
-     * 记录区块添加日志
-     * @param {string} blockId - 区块ID
-     * @param {string} chainId - 区块链ID
-     * @param {string} creatorId - 创建者ID
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log block added
+     * @param {string} blockId - Block ID
+     * @param {string} chainId - Chain ID
+     * @param {string} creatorId - Creator ID
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logBlockAdded(blockId, chainId, creatorId, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.BLOCK_ADDED,
-            `区块 ${blockId} 已添加到区块链 ${chainId}`,
+            `Block ${blockId} has been added to blockchain ${chainId}`,
             {
                 blockId,
                 chainId,
@@ -130,17 +120,17 @@ export class Logger {
     }
 
     /**
-     * 记录区块接受日志
-     * @param {string} blockId - 区块ID
-     * @param {string} chainId - 区块链ID
-     * @param {string} receiverId - 接收者ID
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log block accepted
+     * @param {string} blockId - Block ID
+     * @param {string} chainId - Chain ID
+     * @param {string} receiverId - Receiver ID
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logBlockAccepted(blockId, chainId, receiverId, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.BLOCK_ACCEPTED,
-            `区块 ${blockId} 已被接受，区块链 ${chainId} 转移给 ${receiverId}`,
+            `Block ${blockId} has been accepted, blockchain ${chainId} transferred to ${receiverId}`,
             {
                 blockId,
                 chainId,
@@ -152,17 +142,17 @@ export class Logger {
     }
 
     /**
-     * 记录区块拒绝日志
-     * @param {string} blockId - 区块ID
-     * @param {string} chainId - 区块链ID
-     * @param {string} reason - 拒绝原因
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log block rejected
+     * @param {string} blockId - Block ID
+     * @param {string} chainId - Chain ID
+     * @param {string} reason - Reason for rejection
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logBlockRejected(blockId, chainId, reason, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.BLOCK_REJECTED,
-            `区块 ${blockId} 被拒绝: ${reason}`,
+            `Block ${blockId} was rejected: ${reason}`,
             {
                 blockId,
                 chainId,
@@ -174,16 +164,16 @@ export class Logger {
     }
 
     /**
-     * 记录分叉警告日志
-     * @param {string} chainId - 区块链ID
-     * @param {Array} conflictBlocks - 冲突区块列表
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log fork warning
+     * @param {string} chainId - Chain ID
+     * @param {Array} conflictBlocks - List of conflicting blocks
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logForkWarning(chainId, conflictBlocks, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.FORK_WARNING,
-            `检测到区块链 ${chainId} 分叉，冲突区块: ${conflictBlocks.join(', ')}`,
+            `Fork detected in blockchain ${chainId}, conflicting blocks: ${conflictBlocks.join(', ')}`,
             {
                 chainId,
                 conflictBlocks,
@@ -194,16 +184,16 @@ export class Logger {
     }
 
     /**
-     * 记录用户拉黑日志
-     * @param {string} userId - 用户ID
-     * @param {string} reason - 拉黑原因
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log user blacklisted
+     * @param {string} userId - User ID
+     * @param {string} reason - Reason for blacklisting
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logUserBlacklisted(userId, reason, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.USER_BLACKLISTED,
-            `用户 ${userId} 被拉黑: ${reason}`,
+            `User ${userId} was blacklisted: ${reason}`,
             {
                 userId,
                 reason,
@@ -214,16 +204,16 @@ export class Logger {
     }
 
     /**
-     * 记录网络事件日志
-     * @param {string} eventType - 事件类型
-     * @param {string} description - 事件描述
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log network event
+     * @param {string} eventType - Event type
+     * @param {string} description - Event description
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logNetworkEvent(eventType, description, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.NETWORK_EVENT,
-            `网络事件 [${eventType}]: ${description}`,
+            `Network event [${eventType}]: ${description}`,
             {
                 eventType,
                 ...additionalData
@@ -233,16 +223,16 @@ export class Logger {
     }
 
     /**
-     * 记录验证错误日志
-     * @param {string} validationType - 验证类型
-     * @param {string} error - 错误信息
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log validation error
+     * @param {string} validationType - Validation type
+     * @param {string} error - Error message
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logValidationError(validationType, error, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.VALIDATION_ERROR,
-            `验证错误 [${validationType}]: ${error}`,
+            `Validation error [${validationType}]: ${error}`,
             {
                 validationType,
                 error,
@@ -253,31 +243,30 @@ export class Logger {
     }
 
     /**
-     * 记录系统信息日志
-     * @param {string} info - 信息内容
-     * @param {Object} additionalData - 额外数据
-     * @returns {Object} 日志条目
+     * Log system info
+     * @param {string} info - Information content
+     * @param {Object} additionalData - Additional data
+     * @returns {Object} Log entry
      */
     logSystemInfo(info, additionalData = {}) {
         return this.log(
             Logger.LOG_TYPES.SYSTEM_INFO,
-            `系统信息: ${info}`,
+            `System info: ${info}`,
             additionalData,
             Logger.LOG_LEVELS.INFO
         );
     }
 
     /**
-     * 获取日志列表
-     * @param {Object} filter - 过滤条件
-     * @param {number} page - 页码（从1开始）
-     * @param {number} pageSize - 每页大小
-     * @returns {Object} 分页日志数据
+     * Get log list
+     * @param {Object} filter - Filter conditions
+     * @param {number} page - Page number (starting from 1)
+     * @param {number} pageSize - Page size
+     * @returns {Object} Paginated log data
      */
     getLogs(filter = {}, page = 1, pageSize = 100) {
         let filteredLogs = [...this.logs];
 
-        // 应用过滤条件
         if (filter.type) {
             filteredLogs = filteredLogs.filter(log => log.type === filter.type);
         }
@@ -314,10 +303,8 @@ export class Logger {
             filteredLogs = filteredLogs.filter(log => log.timestamp <= filter.endTime);
         }
 
-        // 按时间倒序排列（最新的在前）
         filteredLogs.sort((a, b) => b.timestamp - a.timestamp);
 
-        // 分页处理
         const totalCount = filteredLogs.length;
         const totalPages = Math.ceil(totalCount / pageSize);
         const startIndex = (page - 1) * pageSize;
@@ -338,46 +325,46 @@ export class Logger {
     }
 
     /**
-     * 根据用户ID获取相关日志
-     * @param {string} userId - 用户ID
-     * @param {number} limit - 限制数量
-     * @returns {Array} 日志列表
+     * Get logs by user ID
+     * @param {string} userId - User ID
+     * @param {number} limit - Limit
+     * @returns {Array} Log list
      */
     getLogsByUser(userId, limit = 100) {
         return this.getLogs({ userId }, 1, limit).logs;
     }
 
     /**
-     * 根据区块链ID获取相关日志
-     * @param {string} chainId - 区块链ID
-     * @param {number} limit - 限制数量
-     * @returns {Array} 日志列表
+     * Get logs by chain ID
+     * @param {string} chainId - Chain ID
+     * @param {number} limit - Limit
+     * @returns {Array} Log list
      */
     getLogsByChain(chainId, limit = 100) {
         return this.getLogs({ chainId }, 1, limit).logs;
     }
 
     /**
-     * 根据区块ID获取相关日志
-     * @param {string} blockId - 区块ID
-     * @param {number} limit - 限制数量
-     * @returns {Array} 日志列表
+     * Get logs by block ID
+     * @param {string} blockId - Block ID
+     * @param {number} limit - Limit
+     * @returns {Array} Log list
      */
     getLogsByBlock(blockId, limit = 100) {
         return this.getLogs({ blockId }, 1, limit).logs;
     }
 
     /**
-     * 获取最近的日志
-     * @param {number} count - 数量
-     * @returns {Array} 日志列表
+     * Get recent logs
+     * @param {number} count - Count
+     * @returns {Array} Log list
      */
     getRecentLogs(count = 100) {
         return this.logs.slice(-count).reverse();
     }
 
     /**
-     * 清空日志
+     * Clear logs
      */
     clearLogs() {
         this.logs = [];
@@ -389,12 +376,12 @@ export class Logger {
         };
         
         this.notifyListeners('clear');
-        console.log('日志已清空');
+        console.log('Logs cleared');
     }
 
     /**
-     * 获取日志统计信息
-     * @returns {Object} 统计信息
+     * Get log statistics
+     * @returns {Object} Statistics
      */
     getStats() {
         return {
@@ -406,18 +393,18 @@ export class Logger {
     }
 
     /**
-     * 设置日志级别
-     * @param {number} level - 新的日志级别
+     * Set log level
+     * @param {number} level - New log level
      */
     setLogLevel(level) {
         this.logLevel = level;
-        console.log(`日志级别设置为: ${level}`);
+        console.log(`Log level set to: ${level}`);
     }
 
     /**
-     * 添加事件监听器
-     * @param {string} event - 事件名称
-     * @param {Function} callback - 回调函数
+     * Add event listener
+     * @param {string} event - Event name
+     * @param {Function} callback - Callback function
      */
     addEventListener(event, callback) {
         if (!this.listeners.has(event)) {
@@ -427,9 +414,9 @@ export class Logger {
     }
 
     /**
-     * 移除事件监听器
-     * @param {string} event - 事件名称
-     * @param {Function} callback - 回调函数
+     * Remove event listener
+     * @param {string} event - Event name
+     * @param {Function} callback - Callback function
      */
     removeEventListener(event, callback) {
         if (this.listeners.has(event)) {
@@ -438,9 +425,9 @@ export class Logger {
     }
 
     /**
-     * 通知事件监听器
-     * @param {string} event - 事件名称
-     * @param {*} data - 事件数据
+     * Notify event listeners
+     * @param {string} event - Event name
+     * @param {*} data - Event data
      */
     notifyListeners(event, data) {
         if (this.listeners.has(event)) {
@@ -448,32 +435,30 @@ export class Logger {
                 try {
                     callback(data);
                 } catch (error) {
-                    console.error('日志事件监听器执行错误:', error);
+                    console.error('Error in log event listener:', error);
                 }
             }
         }
     }
 
     /**
-     * 更新统计信息
-     * @param {string} type - 日志类型
-     * @param {number} level - 日志级别
+     * Update statistics
+     * @param {string} type - Log type
+     * @param {number} level - Log level
      */
     updateStats(type, level) {
         this.stats.totalLogs++;
         
-        // 按类型统计
         const typeCount = this.stats.logsByType.get(type) || 0;
         this.stats.logsByType.set(type, typeCount + 1);
         
-        // 按级别统计
         const levelCount = this.stats.logsByLevel.get(level) || 0;
         this.stats.logsByLevel.set(level, levelCount + 1);
     }
 
     /**
-     * 控制台输出
-     * @param {Object} logEntry - 日志条目
+     * Console output
+     * @param {Object} logEntry - Log entry
      */
     consoleOutput(logEntry) {
         const timestamp = new Date(logEntry.timestamp).toLocaleTimeString();
@@ -502,9 +487,9 @@ export class Logger {
     }
 
     /**
-     * 导出日志为JSON
-     * @param {Object} filter - 过滤条件
-     * @returns {string} JSON字符串
+     * Export logs as JSON
+     * @param {Object} filter - Filter conditions
+     * @returns {string} JSON string
      */
     exportLogs(filter = {}) {
         const { logs } = this.getLogs(filter, 1, this.logs.length);
@@ -516,9 +501,9 @@ export class Logger {
     }
 
     /**
-     * 从JSON导入日志
-     * @param {string} jsonData - JSON数据
-     * @param {boolean} append - 是否追加到现有日志
+     * Import logs from JSON
+     * @param {string} jsonData - JSON data
+     * @param {boolean} append - Whether to append to existing logs
      */
     importLogs(jsonData, append = false) {
         try {
@@ -530,22 +515,20 @@ export class Logger {
             
             if (data.logs && Array.isArray(data.logs)) {
                 for (const logEntry of data.logs) {
-                    // 重新分配ID以避免冲突
                     logEntry.id = `log_${++this.logIndex}`;
                     this.logs.push(logEntry);
                     this.updateStats(logEntry.type, logEntry.level);
                 }
                 
-                // 维护最大日志数量
                 if (this.logs.length > this.maxLogs) {
                     const excess = this.logs.length - this.maxLogs;
                     this.logs.splice(0, excess);
                 }
                 
-                console.log(`导入了 ${data.logs.length} 条日志`);
+                console.log(`Imported ${data.logs.length} logs`);
             }
         } catch (error) {
-            console.error('导入日志失败:', error);
+            console.error('Failed to import logs:', error);
             throw error;
         }
     }
