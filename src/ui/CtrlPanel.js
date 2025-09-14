@@ -74,7 +74,7 @@ class CtrlPanel {
             <button class="btn btn-warning" id="pause-btn" disabled data-text="pause_system">${GetText('pause_system')}</button>
             <button class="btn btn-danger" id="stop-btn" disabled data-text="stop_system">${GetText('stop_system')}</button>
             <div class="system-controls-header">
-                <button class="help-icon" data-help="system-controls" title="${GetText('view_help')}">${GetText('help_icon')}</button>
+                <button class="help-icon" data-help="systemctrls" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
         `;
     }
@@ -84,42 +84,42 @@ class CtrlPanel {
             <div class="form-group inline-input">
                 <label class="form-label">
                     <span data-text="node_count">${GetText('node_count')}</span>
-                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="node-count" value="${this.currentConfig.nodeCount}" min="1" max="100">
+                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
             
             <div class="form-group inline-input">
                 <label class="form-label">
                     <span data-text="user_count">${GetText('user_count')}</span>
-                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="user-count" value="${this.currentConfig.userCount}" min="1" max="1000">
+                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
             
             <div class="form-group inline-input">
                 <label class="form-label">
                     <span data-text="max_connections">${GetText('max_connections')}</span>
-                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="max-connections" value="${this.currentConfig.maxConnections}" min="1" max="20">
+                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
             
             <div class="form-group inline-input">
                 <label class="form-label">
                     <span data-text="user_node_connections">${GetText('user_node_connections')}</span>
-                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="number" class="form-control" id="userNodeNum" value="${this.currentConfig.userNodeNum}" min="1" max="5">
+                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
             
             <div class="form-group">
                 <label class="form-label">
                     <span data-text="failure_rate_percent">${GetText('failure_rate_percent')}</span>
-                    <button class="help-icon" data-help="network-settings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
                 <small class="text-muted" data-text-template="current_percent">${GetText('current')}: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
+                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
         `;
     }
@@ -149,7 +149,7 @@ class CtrlPanel {
             <div class="form-group">
                 <label class="form-label">
                     ${GetText('tick_interval')}
-                    <button class="help-icon" data-help="runtime-controls" title="help">?</button>
+                    <button class="help-icon" data-help="runtimectrls" title="help">?</button>
                 </label>
                 <input type="range" class="form-control" id="tick-interval" value="${defaultLogValue}" min="0" max="100" step="1">
                 <small class="text-muted">${GetText('current')}: 1.0 ${GetText('seconds')}</small>
@@ -665,8 +665,8 @@ class CtrlPanel {
         const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
         if (type === 'hash') {
             return `
-const originalData = \`${DefStr.replace( '\\n', '\\\\n' ).replace( '\n', '\\n' ) + this.currentConfig.chainDefinition}\`;
-const expectedHash = "${value}";
+originalData = \`${DefStr.replace( /\\n/g, '\\\\n' ) + this.currentConfig.chainDefinition}\`;
+expectedHash = "${value}";
 
 (async function() {
     try {

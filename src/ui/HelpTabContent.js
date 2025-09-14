@@ -382,7 +382,7 @@ class HelpTabContent {
                         </div>
                     </section>
                     
-                    <section id="networksettings" class="help-section">
+                    <section id="runtimectrls" class="help-section">
                         <h2>运行时控制</h2>
                         <p>系统运行时可以调整的参数，用于控制模拟的速度和行为。</p>
                         
