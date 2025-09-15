@@ -1,29 +1,29 @@
-# Crypto 导出问题修复总结
+# Crypto Export Issue Fix Summary
 
-## 🐛 问题描述
+## 🐛 Problem Description
 
-**错误**: `TypeError: Cannot read properties of undefined (reading 'sha256')`
+**Error**: `TypeError: Cannot read properties of undefined (reading 'sha256')`
 
-**原因**: 多个类没有正确的 ES6 模块导出语句，导致在测试环境中无法正确导入。
+**Cause**: Several classes were missing the correct ES6 module export statements, preventing them from being imported correctly in the test environment.
 
-## 🔍 问题分析
+## 🔍 Problem Analysis
 
-1. **Crypto 类缺少导出** - `BlockChain` 类导入 `Crypto` 时失败
-2. **UI 类缺少导出** - `CtrlPanel`, `LogPanel`, `MainPanel`, `UIManager` 等类无法在测试中实例化
-3. **PerformanceOptimizer 类缺少导出** - 性能测试失败
-4. **BlockChain 异步初始化问题** - 构造函数中调用异步方法导致竞态条件
+1.  **Crypto Class Missing Export** - The `BlockChain` class failed when importing `Crypto`.
+2.  **UI Classes Missing Exports** - Classes like `CtrlPanel`, `LogPanel`, `MainPanel`, and `UIManager` could not be instantiated in tests.
+3.  **PerformanceOptimizer Class Missing Export** - Performance tests were failing.
+4.  **BlockChain Asynchronous Initialization Issue** - Calling an async method in the constructor caused a race condition.
 
-## ✅ 修复方案
+## ✅ Fix Implementation
 
-### 1. 添加缺失的导出语句
+### 1. Added Missing Export Statements
 
-#### Crypto 服务
+#### Crypto Service
 ```javascript
 // src/services/Crypto.js
 export { Crypto };
 ```
 
-#### UI 组件
+#### UI Components
 ```javascript
 // src/ui/CtrlPanel.js
 export { CtrlPanel };
@@ -38,23 +38,23 @@ export { MainPanel };
 export { UIManager };
 ```
 
-#### 性能优化器
+#### Performance Optimizer
 ```javascript
 // src/services/PerformanceOptimizer.js
 export { PerformanceOptimizer };
 ```
 
-### 2. 修复 BlockChain 异步初始化
+### 2. Fixed BlockChain Asynchronous Initialization
 
-#### 问题
+#### The Problem
 ```javascript
 constructor(definition, serialNumber) {
     // ...
-    this.createRootBlock(); // 异步方法在同步构造函数中调用
+    this.createRootBlock(); // Async method called in a sync constructor
 }
 ```
 
-#### 解决方案
+#### The Solution
 ```javascript
 constructor(definition, serialNumber) {
     // ...
@@ -70,54 +70,54 @@ async waitForInit() {
 }
 
 async createRootBlock() {
-    // ... 创建根区块
+    // ... create the root block
     this.initialized = true;
 }
 ```
 
-### 3. 更新测试文件
+### 3. Updated Test Files
 
-所有使用 `BlockChain` 的测试都需要等待初始化：
+All tests using `BlockChain` now need to wait for initialization:
 
 ```javascript
 beforeEach(async () => {
     mockBlockchain1 = new BlockChain(chainDef1, '1');
     mockBlockchain2 = new BlockChain(chainDef2, '11');
 
-    // 等待区块链初始化完成
+    // Wait for the blockchain to finish initializing
     await mockBlockchain1.waitForInit();
     await mockBlockchain2.waitForInit();
 });
 ```
 
-## 🧪 验证结果
+## 🧪 Verification Results
 
-- ✅ `User.test.js` - 18/18 测试通过
-- ✅ `Crypto` 导入问题已解决
-- ✅ UI 类可以正确实例化
-- ✅ `BlockChain` 异步初始化问题已解决
+- ✅ `User.test.js` - 18/18 tests passed.
+- ✅ The `Crypto` import issue is resolved.
+- ✅ UI classes can now be instantiated correctly.
+- ✅ The `BlockChain` asynchronous initialization issue is resolved.
 
-## 📁 修改的文件
+## 📁 Modified Files
 
-1. **src/services/Crypto.js** - 添加导出语句
-2. **src/ui/CtrlPanel.js** - 添加导出语句
-3. **src/ui/LogPanel.js** - 添加导出语句
-4. **src/ui/MainPanel.js** - 添加导出语句
-5. **src/ui/UIManager.js** - 添加导出语句
-6. **src/services/PerformanceOptimizer.js** - 添加导出语句
-7. **src/models/BlockChain.js** - 修复异步初始化
-8. **tests/models/User.test.js** - 更新初始化等待
-9. **tests/services/PaymentRateController.test.js** - 更新初始化等待
-10. **tests/services/AutoTransferManager.integration.test.js** - 更新初始化等待
-11. **tests/integration/SecurityMechanisms.integration.test.js** - 更新初始化等待
+1.  **src/services/Crypto.js** - Added export statement.
+2.  **src/ui/CtrlPanel.js** - Added export statement.
+3.  **src/ui/LogPanel.js** - Added export statement.
+4.  **src/ui/MainPanel.js** - Added export statement.
+5.  **src/ui/UIManager.js** - Added export statement.
+6.  **src/services/PerformanceOptimizer.js** - Added export statement.
+7.  **src/models/BlockChain.js** - Fixed async initialization.
+8.  **tests/models/User.test.js** - Updated to wait for initialization.
+9.  **tests/services/PaymentRateController.test.js** - Updated to wait for initialization.
+10. **tests/services/AutoTransferManager.integration.test.js** - Updated to wait for initialization.
+11. **tests/integration/SecurityMechanisms.integration.test.js** - Updated to wait for initialization.
 
-## 🎯 下一步
+## 🎯 Next Steps
 
-现在需要修复的主要问题：
+The main issues that now need to be addressed are:
 
-1. **UI 类方法缺失** - `CtrlPanel`, `LogPanel`, `MainPanel` 等类缺少测试期望的方法
-2. **Crypto 类方法缺失** - 缺少 `setErrorHandler`, `setSystemMonitor` 等方法
-3. **验证器逻辑问题** - 一些验证测试的期望值不正确
-4. **性能测试问题** - 需要修复性能相关的测试
+1.  **Missing Methods in UI Classes** - `CtrlPanel`, `LogPanel`, `MainPanel`, etc., are missing methods expected by the tests.
+2.  **Missing Methods in Crypto Class** - Methods like `setErrorHandler` and `setSystemMonitor` are missing.
+3.  **Validator Logic Issues** - Some validation tests have incorrect expected values.
+4.  **Performance Test Issues** - Performance-related tests need to be fixed.
 
-这些问题主要是实现与测试接口不匹配，需要逐个修复。
+These problems are primarily due to a mismatch between the implementation and the test interfaces, which will need to be fixed one by one.

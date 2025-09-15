@@ -1,35 +1,35 @@
-# UI改进工作完成总结
+# UI Improvements Completion Summary
 
-## 完成时间
-2025年1月27日
+## Completion Date
+January 27, 2025
 
-## 修复的BUG
+## Fixed Bugs
 
-### 1. 网络图显示问题 ✅
-- **问题**：网络图只显示节点，没有连接线
-- **解决方案**：在D3.js渲染中添加连接线生成和绘制逻辑
-- **文件修改**：`src/ui/MainPanel.js`
+### 1. Network Graph Display Issue ✅
+- **Problem**: The network graph only showed nodes, without any connection lines.
+- **Solution**: Added logic for generating and drawing connection lines in the D3.js rendering.
+- **File Modified**: `src/ui/MainPanel.js`
 
-### 2. 界面重绘性能问题 ✅  
-- **问题**：用户区域和区块链区块不断全量重画
-- **解决方案**：实现增量更新，只更新变化的元素
-- **文件修改**：`src/ui/MainPanel.js`
+### 2. UI Redraw Performance Issue ✅
+- **Problem**: The user area and blockchain blocks were constantly being fully redrawn.
+- **Solution**: Implemented incremental updates to only update elements that have changed.
+- **File Modified**: `src/ui/MainPanel.js`
 
-### 3. 日志显示顺序问题 ✅
-- **问题**：新日志显示在顶部，顺序混乱
-- **解决方案**：改为新日志添加到底部，自动滚动
-- **文件修改**：`src/ui/LogPanel.js`
+### 3. Log Display Order Issue ✅
+- **Problem**: New logs were displayed at the top, leading to a confusing order.
+- **Solution**: Changed it so new logs are appended to the bottom, with auto-scrolling.
+- **File Modified**: `src/ui/LogPanel.js`
 
-### 4. 日志样式问题 ✅
-- **问题**：日志背景色过深，时间独占一行
-- **解决方案**：使用浅色背景，时间和消息同行显示
-- **文件修改**：`src/ui/LogPanel.js`, `src/styles/main.css`
+### 4. Log Style Issue ✅
+- **Problem**: The log background color was too dark, and the timestamp took up a separate line.
+- **Solution**: Used a lighter background color and displayed the timestamp and message on the same line.
+- **Files Modified**: `src/ui/LogPanel.js`, `src/styles/main.css`
 
-## 创建的文件
-- `test-ui-fixes.html` - UI修复测试页面
-- `.kiro/specs/ui-improvements/tasks.md` - 任务跟踪文件
+## Created Files
+- `test-ui-fixes.html` - Test page for UI fixes.
+- `.kiro/specs/ui-improvements/tasks.md` - Task tracking file.
 
-## 工作状态
-🎉 **所有BUG修复完成！** 
+## Work Status
+🎉 **All bugs have been fixed!**
 
-界面现在应该正常显示网络连接、高效更新数据、正确排序日志。
+The interface should now correctly display network connections, efficiently update data, and sort logs properly.

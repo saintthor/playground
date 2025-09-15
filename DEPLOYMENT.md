@@ -1,132 +1,132 @@
-# P2P 区块链 Playground 部署指南
+# P2P Blockchain Playground Deployment Guide
 
-## 概述
+## Overview
 
-P2P 区块链 Playground 是一个纯前端应用，可以部署到任何支持静态文件服务的环境中。本指南提供了多种部署方式的详细说明。
+The P2P Blockchain Playground is a pure front-end application that can be deployed in any environment that supports static file serving. This guide provides detailed instructions for various deployment methods.
 
-## 系统要求
+## System Requirements
 
-### 开发环境
+### Development Environment
 - Node.js 16.0+
 - npm 8.0+
-- 现代浏览器（Chrome 90+, Firefox 88+, Safari 14+, Edge 90+）
+- Modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
 
-### 生产环境
-- 静态文件服务器（Apache, Nginx, 或任何 HTTP 服务器）
-- HTTPS 支持（推荐）
-- 现代浏览器支持
+### Production Environment
+- Static file server (Apache, Nginx, or any HTTP server)
+- HTTPS support (recommended)
+- Modern browser support
 
-## 快速部署
+## Quick Deployment
 
-### 方法 1: 直接使用（推荐）
+### Method 1: Direct Use (Recommended)
 
-最简单的部署方式是直接使用现有文件：
+The simplest way to deploy is to use the existing files directly:
 
 ```bash
-# 1. 克隆或下载项目
+# 1. Clone or download the project
 git clone <repository-url>
 cd p2p-blockchain-playground
 
-# 2. 启动本地服务器
+# 2. Start a local server
 npm start
-# 或者使用 Python
+# Or using Python
 python3 -m http.server 8080
-# 或者使用 Node.js
+# Or using Node.js
 npx http-server . -p 8080 -o
 ```
 
-### 方法 2: 开发模式
+### Method 2: Development Mode
 
-用于开发和测试：
+For development and testing:
 
 ```bash
-# 1. 安装依赖
+# 1. Install dependencies
 npm install
 
-# 2. 运行测试
+# 2. Run tests
 npm test
 
-# 3. 启动开发服务器
+# 3. Start the development server
 npm run dev
 ```
 
-### 方法 3: 生产构建
+### Method 3: Production Build
 
-用于生产环境部署：
+For production environment deployment:
 
 ```bash
-# 1. 安装依赖
+# 1. Install dependencies
 npm install
 
-# 2. 运行完整验证
+# 2. Run full validation
 npm run validate
 
-# 3. 构建生产版本
+# 3. Build the production version
 npm run build
 
-# 4. 部署 dist 目录到服务器
+# 4. Deploy the dist directory to the server
 ```
 
-## 详细部署步骤
+## Detailed Deployment Steps
 
-### 1. 准备环境
+### 1. Prepare the Environment
 
-#### 检查 Node.js 版本
+#### Check Node.js Version
 ```bash
-node --version  # 应该 >= 16.0
-npm --version   # 应该 >= 8.0
+node --version  # Should be >= 16.0
+npm --version   # Should be >= 8.0
 ```
 
-#### 安装依赖
+#### Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. 代码质量检查
+### 2. Code Quality Check
 
-#### 运行测试
+#### Run Tests
 ```bash
-# 运行所有测试
+# Run all tests
 npm test
 
-# 运行测试并生成覆盖率报告
+# Run tests and generate a coverage report
 npm run test:coverage
 
-# 交互式测试界面
+# Interactive test interface
 npm run test:ui
 ```
 
-#### 代码检查
+#### Code Linting
 ```bash
-# 检查代码质量
+# Check code quality
 npm run lint
 
-# 自动修复代码问题
+# Automatically fix code issues
 npm run lint:fix
 ```
 
-### 3. 构建和部署
+### 3. Build and Deploy
 
-#### 开发构建
+#### Development Build
 ```bash
 npm run build:dev
 ```
 
-#### 生产构建
+#### Production Build
 ```bash
 npm run build
 ```
 
-#### 清理构建文件
+#### Clean Build Files
 ```bash
 npm run clean
 ```
 
-## 部署到不同平台
+## Deploying to Different Platforms
 
-### 1. 本地开发服务器
+### 1. Local Development Server
 
-#### 使用 Python
+#### Using Python
 ```bash
 # Python 3
 python3 -m http.server 8080
@@ -135,30 +135,30 @@ python3 -m http.server 8080
 python -m SimpleHTTPServer 8080
 ```
 
-#### 使用 Node.js
+#### Using Node.js
 ```bash
-# 安装 http-server
+# Install http-server
 npm install -g http-server
 
-# 启动服务器
+# Start the server
 http-server . -p 8080 -o
 ```
 
-#### 使用 PHP
+#### Using PHP
 ```bash
 php -S localhost:8080
 ```
 
-### 2. Apache 服务器
+### 2. Apache Server
 
-#### 配置文件 (.htaccess)
+#### Configuration File (.htaccess)
 ```apache
-# 启用 HTTPS 重定向
+# Enable HTTPS redirect
 RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# 设置缓存策略
+# Set caching policy
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType text/html "access plus 1 hour"
@@ -168,7 +168,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     ExpiresByType image/svg+xml "access plus 1 year"
 </IfModule>
 
-# 启用 Gzip 压缩
+# Enable Gzip compression
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/plain
     AddOutputFilterByType DEFLATE text/html
@@ -181,7 +181,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>
 
-# 安全头设置
+# Security header settings
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options nosniff
     Header always set X-Frame-Options DENY
@@ -191,9 +191,9 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 ```
 
-### 3. Nginx 服务器
+### 3. Nginx Server
 
-#### 配置文件 (nginx.conf)
+#### Configuration File (nginx.conf)
 ```nginx
 server {
     listen 80;
@@ -205,17 +205,17 @@ server {
     listen 443 ssl http2;
     server_name your-domain.com;
     
-    # SSL 配置
+    # SSL configuration
     ssl_certificate /path/to/certificate.crt;
     ssl_certificate_key /path/to/private.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
     
-    # 文档根目录
+    # Document root
     root /path/to/p2p-blockchain-playground;
     index index.html;
     
-    # 缓存策略
+    # Caching policy
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
@@ -226,20 +226,20 @@ server {
         add_header Cache-Control "public";
     }
     
-    # Gzip 压缩
+    # Gzip compression
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
     gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
     
-    # 安全头
+    # Security headers
     add_header X-Content-Type-Options nosniff;
     add_header X-Frame-Options DENY;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'";
     
-    # 主页面
+    # Main page
     location / {
         try_files $uri $uri/ /index.html;
     }
@@ -248,14 +248,14 @@ server {
 
 ### 4. GitHub Pages
 
-#### 部署步骤
-1. 将代码推送到 GitHub 仓库
-2. 在仓库设置中启用 GitHub Pages
-3. 选择源分支（通常是 main 或 gh-pages）
-4. 访问 `https://username.github.io/repository-name`
+#### Deployment Steps
+1. Push the code to a GitHub repository.
+2. Enable GitHub Pages in the repository settings.
+3. Select the source branch (usually `main` or `gh-pages`).
+4. Access `https://username.github.io/repository-name`.
 
-#### GitHub Actions 自动部署
-创建 `.github/workflows/deploy.yml`：
+#### GitHub Actions for Automatic Deployment
+Create `.github/workflows/deploy.yml`:
 
 ```yaml
 name: Deploy to GitHub Pages
@@ -298,13 +298,13 @@ jobs:
 
 ### 5. Netlify
 
-#### 部署步骤
-1. 在 Netlify 中连接 GitHub 仓库
-2. 设置构建命令：`npm run build`
-3. 设置发布目录：`dist`
-4. 部署设置会自动触发
+#### Deployment Steps
+1. Connect your GitHub repository in Netlify.
+2. Set the build command: `npm run build`.
+3. Set the publish directory: `dist`.
+4. Deployment will be triggered automatically.
 
-#### netlify.toml 配置
+#### netlify.toml Configuration
 ```toml
 [build]
   command = "npm run build"
@@ -334,12 +334,12 @@ jobs:
 
 ### 6. Vercel
 
-#### 部署步骤
-1. 安装 Vercel CLI：`npm i -g vercel`
-2. 在项目目录运行：`vercel`
-3. 按照提示完成部署
+#### Deployment Steps
+1. Install the Vercel CLI: `npm i -g vercel`.
+2. Run `vercel` in the project directory.
+3. Follow the prompts to complete the deployment.
 
-#### vercel.json 配置
+#### vercel.json Configuration
 ```json
 {
   "version": 2,
@@ -380,25 +380,25 @@ jobs:
 }
 ```
 
-## 性能优化
+## Performance Optimization
 
-### 1. 资源优化
+### 1. Resource Optimization
 
-#### 图片优化
-- 使用现代图片格式（WebP, AVIF）
-- 压缩图片文件
-- 使用适当的图片尺寸
+#### Image Optimization
+- Use modern image formats (WebP, AVIF).
+- Compress image files.
+- Use appropriate image dimensions.
 
-#### 代码优化
-- 启用代码压缩
-- 移除未使用的代码
-- 使用代码分割
+#### Code Optimization
+- Enable code minification.
+- Remove unused code.
+- Use code splitting.
 
-### 2. 缓存策略
+### 2. Caching Strategy
 
-#### 浏览器缓存
+#### Browser Caching
 ```javascript
-// Service Worker 缓存策略
+// Service Worker caching strategy
 const CACHE_NAME = 'p2p-blockchain-v1.0.0';
 const urlsToCache = [
   '/',
@@ -415,56 +415,56 @@ self.addEventListener('install', event => {
 });
 ```
 
-#### CDN 配置
-- 使用 CDN 加速静态资源
-- 配置适当的缓存头
-- 启用 Gzip/Brotli 压缩
+#### CDN Configuration
+- Use a CDN to accelerate static resources.
+- Configure appropriate cache headers.
+- Enable Gzip/Brotli compression.
 
-### 3. 监控和分析
+### 3. Monitoring and Analytics
 
-#### 性能监控
+#### Performance Monitoring
 ```javascript
-// 性能监控代码
+// Performance monitoring code
 if ('performance' in window) {
   window.addEventListener('load', () => {
     const perfData = performance.getEntriesByType('navigation')[0];
-    console.log('页面加载时间:', perfData.loadEventEnd - perfData.fetchStart);
+    console.log('Page load time:', perfData.loadEventEnd - perfData.fetchStart);
   });
 }
 ```
 
-#### 错误追踪
+#### Error Tracking
 ```javascript
-// 错误追踪
+// Error tracking
 window.addEventListener('error', event => {
-  console.error('JavaScript 错误:', event.error);
-  // 发送错误报告到监控服务
+  console.error('JavaScript Error:', event.error);
+  // Send error report to a monitoring service
 });
 
 window.addEventListener('unhandledrejection', event => {
-  console.error('未处理的 Promise 拒绝:', event.reason);
-  // 发送错误报告到监控服务
+  console.error('Unhandled Promise Rejection:', event.reason);
+  // Send error report to a monitoring service
 });
 ```
 
-## 安全配置
+## Security Configuration
 
-### 1. HTTPS 配置
+### 1. HTTPS Configuration
 
-#### Let's Encrypt 证书
+#### Let's Encrypt Certificate
 ```bash
-# 安装 Certbot
+# Install Certbot
 sudo apt-get install certbot
 
-# 获取证书
+# Obtain a certificate
 sudo certbot certonly --webroot -w /path/to/webroot -d your-domain.com
 
-# 自动续期
+# Automatic renewal
 sudo crontab -e
-# 添加: 0 12 * * * /usr/bin/certbot renew --quiet
+# Add: 0 12 * * * /usr/bin/certbot renew --quiet
 ```
 
-### 2. 安全头配置
+### 2. Security Header Configuration
 
 #### Content Security Policy
 ```html
@@ -479,11 +479,11 @@ sudo crontab -e
 ">
 ```
 
-### 3. 访问控制
+### 3. Access Control
 
-#### IP 白名单（如需要）
+#### IP Whitelisting (if needed)
 ```nginx
-# Nginx 配置
+# Nginx configuration
 location / {
     allow 192.168.1.0/24;
     allow 10.0.0.0/8;
@@ -493,19 +493,19 @@ location / {
 }
 ```
 
-## 故障排除
+## Troubleshooting
 
-### 1. 常见部署问题
+### 1. Common Deployment Issues
 
-#### 文件权限问题
+#### File Permission Issues
 ```bash
-# 设置正确的文件权限
+# Set correct file permissions
 chmod -R 644 /path/to/project
 chmod 755 /path/to/project
 find /path/to/project -type d -exec chmod 755 {} \;
 ```
 
-#### MIME 类型问题
+#### MIME Type Issues
 ```apache
 # Apache .htaccess
 AddType application/javascript .js
@@ -513,29 +513,29 @@ AddType text/css .css
 AddType image/svg+xml .svg
 ```
 
-### 2. 性能问题
+### 2. Performance Issues
 
-#### 检查资源加载
+#### Check Resource Loading
 ```javascript
-// 检查资源加载时间
+// Check resource loading times
 performance.getEntriesByType('resource').forEach(resource => {
   console.log(resource.name, resource.duration);
 });
 ```
 
-#### 内存使用监控
+#### Memory Usage Monitoring
 ```javascript
-// 监控内存使用
+// Monitor memory usage
 if ('memory' in performance) {
-  console.log('内存使用:', performance.memory);
+  console.log('Memory Usage:', performance.memory);
 }
 ```
 
-### 3. 兼容性问题
+### 3. Compatibility Issues
 
-#### 浏览器检测
+#### Browser Feature Detection
 ```javascript
-// 检查浏览器支持
+// Check for browser support
 const checkSupport = () => {
   const required = [
     'fetch',
@@ -550,7 +550,7 @@ const checkSupport = () => {
   });
   
   if (missing.length > 0) {
-    console.warn('不支持的功能:', missing);
+    console.warn('Unsupported features:', missing);
     return false;
   }
   
@@ -558,59 +558,59 @@ const checkSupport = () => {
 };
 ```
 
-## 维护和更新
+## Maintenance and Updates
 
-### 1. 版本管理
+### 1. Version Management
 
-#### 语义化版本
-- 主版本号：不兼容的 API 修改
-- 次版本号：向下兼容的功能性新增
-- 修订号：向下兼容的问题修正
+#### Semantic Versioning
+- Major version: Incompatible API changes.
+- Minor version: Backward-compatible new features.
+- Patch version: Backward-compatible bug fixes.
 
-#### 更新流程
-1. 更新代码
-2. 运行测试
-3. 更新版本号
-4. 构建新版本
-5. 部署到生产环境
-6. 验证部署结果
+#### Update Process
+1. Update the code.
+2. Run tests.
+3. Update the version number.
+4. Build the new version.
+5. Deploy to the production environment.
+6. Verify the deployment.
 
-### 2. 备份策略
+### 2. Backup Strategy
 
-#### 代码备份
-- 使用版本控制系统（Git）
-- 定期推送到远程仓库
-- 创建发布标签
+#### Code Backup
+- Use a version control system (Git).
+- Regularly push to a remote repository.
+- Create release tags.
 
-#### 配置备份
-- 备份服务器配置文件
-- 备份 SSL 证书
-- 备份部署脚本
+#### Configuration Backup
+- Back up server configuration files.
+- Back up SSL certificates.
+- Back up deployment scripts.
 
-### 3. 监控和日志
+### 3. Monitoring and Logging
 
-#### 访问日志分析
+#### Access Log Analysis
 ```bash
-# 分析 Nginx 访问日志
+# Analyze Nginx access logs
 tail -f /var/log/nginx/access.log | grep "p2p-blockchain"
 
-# 分析错误日志
+# Analyze error logs
 tail -f /var/log/nginx/error.log
 ```
 
-#### 性能监控
-- 设置性能监控告警
-- 定期检查系统资源使用
-- 监控用户访问模式
+#### Performance Monitoring
+- Set up performance monitoring alerts.
+- Regularly check system resource usage.
+- Monitor user access patterns.
 
-## 总结
+## Conclusion
 
-本部署指南提供了多种部署方式，从简单的本地开发到复杂的生产环境部署。选择适合你需求的部署方式，并根据实际情况调整配置。
+This deployment guide provides various methods for deploying, from simple local development to complex production environments. Choose the deployment method that suits your needs and adjust the configuration accordingly.
 
-记住：
-- 始终在部署前运行测试
-- 使用 HTTPS 保护用户数据
-- 定期更新和维护系统
-- 监控系统性能和安全性
+Remember:
+- Always run tests before deploying.
+- Use HTTPS to protect user data.
+- Regularly update and maintain the system.
+- Monitor system performance and security.
 
-如有问题，请参考技术文档或联系开发团队。
+If you have any questions, please refer to the technical documentation or contact the development team.

@@ -1,55 +1,55 @@
-# ⚠️ 重要项目约束 - 必须遵守
+# ⚠️ Important Project Constraints - Must Be Followed
 
-## 🚨 关键约束
+## 🚨 Key Constraints
 
-### 1. 无服务器网页应用
-- **这是一个无服务器的网页应用，直接在浏览器中运行**
-- **使用传统的 `<script>` 标签加载 JavaScript 文件**
-- **所有类必须直接在全局作用域中定义**
+### 1. Serverless Web Application
+- **This is a serverless web application that runs directly in the browser.**
+- **It uses traditional `<script>` tags to load JavaScript files.**
+- **All classes must be defined directly in the global scope.**
 
-### 2. 项目配置要求
-- **`package.json` 中不能有 `"type": "module"`**
-- **HTML 使用传统的 `<script src="...">` 而不是 `<script type="module">`**
-- **类定义直接暴露在全局作用域，不使用 ES6 模块系统**
+### 2. Project Configuration Requirements
+- **There must NOT be `"type": "module"` in `package.json`.**
+- **The HTML must use traditional `<script src="...">`, not `<script type="module">`.**
+- **Class definitions are exposed directly to the global scope, without using the ES6 module system.**
 
-### 3. 正确的类定义方式
+### 3. Correct Way to Define Classes
 ```javascript
-// ✅ 正确 - 直接定义类（全局作用域）
+// ✅ Correct - Define the class directly (in the global scope)
 class Crypto {
-    // 类内容
+    // class content
 }
 
-// ❌ 错误 - 不要添加 export（会导致语法错误）
+// ❌ Incorrect - Do not add export (this will cause a syntax error)
 class Crypto {
-    // 类内容
+    // class content
 }
-export { Crypto }; // 这会导致语法错误！
+export { Crypto }; // This will cause a syntax error!
 ```
 
-### 4. 文件加载方式
-HTML 中使用：
+### 4. How to Load Files
+In the HTML, use:
 ```html
 <script src="src/services/Crypto.js"></script>
 <script src="src/ui/UIManager.js"></script>
-<!-- 类会自动在全局作用域中可用 -->
+<!-- The classes will automatically be available in the global scope -->
 ```
 
-### 5. 测试环境 vs 浏览器环境
-- **测试使用 Vitest，支持 ES6 模块**
-- **浏览器运行使用传统脚本加载**
-- **这种混合模式是正常的，不要试图统一**
+### 5. Test Environment vs. Browser Environment
+- **Tests use Vitest, which supports ES6 modules.**
+- **The browser runs using traditional script loading.**
+- **This hybrid model is intentional; do not try to unify them.**
 
-## 🔥 之前的错误教训
-1. **错误地在 `package.json` 中添加了 `"type": "module"`**
-2. **错误地添加了 `export` 语句导致浏览器语法错误**
-3. **错误地将 HTML 改为 `<script type="module">`**
-4. **导致控制面板无法加载，破坏了整个应用**
+## 🔥 Lessons Learned from Previous Mistakes
+1.  **Incorrectly added `"type": "module"` to `package.json`.**
+2.  **Incorrectly added `export` statements, causing browser syntax errors.**
+3.  **Incorrectly changed the HTML to use `<script type="module">`.**
+4.  **This led to the control panel failing to load, breaking the entire application.**
 
-## 📝 修复原则
-1. **保持 `package.json` 中没有 `"type": "module"`**
-2. **保持 HTML 使用传统的 `<script>` 标签**
-3. **保持类定义在全局作用域**
-4. **测试问题通过测试配置解决，不影响浏览器兼容性**
+## 📝 Principles for Fixes
+1.  **Keep `"type": "module"` out of `package.json`.**
+2.  **Keep the HTML using traditional `<script>` tags.**
+3.  **Keep class definitions in the global scope.**
+4.  **Solve testing issues through test configuration, without affecting browser compatibility.**
 
-## 🎯 核心理念
-**这个项目是为浏览器直接运行设计的传统网页应用，不是现代模块化应用！**
+## 🎯 Core Concept
+**This project is designed as a traditional web application to be run directly in the browser, not a modern modular application!**

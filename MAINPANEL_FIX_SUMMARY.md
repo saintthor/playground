@@ -1,19 +1,19 @@
-# MainPanel 修复总结
+# MainPanel Fix Summary
 
-## 🐛 问题诊断
+## 🐛 Problem Diagnosis
 
-**错误**: `Uncaught ReferenceError: MainPanel is not defined`
+**Error**: `Uncaught ReferenceError: MainPanel is not defined`
 
-**根本原因**: `src/ui/MainPanel.js` 文件中存在语法错误，导致 JavaScript 引擎无法解析该文件，从而 `MainPanel` 类未被定义。
+**Root Cause**: A syntax error existed in the `src/ui/MainPanel.js` file, which prevented the JavaScript engine from parsing the file. As a result, the `MainPanel` class was never defined.
 
-## 🔍 问题定位
+## 🔍 Locating the Issue
 
-使用 Node.js 语法检查发现错误：
+The error was identified using Node.js syntax checking:
 ```bash
 node -c src/ui/MainPanel.js
 ```
 
-错误信息：
+Error Message:
 ```
 /home/thor/Projects/AOBPlayground/src/ui/MainPanel.js:100
 renderNetworkGraph(container, networkData) {
@@ -21,54 +21,54 @@ renderNetworkGraph(container, networkData) {
 SyntaxError: Unexpected token '{'
 ```
 
-## 🛠️ 修复过程
+## 🛠️ The Fix
 
-### 问题代码（第95-105行）：
+### Problematic Code (Lines 95-105):
 ```javascript
             chainCount.textContent = data.chainData ? data.chainData.size : 0;
         }
     }
-}    // ← 这里有多余的 } 导致类定义提前结束
+}    // ← An extra } here terminated the class definition prematurely
 
-    renderNetworkGraph(container, networkData) { // ← 这里变成了全局函数，语法错误
+    renderNetworkGraph(container, networkData) { // ← This became a global function, causing a syntax error
 ```
 
-### 修复后的代码：
+### Corrected Code:
 ```javascript
             chainCount.textContent = data.chainData ? data.chainData.size : 0;
         }
     }
     
-    renderNetworkGraph(container, networkData) { // ← 现在是类的方法
+    renderNetworkGraph(container, networkData) { // ← Now correctly a class method
 ```
 
-## ✅ 修复结果
+## ✅ Results of the Fix
 
-1. **语法检查通过**：
-   ```bash
-   node -c src/ui/MainPanel.js
-   # Exit Code: 0 (成功)
-   ```
+1.  **Syntax Check Passes**:
+    ```bash
+    node -c src/ui/MainPanel.js
+    # Exit Code: 0 (Success)
+    ```
 
-2. **MainPanel 类正确定义**：
-   - 类可以正常实例化
-   - 所有方法都在类的作用域内
-   - 脚本加载不再报错
+2.  **`MainPanel` Class is Correctly Defined**:
+    - The class can now be instantiated normally.
+    - All methods are within the class scope.
+    - The script no longer throws an error upon loading.
 
-## 🧪 验证方法
+## 🧪 Verification Method
 
-创建了 `debug-mainpanel.html` 测试文件来验证修复：
-- ✅ MainPanel 类正确定义
-- ✅ MainPanel 实例可以成功创建
-- ✅ 不再有语法错误
+A test file, `debug-mainpanel.html`, was created to verify the fix:
+- ✅ The `MainPanel` class is correctly defined.
+- ✅ An instance of `MainPanel` can be created successfully.
+- ✅ There are no more syntax errors.
 
-## 📁 修改的文件
+## 📁 Modified Files
 
-1. **src/ui/MainPanel.js** - 修复了第99行的多余 `}` 字符
-2. **debug-mainpanel.html** - 创建了调试测试文件
+1.  **src/ui/MainPanel.js** - Fixed the extra `}` character on line 99.
+2.  **debug-mainpanel.html** - Created a debug test file.
 
-## 🎯 最终状态
+## 🎯 Final Status
 
-现在 `MainPanel` 类已经正确定义，应用程序可以正常启动而不会出现 "MainPanel is not defined" 错误。
+The `MainPanel` class is now correctly defined, and the application can start without the "MainPanel is not defined" error.
 
-所有之前修复的功能（浮动验证窗口、控制面板隐藏、哈希格式等）都应该正常工作。
+All previously fixed features (floating verification window, control panel auto-hide, hash formatting, etc.) should now work as expected.
