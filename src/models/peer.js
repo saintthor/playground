@@ -107,6 +107,7 @@ class Peer
             {
                 const key = [...p.Connections.keys()][Math.floor( Math.random() * ConnNum )];
                 p.BreakConn( key );
+                window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: `Break conn ${ p.Id } with ${ key }`, category: 'peer' } );
             }
             
             for( let i = minConnNum - p.Connections.size; i > 0; )
@@ -118,6 +119,10 @@ class Peer
                     const Tick = Math.floor( Math.random() * 5 + 1 );
                     p.Connect( peer, Tick );
                     peer.Connect( p, Tick );
+                    if( currTick > 1 )
+                    {
+                        window.LogPanel.AddLog( { dida: currTick, peer: p.Id, content: `New conn ${ p.Id } with ${ peer.Id }`, category: 'peer' } );
+                    }
                     i--;
                 }
             }

@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /src/
-Disallow: /tests/
-Disallow: /*.json$
-
-Sitemap: https://your-domain.com/sitemap.xml

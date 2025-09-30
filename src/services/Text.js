@@ -5,7 +5,7 @@
 class Text {
     constructor()
     {
-        this.language = 'en'; // 默认中文
+        this.language = 'cn'; // 默认中文
         this.textMap = new Map();
         this.initTextMap();
         window.Text = this;
@@ -1120,7 +1120,7 @@ class Text {
         {
             this.language = lang;
             this.updateAllTexts();
-            //localStorage.setItem( 'app_language', lang );
+            localStorage.setItem( 'app_language', lang );
         }
     }
     
@@ -1147,7 +1147,7 @@ class Text {
      */
     loadLanguageFromStorage()
     {
-        const savedLang = 'en'; //localStorage.getItem( 'app_language' );
+        const savedLang = localStorage.getItem( 'app_language' );
         if( savedLang && ( savedLang === 'cn' || savedLang === 'en' ))
         {
             this.language = savedLang;

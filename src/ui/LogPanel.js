@@ -288,7 +288,7 @@ class LogPanel {
             FilterList.innerHTML = '';
             tabPane.querySelectorAll( '.log-entry' ).forEach( div =>
             {
-                console.log( div );
+                //console.log( div );
                 if( div.childNodes[5].innerText == itemId )
                 {
                     FilterList.appendChild( div );

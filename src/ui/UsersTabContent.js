@@ -46,12 +46,17 @@ class UsersTabContent {
         for (const [userId, user] of userData) {
             let userCard = usersGrid.querySelector(`[data-user-id="${userId}"]`);
             const isTransferring = user.isTransferring || false;
+            const BlackListed = Peer.ChkBlackList( userId ).length > 0;
             
             if (!userCard) {
                 // 创建新的用户卡片
                 userCard = document.createElement('div');
                 userCard.className = `user-card ${isTransferring ? 'transferring' : ''}`;
                 userCard.setAttribute('data-user-id', userId);
+                if( BlackListed )
+                {
+                    userCard.style.backgroundColor = '#ccc';
+                }
                 
                 // 生成公钥预览（前6个字符）
                 const keyPreview = this.generateKeyPreview(userId);

@@ -116,10 +116,10 @@ class CtrlPanel {
             <div class="form-group">
                 <label class="form-label">
                     <span data-text="failure_rate_percent">${GetText('failure_rate_percent')}</span>
+                    <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
                 <small class="text-muted" data-text-template="current_percent">${GetText('current')}: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
-                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
         `;
     }
