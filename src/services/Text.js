@@ -800,6 +800,16 @@ class Text {
             en: 'Description: '
         });
         
+        this.textMap.set('user_st_sending', {
+            cn: '正在发送',
+            en: 'Sending: '
+        });
+
+        this.textMap.set('user_st_receiving', {
+            cn: '正在接收',
+            en: 'Receiving'
+        });
+
         // 网络设置描述
         this.textMap.set('help_network_settings_desc', {
             cn: '配置P2P网络的基本参数，这些设置在系统启动前可以修改。',

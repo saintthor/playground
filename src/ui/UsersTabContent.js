@@ -51,7 +51,8 @@ class UsersTabContent {
             if (!userCard) {
                 // 创建新的用户卡片
                 userCard = document.createElement('div');
-                userCard.className = `user-card ${isTransferring ? 'transferring' : ''}`;
+                userCard.className = `user-card ${ user.Status }`;
+                userCard.title = user.Status ? GetText( 'user_st_' + user.Status ) : null;
                 userCard.setAttribute('data-user-id', userId);
                 if( BlackListed )
                 {
@@ -73,13 +74,20 @@ class UsersTabContent {
                 userCard.addEventListener('click', () => {
                     this.handleUserClick(userId);
                 });
-            } else {
-                // 更新转账状态样式
-                if (isTransferring && !userCard.classList.contains('transferring')) {
-                    userCard.classList.add('transferring');
-                } else if (!isTransferring && userCard.classList.contains('transferring')) {
-                    userCard.classList.remove('transferring');
-                }
+            }
+            else
+            {
+                ['sending', 'receiving'].forEach( st =>
+                {
+                    if( user.Status === st && !userCard.classList.contains( st ))
+                    {
+                        userCard.classList.add( st );
+                    }
+                    else if( user.Status !== st && userCard.classList.contains( st ))
+                    {
+                        userCard.classList.remove( st );
+                    }
+                } );
             }
         }
         

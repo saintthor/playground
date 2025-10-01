@@ -953,14 +953,18 @@ body {
     transform: translateY(-2px);
 }
 
-.user-card.transferring {
+.user-card.sending {
     border-color: #ffc107;
     background: #fff3cd;
 }
 
+.user-card.receiving {
+    border-color: #c1ff07;
+    background: #f3ffcd;
+}
+
 .user-card.selected {
     border-color: #007bff;
-    background: #e3f2fd;
     box-shadow: 0 0 0 1px rgba(0,123,255,0.5);
 }
 
@@ -5085,7 +5089,6 @@ small.text-muted {
 /* 用户卡片和区块链卡片选中状态 */
 .user-card.selected {
     border-color: #007bff;
-    background: #f8f9ff;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
