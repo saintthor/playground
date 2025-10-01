@@ -1177,7 +1177,7 @@ class TabManager {
                     this.updateUsersDataIncremental(newData.userData, previousData?.userData);
                     break;
                 case 'chains':
-                    //this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
+                    this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
                     break;
             }
             

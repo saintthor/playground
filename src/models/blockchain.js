@@ -139,6 +139,7 @@ class BlockChain
         this.owner = null;
         this.BlockIds = new Set();
         this.Forks = null;
+        this.Status = '';
         this.SetFaceVal( serial );
         //console.log( 'BlockChain constructor', this.FaceVal, defHash, serial, firstOwner );
         return ( async () =>
@@ -170,6 +171,11 @@ class BlockChain
             }
         }
         this.FaceVal = 0;
+    }
+    
+    Transfer( start )
+    {
+        this.Status = start ? 'transferring' : '';
     }
     
     Update( owner, block )

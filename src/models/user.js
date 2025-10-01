@@ -137,8 +137,9 @@ class User
             const SrcPeerKs = [...this.Peers.keys()];
             window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block by ' + SrcPeerKs.join( ',' ) + ' to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
             Peer.StartTransing( TransBlock, dida, SrcPeerKs );
+            chain.Transfer( 1 );
             this.Status = 'sending';
-            this.Waiting.set( 'status', dida + Peer.BroadcastTicks * 4 );
+            this.Waiting.set(() => this.Status = '', dida + Peer.BroadcastTicks * 4 );
         }
         else
         {
@@ -207,9 +208,9 @@ class User
             [...u.Waiting.entries()].forEach(( [k, v] ) =>
             {
                 //console.log( 'WaitTrusted', k, v );
-                if( k === 'status' && v < tick )
+                if( typeof k === 'function' && v < tick )
                 {
-                    u.Status = '';
+                    k();
                     u.Waiting.delete( k );
                 }
                 else if( [...u.Peers.values()].map( p => p.LocalBlocks.get( k )).every( b => b && b.Status === 0 ))
