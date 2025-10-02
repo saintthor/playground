@@ -213,6 +213,11 @@ class Peer
                     {
                         ExistB0.Status *= -1;
                     }
+                    else if( ExistB0?.Status === 0 )
+                    {
+                        const ChainId = ExistB0.GetBlockChain()[0];
+                        BlockChain.SupportFork( ChainId, this.Id, ExistB0.Id );
+                    }
                     else if( ExistB0 == null )
                     {
                         this.LocalBlocks.set( b0.Id, b0 );
@@ -315,6 +320,8 @@ class Peer
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         this.Broadcast( AlarmMsg, window.app.Tick );
         this.WaitList = this.WaitList.filter(( [b, t] ) => b?.Id != block.Id && b?.Id != block0.Id );
+        const ChainId = block.GetBlockChain()[0];
+        BlockChain.SetFork( ChainId, [block.Id, block0.Id] );
     }
     
     static GetOther( n, exceptKs )

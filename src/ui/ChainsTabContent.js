@@ -297,6 +297,21 @@ class ChainsTabContent {
                         `).join('') : `<p class="text-muted" data-text="no_block_data">${GetText('no_block_data')}</p>`}
                     </div>
                 </div>
+                <div class="chain-blocks-section">
+                    <h6 data-text="fork_blocks_title">${GetText('fork_blocks_title')} (${chainData.Forks.size})</h6>
+                    <div class="blocks-list">
+                        ${ chainData.Forks.size > 0 ? chainData.GetForks().map(( [blockId, index, peerIds] ) => `
+                            <div class="block-item">
+                                <div class="block-header">
+                                    <span class="block-index">#${index}</span>
+                                    <span class="detail-info-value" title="blockId">${blockId}</span>
+                                </div>
+                                <h6 data-text="support_peers">${GetText('support_peers')}</h6>
+                                <div class="block-header">Peers- ${ peerIds.join( ',' )}</div>
+                            </div>
+                        `).join('') : `<p class="text-muted" data-text="no_fork_data">${GetText('no_fork_data')}</p>`}
+                    </div>
+                </div>
             </div>
         `;
     }

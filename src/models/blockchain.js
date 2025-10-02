@@ -138,7 +138,7 @@ class BlockChain
     {
         this.owner = null;
         this.BlockIds = new Set();
-        this.Forks = null;
+        this.Forks = new Map();
         this.Status = '';
         this.SetFaceVal( serial );
         //console.log( 'BlockChain constructor', this.FaceVal, defHash, serial, firstOwner );
@@ -171,6 +171,24 @@ class BlockChain
             }
         }
         this.FaceVal = 0;
+    }
+    
+    static SetFork( chainId, forkIds )
+    {
+        console.log( 'SetFork', chainId, forkIds );
+        const Forks = this.All.get( chainId ).Forks;
+        forkIds.forEach( fid => Forks.set( fid, [] ));
+    }
+    
+    GetForks()
+    {
+        return [...this.Forks.entries()].map(( [bid, peerIds] ) => [bid, BaseBlock.All.get( bid ).Index, peerIds] ).sort(( [bid, idx, peerIds] ) => idx );
+    }
+    
+    static SupportFork( chainId, peerId, blockId )
+    {
+        const Forks = this.All.get( chainId ).Forks;
+        Forks.get( blockId ).push( peerId );
     }
     
     Transfer( start )

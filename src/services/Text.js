@@ -973,6 +973,10 @@ class Text {
             cn: '后续区块',
             en: 'Subsequent Blocks'
         });
+        this.textMap.set('fork_blocks_title', {
+            cn: '分叉',
+            en: 'Forks'
+        });
         this.textMap.set('root_block', {
             cn: '根区块',
             en: 'Root Block'
@@ -984,6 +988,14 @@ class Text {
         this.textMap.set('no_block_data', {
             cn: '暂无区块数据',
             en: 'No block data available'
+        });
+        this.textMap.set('no_fork_data', {
+            cn: '未发现分叉',
+            en: 'No Fork data detected'
+        });
+        this.textMap.set('support_peers', {
+            cn: '认可的节点',
+            en: 'Support Peers'
         });
         this.textMap.set('click_chain_to_see_details', {
             cn: '请点击区块链缩略图查看详情',
