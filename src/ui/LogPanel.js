@@ -52,13 +52,6 @@ class LogPanel {
         }
         
         panelContent.innerHTML = `
-            <div class="log-header">
-                <h3 data-text="log_panel">系统日志</h3>
-                <div class="log-controls">
-                    <!--button class="btn btn-sm btn-secondary" id="clear-logs">清空日志</button-->
-                    <button class="btn btn-sm btn-info" id="export-logs" data-text="export_logs">导出日志</button>
-                </div>
-            </div>
             <div class="log-tabs">
                 <ul class="nav nav-tabs" id="log-tabs" role="tablist">
                     <li class="nav-item" role="presentation">

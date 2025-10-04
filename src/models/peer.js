@@ -208,14 +208,18 @@ class Peer
                     b1.Status = b0.Status = -1;
                     this.LocalBlocks.set( b1.Id, b1 );
                     this.WaitList = this.WaitList.filter(( [b, t] ) => b?.Id != b0.Id && b?.Id != b1.Id );
-                    const ExistB0 = this.LocalBlocks.get( b0.Id )
+                    const ExistB0 = this.LocalBlocks.get( b0.Id );
+                    const ChainId = ExistB0.GetBlockChain()[0];
                     if( ExistB0?.Status > 0 )
                     {
                         ExistB0.Status *= -1;
+                        if( this.Users.has( ExistB0.OwnerId ))
+                        {
+                            window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, user: ExistB0.OwnerId, blockchain: ChainId, content: 'transfer rejected.', category: 'blockchain' } );
+                        }
                     }
                     else if( ExistB0?.Status === 0 )
                     {
-                        const ChainId = ExistB0.GetBlockChain()[0];
                         BlockChain.SupportFork( ChainId, this.Id, ExistB0.Id );
                     }
                     else if( ExistB0 == null )

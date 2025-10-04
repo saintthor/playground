@@ -198,6 +198,10 @@ body {
     display: none;
 }
 
+.log-panel.minimized .log-controls {
+    display: none;
+}
+
 .log-panel.minimized h2 {
     writing-mode: vertical-rl;
     text-orientation: mixed;
@@ -6438,7 +6442,6 @@ body.resizing .resize-handle {
 /* Log panel hierarchy styles */
 .log-header {
     flex-shrink: 0;
-    padding: 1rem;
     border-bottom: 1px solid #e9ecef;
     background: #f8f9fa;
 }
