@@ -316,15 +316,15 @@ class ChainsTabContent {
         `;
     }
     
-    /**
+    /*
      * Updates the chain details.
      * @param {Object} chainData - The chain data.
      */
-    updateChainDetails(chainData) {
+    /* updateChainDetails(chainData) {
         if (this.selectedChain !== null) {
             this.showChainDetails(this.selectedChain);
         }
-    }
+    } */
     
     /**
      * Clears the selection.
@@ -373,10 +373,10 @@ class ChainsTabContent {
         }
     }
     
-    /**
+    /*
      * Resets the chains grid.
      */
-    resetChainsGrid() {
+    /* resetChainsGrid() {
         this.chainsGridInitialized = false;
         this.clearSelection();
         
@@ -384,7 +384,7 @@ class ChainsTabContent {
         if (container) {
             container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText("sys_not_started")}</p>`;
         }
-    }
+    } */
     
     /**
      * Generates a preview of the chain ID.

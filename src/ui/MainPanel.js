@@ -215,7 +215,7 @@ class MainPanel {
         }
     }
     
-    renderNetworkGraph(container, networkData) {
+    /* renderNetworkGraph(container, networkData) {
         if (!networkData) {
             container.innerHTML = `<p class="text-muted" data-text="no_network_data">${GetText('no_network_data')}</p>`;
             this.networkGraphInitialized = false;
@@ -271,9 +271,9 @@ class MainPanel {
         }
         
         this.lastNetworkConfig = currentConfig;
-    }  
+    } */  
   
-    renderD3NetworkGraph(nodeCount, networkData) {
+    /* renderD3NetworkGraph(nodeCount, networkData) {
         const container = document.getElementById('d3-network-container');
         if (!container) return;
         
@@ -405,15 +405,15 @@ class MainPanel {
         
         this.networkLinks = finalLinks;
         this.networkSimulation = simulation;
-    }    
+    } */    
   
-  updateNetworkStats(networkData) {
+  /* updateNetworkStats(networkData) {
         console.log('Updating network stats:', networkData);
-    }
+    } */
     
-    updateNetworkConnections(networkData) {
+    /* updateNetworkConnections(networkData) {
         console.log('Updating network connections:', networkData);
-    }
+    } */
     
     /**
      * Starts real-time updates.
@@ -453,10 +453,10 @@ class MainPanel {
         }
     }
     
-    /**
+    /*
      * Shows a detail modal.
      */
-    showDetailModal(title, content) {
+    /* showDetailModal(title, content) {
         const modalHTML = `
             <div id="detail-modal" class="detail-modal show">
                 <div class="detail-modal-overlay" onclick="document.getElementById('detail-modal').remove()"></div>
@@ -478,13 +478,13 @@ class MainPanel {
         }
         
         document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }
+    } */
     
     
-    /**
+    /*
      * Gets user-related logs.
      */
-    getUserRelatedLogs(userId) {
+    /* getUserRelatedLogs(userId) {
         if (this.app && this.app.uiManager && this.app.uiManager.panels && this.app.uiManager.panels.log && this.app.uiManager.panels.log.logs) {
             return this.app.uiManager.panels.log.logs.filter(log => 
                 log.message.includes(userId) || 
@@ -492,7 +492,7 @@ class MainPanel {
             );
         }
         return [];
-    }
+    } */
     
     onLanguageChanged( language )
     {

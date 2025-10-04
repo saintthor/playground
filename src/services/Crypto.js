@@ -10,11 +10,11 @@ class Crypto {
     static cacheHits = 0;
     static cacheMisses = 0;
     
-    /**
+    /*
      * 生成真实的ECDSA密钥对
      * @returns {Promise<Object>} 包含publicKey和privateKey的对象
      */
-    static async genKeyPair( )
+    /* static async genKeyPair( )
     {
         try
         {
@@ -55,7 +55,7 @@ class Crypto {
             console.error( '密钥对生成失败:', error );
             throw new Error( '无法生成密钥对: ' + error.message );
         }
-    }
+    } */
     
     /**
      * 使用ECDSA私钥对数据进行数字签名
@@ -282,12 +282,12 @@ class Crypto {
         }
     }
     
-    /**
+    /*
      * 将字符串转换为Base64编码
      * @param {string} data - 原始字符串
      * @returns {string} Base64编码的字符串
      */
-    static toBase64( data )
+    /* static toBase64( data )
     {
         try
         {
@@ -300,14 +300,14 @@ class Crypto {
             console.error( 'Base64编码失败:', error );
             throw new Error( 'Base64编码失败: ' + error.message );
         }
-    }
+    } */
     
-    /**
+    /*
      * 将Base64编码转换为字符串
      * @param {string} base64String - Base64编码的字符串
      * @returns {string} 原始字符串
      */
-    static fromBase64( base64String )
+    /* static fromBase64( base64String )
     {
         try
         {
@@ -320,16 +320,16 @@ class Crypto {
             console.error( 'Base64解码失败:', error );
             throw new Error( 'Base64解码失败: ' + error.message );
         }
-    }
+    } */
     
-    /**
+    /*
      * 生成验证代码
      * @param {string} data - 数据
      * @param {string} dataType - 数据类型
      * @param {Object} context - 上下文信息
      * @returns {string} 验证代码
      */
-    static genVerifyCode( data, dataType, context = {} )
+    /* static genVerifyCode( data, dataType, context = {} )
     {
         return `// 密码学验证代码 - ${dataType}
 // 数据: ${data.substring( 0, 50 )}${data.length > 50 ? '...' : ''}
@@ -338,7 +338,7 @@ class Crypto {
 console.log( '验证数据类型:', '${dataType}' );
 console.log( '数据长度:', ${data.length} );
 console.log( '使用真实密码学算法验证' );`;
-    }
+    } */
     
     /**
      * 设置性能优化器
@@ -350,23 +350,23 @@ console.log( '使用真实密码学算法验证' );`;
         console.log( '密码学服务已连接性能优化器' );
     }
     
-    /**
+    /*
      * 检查Web Crypto API是否可用
      * @returns {boolean} 是否支持Web Crypto API
      */
-    static isWebCryptoSupported( )
+    /* static isWebCryptoSupported( )
     {
         return typeof crypto !== 'undefined' && 
                typeof crypto.subtle !== 'undefined' &&
                typeof crypto.subtle.generateKey === 'function';
-    }
+    } */
     
-    /**
+    /*
      * 生成安全随机数
      * @param {number} length - 随机数长度（字节）
      * @returns {Uint8Array} 随机数组
      */
-    static getRandomBytes( length )
+    /* static getRandomBytes( length )
     {
         if( typeof crypto !== 'undefined' && crypto.getRandomValues )
         {
@@ -376,27 +376,27 @@ console.log( '使用真实密码学算法验证' );`;
         {
             throw new Error( '安全随机数生成不可用' );
         }
-    }
+    } */
     
-    /**
+    /*
      * 生成随机十六进制字符串
      * @param {number} length - 字符串长度
      * @returns {string} 十六进制随机字符串
      */
-    static getRandomHex( length )
+    /* static getRandomHex( length )
     {
         const bytes = this.getRandomBytes( Math.ceil( length / 2 ) );
         const hex = Array.from( bytes )
             .map( b => b.toString( 16 ).padStart( 2, '0' ) )
             .join( '' );
         return hex.substring( 0, length );
-    }
+    } */
     
-    /**
+    /*
      * 获取缓存统计信息
      * @returns {Object} 缓存统计
      */
-    static getCacheStats( )
+    /* static getCacheStats( )
     {
         return {
             size: this.Cache.size,
@@ -405,13 +405,13 @@ console.log( '使用真实密码学算法验证' );`;
             hits: this.cacheHits || 0,
             misses: this.cacheMisses || 0
         };
-    }
+    } */
     
-    /**
+    /*
      * 清理过期的缓存条目
      * @param {number} maxAge - 最大缓存时间（毫秒），默认1小时
      */
-    static cleanupCache( maxAge = 3600000 )
+    /* static cleanupCache( maxAge = 3600000 )
     {
         const now = Date.now();
         const toDelete = [];
@@ -430,17 +430,17 @@ console.log( '使用真实密码学算法验证' );`;
         {
             console.debug( `清理了 ${toDelete.length} 个过期缓存条目` );
         }
-    }
+    } */
     
-    /**
+    /*
      * 清空所有缓存
      */
-    static clearCache( )
+    /* static clearCache( )
     {
         const size = this.Cache.size;
         this.Cache.clear();
         this.cacheHits = 0;
         this.cacheMisses = 0;
         console.debug( `清空了 ${size} 个缓存条目` );
-    }
+    } */
 }

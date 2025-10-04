@@ -229,15 +229,15 @@ class UIManager {
         }
     }
 
-    /**
+    /*
      * Handles blockchain click events.
      */
-    handleChainClick(chainId, element) {
+    /* handleChainClick(chainId, element) {
         console.log('Blockchain click event:', chainId);
         if (this.app && this.app.handleChainSelection) {
             this.app.handleChainSelection(chainId);
         }
-    }
+    } */
 
     /**
      * Handles log click events.

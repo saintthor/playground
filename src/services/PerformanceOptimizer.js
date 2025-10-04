@@ -200,11 +200,11 @@ class PerformanceOptimizer {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
-    /**
+    /*
      * 获取性能建议
      * @returns {Array<string>} 性能建议数组
      */
-    getPerformanceRecommendations() {
+    /* getPerformanceRecommendations() {
         const recommendations = [];
         const metrics = this.getMetrics();
         
@@ -228,7 +228,7 @@ class PerformanceOptimizer {
         }
         
         return recommendations;
-    }
+    } */
     
     /**
      * 清理资源

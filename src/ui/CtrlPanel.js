@@ -711,27 +711,27 @@ console.log('Result:', decoded);`;
         }
     }
 
-    /**
+    /*
      * Copies text to the clipboard.
      */
-    copyToClipboard() {
+    /* copyToClipboard() {
         const codeElement = document.getElementById('verify-code');
         if (!codeElement) return;
 
         const code = codeElement.textContent;
         this.copyTextToClipboard(code, 'Verification code copied to clipboard');
-    }
+    } */
 
-    /**
+    /*
      * Copies console code to the clipboard.
      */
-    copyConsoleCode() {
+    /* copyConsoleCode() {
         const consoleCodeElement = document.querySelector('.console-code code');
         if (!consoleCodeElement) return;
 
         const code = consoleCodeElement.textContent;
         this.copyTextToClipboard(code, 'Console code copied to clipboard');
-    }
+    } */
 
     /**
      * Generic copy text to clipboard method.

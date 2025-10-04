@@ -316,11 +316,11 @@ class UsersTabContent {
      * 更新用户详情
      * @param {Object} userData - 用户数据
      */
-    updateUserDetails(userData) {
-        if (this.selectedUser !== null) {
-            this.showUserDetails(this.selectedUser);
-        }
-    }
+    //updateUserDetails(userData) {
+        //if (this.selectedUser !== null) {
+            //this.showUserDetails(this.selectedUser);
+        //}
+    //}
     
     /**
      * 清除选中状态
@@ -375,15 +375,15 @@ class UsersTabContent {
     /**
      * 重置用户网格
      */
-    resetUsersGrid() {
-        this.usersGridInitialized = false;
-        this.clearSelection();
+    //resetUsersGrid() {
+        //this.usersGridInitialized = false;
+        //this.clearSelection();
         
-        const container = document.getElementById('users-container');
-        if (container) {
-            container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
-        }
-    }
+        //const container = document.getElementById('users-container');
+        //if (container) {
+            //container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
+        //}
+    //}
     
     /**
      * 生成公钥预览（前6个字符）

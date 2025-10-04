@@ -349,7 +349,7 @@ class LogPanel {
         return logElement;
     }
 
-    clearLogs() {
+    /* clearLogs() {
         this.logs = [];
         
         // 清空所有标签页的日志列表
@@ -362,7 +362,7 @@ class LogPanel {
                 logList.innerHTML = `<div class="log-placeholder">${placeholder}</div>`;
             }
         });
-    }
+    } */
 
     exportLogs() {
         const currentTab = this.currentTab || 'all';
@@ -393,10 +393,10 @@ class LogPanel {
         }
     }
     
-    /**
+    /*
      * 格式化日志消息，截断base64数据只显示前6个字符
      */
-    formatLogIds(message) {
+    /* formatLogIds(message) {
         // 匹配base64格式的数据（长度大于10的字母数字字符串）
         return message.toString().replace(/\b[A-Za-z0-9+/]{10,}={0,2}\b/g, (match) => {
             if (match.length > 12) {
@@ -404,7 +404,7 @@ class LogPanel {
             }
             return match;
         });
-    }
+    } */
     
     /**
      * 语言变更处理

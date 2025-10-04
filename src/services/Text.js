@@ -1146,14 +1146,14 @@ class Text {
         }
     }
     
-    /**
+    /*
      * 获取当前语言
      * @returns {string} 当前语言代码
      */
-    getLanguage()
+    /* getLanguage()
     {
         return this.language;
-    }
+    } */
     
     /**
      * 切换语言

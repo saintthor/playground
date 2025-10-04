@@ -545,9 +545,9 @@ class HelpTabContent {
         }
     }
     
-    destroy() {
+    /* destroy() {
             this.isInitialized = false;
-    }
+    } */
 }
 
 if (typeof module !== 'undefined' && module.exports) {
