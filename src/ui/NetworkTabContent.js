@@ -291,6 +291,7 @@ class NetworkTabContent {
     
     ClearAll()
     {
+        this.NodeColors.clear();
         document.getElementById( 'd3-network-container' ).querySelectorAll( `circle` ).forEach( c => c.setAttribute( 'fill', '#007bff' ));
     }
     

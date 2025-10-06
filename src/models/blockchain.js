@@ -175,7 +175,7 @@ class BlockChain
     
     static SetFork( chainId, forkIds )
     {
-        console.log( 'SetFork', chainId, forkIds );
+        //console.log( 'SetFork', chainId, forkIds );
         const Forks = this.All.get( chainId ).Forks;
         forkIds.forEach( fid => Forks.set( fid, [] ));
     }
