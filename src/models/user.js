@@ -154,7 +154,7 @@ class User
     {
         const ua8 = s instanceof String ? Base642ABuff( s ) : s;
         const sig = ABuff2Base64( await crypto.subtle.sign( { name: "ECDSA", hash: { name: "SHA-1" }, }, this.PriKey, ua8 ));
-        this.constructor.Cache.set( sig, [this.PubKeyStr, s].join( '\n' ));
+        //this.constructor.Cache.set( sig, [this.PubKeyStr, s].join( '\n' ));
         //console.log( 'Verify Cache set.', sig, this.constructor.Cache.get( sig ));
         return sig;
     };
@@ -162,20 +162,20 @@ class User
     static async Verify( sig, s, pubKeyS )
     {
         //console.log( 'Verify', this, sig, data, pubKeyS );
-        if( this.Cache.get( sig ) === [pubKeyS, s].join( '\n' ))
-        {
+        //if( this.Cache.get( sig ) === [pubKeyS, s].join( '\n' ))
+        //{
             //console.log( 'Verify Cache shot.', sig, this.Cache.get( sig ));
-            return true;
-        }
+        //    return true;
+        //}
         const hash = await Hash( s, 'SHA-1' );
         const pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),
                                 { name: "ECDSA", namedCurve: "P-256", }, false, ["verify"] )
         const Rslt = crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), hash );
-        if( Rslt )
-        {
+        //if( Rslt )
+        //{
             //console.log( 'Verify Cache set.' );
-            this.Cache.set( sig, [pubKeyS, s].join( '\n' ));
-        }
+        //    this.Cache.set( sig, [pubKeyS, s].join( '\n' ));
+        //}
         return Rslt;
     };
     
@@ -216,3 +216,5 @@ class User
         } );
     };
 }
+
+export { User, Hash, ABuff2Base64, Base642ABuff };
