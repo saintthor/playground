@@ -520,9 +520,9 @@ class App {
             }
             
             await Promise.all( Blockchains.map( c => p.Receive( { Id: "NewBlock" + c.Root.Id, type: "NewBlock",
-                                                                    block: c.Root.TransData() } )));
+                                                                    block: c.Root.Copy() } )));
             await Promise.all( TransBlocks.map( b => p.Receive( { Id: "NewBlock" + b.Id, type: "NewBlock",
-                                                                    block: b.TransData() } )));
+                                                                    block: b.Copy() } )));
         }
         this.uiManager.panels.log.AddLog( { dida: -1, peer: 'all', content: 'peers connected to others.', category: 'node' } );
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all', content: 'sent blockchains.', category: 'blockchain' } );

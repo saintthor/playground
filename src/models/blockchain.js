@@ -60,11 +60,6 @@ class BaseBlock
         this.id = this.id || id;
     };
     
-    TransData() 
-    {
-        return { Id: this.Id, Content: this.Content };
-    }
-    
     TransferTo( targetUser, dida, sender )  // only for the second block
     {
         //console.log( 'TransferTo', targetUser.Id.slice( 0, 9 ), this.Id.slice( 0, 9 ));

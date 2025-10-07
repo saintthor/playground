@@ -320,7 +320,7 @@ class Peer
     OnDoubleSpend( preOwner, block, block0 )
     {
         const AlarmMsg = { Id: "Alarm" + preOwner.slice( 0, 13 ) + block.Id.slice( 0, 13 ), from: this.Id,
-                            type: "Alarm", blocks: [block.TransData(), block0.TransData()],
+                            type: "Alarm", blocks: [block.Copy(), block0.Copy()],
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         this.Broadcast( AlarmMsg, window.app.Tick );
         this.WaitList = this.WaitList.filter(( [b, t] ) => b?.Id != block.Id && b?.Id != block0.Id );
@@ -344,7 +344,7 @@ class Peer
 
     static StartTransing( block, dida, srcPeerKs )
     {
-        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.TransData(),
+        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.Copy(),
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         srcPeerKs.forEach( k =>
         {
