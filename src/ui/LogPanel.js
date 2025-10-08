@@ -52,13 +52,6 @@ class LogPanel {
         }
         
         panelContent.innerHTML = `
-            <div class="log-header">
-                <h3 data-text="log_panel">系统日志</h3>
-                <div class="log-controls">
-                    <!--button class="btn btn-sm btn-secondary" id="clear-logs">清空日志</button-->
-                    <button class="btn btn-sm btn-info" id="export-logs" data-text="export_logs">导出日志</button>
-                </div>
-            </div>
             <div class="log-tabs">
                 <ul class="nav nav-tabs" id="log-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -288,7 +281,7 @@ class LogPanel {
             FilterList.innerHTML = '';
             tabPane.querySelectorAll( '.log-entry' ).forEach( div =>
             {
-                console.log( div );
+                //console.log( div );
                 if( div.childNodes[5].innerText == itemId )
                 {
                     FilterList.appendChild( div );
@@ -349,7 +342,7 @@ class LogPanel {
         return logElement;
     }
 
-    clearLogs() {
+    /* clearLogs() {
         this.logs = [];
         
         // 清空所有标签页的日志列表
@@ -362,7 +355,7 @@ class LogPanel {
                 logList.innerHTML = `<div class="log-placeholder">${placeholder}</div>`;
             }
         });
-    }
+    } */
 
     exportLogs() {
         const currentTab = this.currentTab || 'all';
@@ -393,10 +386,10 @@ class LogPanel {
         }
     }
     
-    /**
+    /*
      * 格式化日志消息，截断base64数据只显示前6个字符
      */
-    formatLogIds(message) {
+    /* formatLogIds(message) {
         // 匹配base64格式的数据（长度大于10的字母数字字符串）
         return message.toString().replace(/\b[A-Za-z0-9+/]{10,}={0,2}\b/g, (match) => {
             if (match.length > 12) {
@@ -404,7 +397,7 @@ class LogPanel {
             }
             return match;
         });
-    }
+    } */
     
     /**
      * 语言变更处理

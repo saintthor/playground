@@ -108,12 +108,12 @@ class NetworkTabContent {
      * @param {Object} networkData - 网络数据
      */
     
-    UpdateD3Graph( update )
+    /* UpdateD3Graph( update )
     {
         const DefColor = '#007bff';
         
         //this.SVG.selectAll( '.links line' ).attr( "stroke", l => 'gray' ).attr( "stroke-width", 1 ).attr( "stroke-opacity", 1 );
-    }
+    } */
     
     renderD3NetworkGraph( nodes, conns )
     {
@@ -291,6 +291,7 @@ class NetworkTabContent {
     
     ClearAll()
     {
+        this.NodeColors.clear();
         document.getElementById( 'd3-network-container' ).querySelectorAll( `circle` ).forEach( c => c.setAttribute( 'fill', '#007bff' ));
     }
     
@@ -507,15 +508,15 @@ class NetworkTabContent {
         `;
     }
     
-    /**
+    /*
      * 更新节点详情
      * @param {Object} nodeData - 节点数据
      */
-    updateNodeDetails(nodeData) {
+    /* updateNodeDetails(nodeData) {
         if (this.selectedNode !== null) {
             this.showNodeDetails(this.selectedNode);
         }
-    }
+    } */
     
     /**
      * 清除选中状态
@@ -577,10 +578,10 @@ class NetworkTabContent {
         MsgContainer.appendChild( MsgIcon );
         this.ShowedMsgs.add( MsgId );
     }
-    /**
+    /*
      * 重置网络图
      */
-    resetNetworkGraph() {
+    /* resetNetworkGraph() {
         this.networkGraphInitialized = false;
         this.networkLinks = null;
         this.networkSimulation = null;
@@ -601,12 +602,12 @@ class NetworkTabContent {
         if (visualContainer) {
             visualContainer.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>`;
         }
-    }
+    } */
     
-    /**
+    /*
      * 销毁网络标签页内容
      */
-    destroy() {
+    /* destroy() {
         try {
             // 停止D3仿真
             if (this.networkSimulation) {
@@ -626,7 +627,7 @@ class NetworkTabContent {
         } catch (error) {
             console.error('NetworkTabContent 销毁失败:', error);
         }
-    }
+    } */
 }
 
 // 导出 NetworkTabContent 类

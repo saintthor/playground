@@ -60,11 +60,6 @@ class BaseBlock
         this.id = this.id || id;
     };
     
-    TransData() 
-    {
-        return { Id: this.Id, Content: this.Content };
-    }
-    
     TransferTo( targetUser, dida, sender )  // only for the second block
     {
         //console.log( 'TransferTo', targetUser.Id.slice( 0, 9 ), this.Id.slice( 0, 9 ));
@@ -138,7 +133,8 @@ class BlockChain
     {
         this.owner = null;
         this.BlockIds = new Set();
-        this.Forks = null;
+        this.Forks = new Map();
+        this.Status = '';
         this.SetFaceVal( serial );
         //console.log( 'BlockChain constructor', this.FaceVal, defHash, serial, firstOwner );
         return ( async () =>
@@ -170,6 +166,29 @@ class BlockChain
             }
         }
         this.FaceVal = 0;
+    }
+    
+    static SetFork( chainId, forkIds )
+    {
+        //console.log( 'SetFork', chainId, forkIds );
+        const Forks = this.All.get( chainId ).Forks;
+        forkIds.forEach( fid => Forks.set( fid, [] ));
+    }
+    
+    GetForks()
+    {
+        return [...this.Forks.entries()].map(( [bid, peerIds] ) => [bid, BaseBlock.All.get( bid ).Index, peerIds] ).sort(( [bid, idx, peerIds] ) => idx );
+    }
+    
+    static SupportFork( chainId, peerId, blockId )
+    {
+        const Forks = this.All.get( chainId ).Forks;
+        Forks.get( blockId ).push( peerId );
+    }
+    
+    Transfer( start )
+    {
+        this.Status = start ? 'transferring' : '';
     }
     
     Update( owner, block )

@@ -5,7 +5,7 @@
 class Text {
     constructor()
     {
-        this.language = 'en'; // 默认中文
+        this.language = 'cn'; // 默认中文
         this.textMap = new Map();
         this.initTextMap();
         window.Text = this;
@@ -43,6 +43,11 @@ class Text {
             en: 'Blockchain Definition'
         });
         
+        this.textMap.set('blocktree_definition', {
+            cn: '区块树定义',
+            en: 'Block Tree Definition'
+        });
+        
         this.textMap.set('chain_def0', {
             cn: "定义每条区块链为一张钞票，其根区块的数据结构为：H\\nS\\nK。其中：\nH 为本文件 sha256 值（Base64）；K 是初始持有人的公钥（Base64），固定为 ",
             en: 'Define each blockchain as a banknote, with the data structure of its genesis block as: H\\nS\\nK, where: H is the SHA256 hash of this document (Base64); K is the public key of the initial holder (Base64), fixed at '
@@ -51,6 +56,16 @@ class Text {
         this.textMap.set('chain_def1', {
             cn: "；S 是序列号，与钞票面值的对应关系如下：",
             en: "; S is the serial number, with the following correspondence to the banknote's denomination:"
+        });
+        
+        this.textMap.set('tree_def', {
+            cn: "定义区块树中的每个区块为一条消息，包括消息内容、元数据和 ID。元数据是 JSON，包括发布时间戳（ms）；发布者公钥；消息内容的 sha256 值；上级消息的 ID 或本定义文件的 sha256 值；标签。标签如有多个，用 | 分隔。ID 为用户对元数据签名的结果。所有二进制数据用 base64 格式。",
+            en: 'Define each block in the block tree as a message consisting of message content, metadata, and an ID. The metadata is in JSON format and includes the publication timestamp (ms), the publisher’s public key, the SHA-256 hash of the message content, the ID of the parent message or the SHA-256 hash of this definition file, and tags (if multiple, separated by “|”). The ID is the result of the user’s signature over the metadata. All binary data is encoded in Base64 format.'
+        });
+        
+        this.textMap.set('tree_def_hash', {
+            cn: "区块树定义哈希值",
+            en: 'Hash of BlockTree defination'
         });
         
         this.textMap.set('chain_def2', {
@@ -288,6 +303,16 @@ class Text {
         this.textMap.set('help_tab', {
             cn: '帮助',
             en: 'Help'
+        });
+        
+        this.textMap.set('new_msg', {
+            cn: '新消息',
+            en: 'Message'
+        });
+        
+        this.textMap.set('reply', {
+            cn: '回复',
+            en: 'Reply'
         });
         
         // 日志面板
@@ -800,6 +825,16 @@ class Text {
             en: 'Description: '
         });
         
+        this.textMap.set('user_st_sending', {
+            cn: '正在发送',
+            en: 'Sending: '
+        });
+
+        this.textMap.set('user_st_receiving', {
+            cn: '正在接收',
+            en: 'Receiving'
+        });
+
         // 网络设置描述
         this.textMap.set('help_network_settings_desc', {
             cn: '配置P2P网络的基本参数，这些设置在系统启动前可以修改。',
@@ -963,6 +998,10 @@ class Text {
             cn: '后续区块',
             en: 'Subsequent Blocks'
         });
+        this.textMap.set('fork_blocks_title', {
+            cn: '分叉',
+            en: 'Forks'
+        });
         this.textMap.set('root_block', {
             cn: '根区块',
             en: 'Root Block'
@@ -974,6 +1013,14 @@ class Text {
         this.textMap.set('no_block_data', {
             cn: '暂无区块数据',
             en: 'No block data available'
+        });
+        this.textMap.set('no_fork_data', {
+            cn: '未发现分叉',
+            en: 'No Fork data detected'
+        });
+        this.textMap.set('support_peers', {
+            cn: '认可的节点',
+            en: 'Support Peers'
         });
         this.textMap.set('click_chain_to_see_details', {
             cn: '请点击区块链缩略图查看详情',
@@ -1120,18 +1167,18 @@ class Text {
         {
             this.language = lang;
             this.updateAllTexts();
-            //localStorage.setItem( 'app_language', lang );
+            localStorage.setItem( 'app_language', lang );
         }
     }
     
-    /**
+    /*
      * 获取当前语言
      * @returns {string} 当前语言代码
      */
-    getLanguage()
+    /* getLanguage()
     {
         return this.language;
-    }
+    } */
     
     /**
      * 切换语言
@@ -1147,7 +1194,7 @@ class Text {
      */
     loadLanguageFromStorage()
     {
-        const savedLang = 'en'; //localStorage.getItem( 'app_language' );
+        const savedLang = localStorage.getItem( 'app_language' );
         if( savedLang && ( savedLang === 'cn' || savedLang === 'en' ))
         {
             this.language = savedLang;

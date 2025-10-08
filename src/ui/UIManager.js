@@ -140,6 +140,12 @@ class UIManager {
                 </div>
             </div>
             
+            <div class="control-section" id="tree-definition">
+                <h3 data-text="blocktree_definition">${GetText('blocktree_definition')}</h3>
+                <div class="tree-def">
+                </div>
+            </div>
+            
             <div class="control-section" id="runtime-controls">
                 <h3>${GetText('runtime_ctrl')}</h3>
                 <div class="runtime-settings">

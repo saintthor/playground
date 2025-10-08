@@ -71,6 +71,7 @@ class User
         this.Waiting = new Map();
         this.ChainNum = 0;
         this.LastSend = null;
+        this.Status = '';
         return ( async () =>
         {
             let key = await crypto.subtle.generateKey( { name: "ECDSA", namedCurve: "P-256", }, true, ["sign", "verify"] );
@@ -130,12 +131,15 @@ class User
         console.log( 'User.Transfer', dida, chain.Id, targetUId );
         const PrevBlocks = [...this.Peers.values()].map( p => p.FindTail( chain.Id )).filter( b => b && b.Status === 0 );
         const s = new Set( PrevBlocks.map( b => b.Id ));
-        if( s.size === 1 )
+        if( s.size === 1 && !this.Status )
         {
             const TransBlock = await this.SendBlockchain( PrevBlocks[0], chain.Id, dida, targetUId );
             const SrcPeerKs = [...this.Peers.keys()];
             window.LogPanel.AddLog( { dida: dida, user: this.Id, blockchain: chain.Id, block: TransBlock.Id, content: 'add transfer block by ' + SrcPeerKs.join( ',' ) + ' to target user' + targetUId.slice( 0, 8 ) + '...', category: 'user' } );
             Peer.StartTransing( TransBlock, dida, SrcPeerKs );
+            chain.Transfer( 1 );
+            this.Status = 'sending';
+            this.Waiting.set(() => this.Status = '', dida + Peer.BroadcastTicks * 4 );
         }
         else
         {
@@ -194,6 +198,7 @@ class User
     StartWait( blockId, tick )
     {
         this.Waiting.set( blockId, tick );
+        this.Status = 'receiving';
     };
     
     static WaitTrusted( tick )
@@ -203,16 +208,28 @@ class User
             [...u.Waiting.entries()].forEach(( [k, v] ) =>
             {
                 //console.log( 'WaitTrusted', k, v );
-                if( [...u.Peers.values()].map( p => p.LocalBlocks.get( k )).every( b => b && b.Status === 0 ))
+                if( typeof k === 'function' && v < tick )
+                {
+                    k();
+                    u.Waiting.delete( k );
+                }
+                else if( [...u.Peers.values()].map( p => p.LocalBlocks.get( k )).every( b => b && b.Status === 0 ))
                 {
                     window.LogPanel.AddLog( { dida: tick, user: u.Id, block: k, content: 'Receiver trusts. Transfer completes.', category: 'user' } );
                     u.Waiting.delete( k );
+                    u.Status = '';
                 }
                 else if( v < tick )
                 {
                     u.Waiting.delete( k );
+                    u.Status = '';
                 }
             } );
         } );
     };
+    
+    static GetByShort( shortK )
+    {
+        return [...this.All.entries()].map(( [k, v] ) => k.startsWith( shortK ) ? v : null ).filter( v => v );
+    }
 }

@@ -39,7 +39,8 @@ class CtrlPanel {
         const DefStr = GetText('chain_def0') + this.app.SysUser.Id + GetText('chain_def1');
         const hexHash = await Crypto.sha256( DefStr + this.currentConfig.chainDefinition );
         const hashBytes = new Uint8Array( hexHash.match( /.{1,2}/g ).map( byte => parseInt( byte, 16 )));
-        this.app.DefHash = btoa( String.fromCharCode.apply( null, hashBytes ));
+        this.app.ChainDefHash = btoa( String.fromCharCode.apply( null, hashBytes ));
+        this.app.TreeDefHash = ABuff2Base64( await Hash( GetText( 'tree_def' ), 'SHA-256' ));
     }
 
     render() {
@@ -49,6 +50,7 @@ class CtrlPanel {
         const systemControls = controlPanel.querySelector('#system-controls .control-buttons');
         const networkSettings = controlPanel.querySelector('#network-settings .settings-form');
         const chainDefinition = controlPanel.querySelector('#chain-definition .chain-def-editor');
+        const treeDefinition = controlPanel.querySelector('#tree-definition .tree-def');
         const runtimeControls = controlPanel.querySelector('#runtime-controls .runtime-settings');
 
         if (systemControls) {
@@ -63,6 +65,11 @@ class CtrlPanel {
             this.renderChainDefinition(chainDefinition);
         }
 
+        if( treeDefinition )
+        {
+            this.renderTreeDef( treeDefinition );
+        }
+        
         if (runtimeControls) {
             this.renderRuntimeControls(runtimeControls);
         }
@@ -116,10 +123,10 @@ class CtrlPanel {
             <div class="form-group">
                 <label class="form-label">
                     <span data-text="failure_rate_percent">${GetText('failure_rate_percent')}</span>
+                    <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
                 </label>
                 <input type="range" class="form-control" id="failure-rate" value="${this.currentConfig.failureRate * 100}" min="0" max="50">
                 <small class="text-muted" data-text-template="current_percent">${GetText('current')}: ${(this.currentConfig.failureRate * 100).toFixed(1)}%</small>
-                <button class="help-icon" data-help="networksettings" title="${GetText('view_help')}">${GetText('help_icon')}</button>
             </div>
         `;
     }
@@ -140,6 +147,25 @@ class CtrlPanel {
             
             <div id="def-validation-result"></div>
         `;
+    }
+
+    renderTreeDef( container )
+    {
+        const DefStr = GetText( 'tree_def' );
+        ( async () =>
+        {
+            const HashStr = ABuff2Base64( await Hash( DefStr, 'SHA-256' ));
+            this.app.TreeDefHash = HashStr;
+            container.innerHTML = `
+                <div class="form-group">
+                    <div style="font-size: smaller;">${ DefStr }</div>
+                </div>
+                <div id="tree-def-hash">
+                    <b><div data-text="tree_def_hash">${ GetText( 'tree_def_hash' )}</div></b>
+                    <div>${ HashStr }</div>
+                </div>
+            `;
+        } )();
     }
 
     renderRuntimeControls(container) {
@@ -317,17 +343,13 @@ class CtrlPanel {
     /**
      * Hides configuration sections.
      */
-    hideConfigurationSections() {
-        const networkSettings = document.getElementById('network-settings');
-        const chainDefinition = document.getElementById('chain-definition');
-
-        if (networkSettings) {
-            networkSettings.style.display = 'none';
-        }
-
-        if (chainDefinition) {
-            chainDefinition.style.display = 'none';
-        }
+    hideConfigurationSections()
+    {
+        ['network-settings', 'chain-definition', 'tree-definition'].forEach( domId =>
+        {
+            const dom = document.getElementById( domId );
+            dom && ( dom.style.display = 'none' );
+        } );
 
         console.log('Configuration sections hidden');
     }
@@ -335,17 +357,13 @@ class CtrlPanel {
     /**
      * Shows configuration sections.
      */
-    showConfigurationSections() {
-        const networkSettings = document.getElementById('network-settings');
-        const chainDefinition = document.getElementById('chain-definition');
-
-        if (networkSettings) {
-            networkSettings.style.display = 'block';
-        }
-
-        if (chainDefinition) {
-            chainDefinition.style.display = 'block';
-        }
+    showConfigurationSections()
+    {
+        ['network-settings', 'chain-definition', 'tree-definition'].forEach( domId =>
+        {
+            const dom = document.getElementById( domId );
+            dom && ( dom.style.display = '' );
+        } );
 
         console.log('Configuration sections shown');
     }
@@ -477,7 +495,7 @@ class CtrlPanel {
     updateValidationResult(result, definitionHash) {
         const resultContainer = document.getElementById('def-validation-result');
         if (!resultContainer) return;
-        this.app.DefHash = definitionHash;
+        this.app.ChainDefHash = definitionHash;
         resultContainer.innerHTML = `
             <div class="alert alert-success">
                 <strong>${GetText('validation_pass')}</strong><br>
@@ -711,27 +729,27 @@ console.log('Result:', decoded);`;
         }
     }
 
-    /**
+    /*
      * Copies text to the clipboard.
      */
-    copyToClipboard() {
+    /* copyToClipboard() {
         const codeElement = document.getElementById('verify-code');
         if (!codeElement) return;
 
         const code = codeElement.textContent;
         this.copyTextToClipboard(code, 'Verification code copied to clipboard');
-    }
+    } */
 
-    /**
+    /*
      * Copies console code to the clipboard.
      */
-    copyConsoleCode() {
+    /* copyConsoleCode() {
         const consoleCodeElement = document.querySelector('.console-code code');
         if (!consoleCodeElement) return;
 
         const code = consoleCodeElement.textContent;
         this.copyTextToClipboard(code, 'Console code copied to clipboard');
-    }
+    } */
 
     /**
      * Generic copy text to clipboard method.

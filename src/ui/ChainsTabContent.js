@@ -43,12 +43,12 @@ class ChainsTabContent {
         
         for (const [chainId, chain] of chainData) {
             let chainCard = chainsGrid.querySelector(`[data-chain-id="${chainId}"]`);
-            const isTransferring = chain.isTransferring || false;
+            const isTransferring = !!chain.Status;
             
             if( !chainCard )
             {
                 chainCard = document.createElement( 'div' );
-                chainCard.className = `chain-card ${ isTransferring ? 'transferring' : '' }`;
+                chainCard.className = `chain-card ${ chain.Status }`;
                 chainCard.setAttribute( 'data-chain-id', chainId );
                 
                 const chainIdPreview = this.generateChainIdPreview( chainId );
@@ -60,10 +60,11 @@ class ChainsTabContent {
                     this.handleChainClick( chainId );
                 });
             } 
-            else 
+            else
             {
-                if( isTransferring && !chainCard.classList.contains( 'transferring' ) )
+                if( isTransferring )
                 {
+                    console.log( 'add transferring' );
                     chainCard.classList.add( 'transferring' );
                 } 
                 else if( !isTransferring && chainCard.classList.contains( 'transferring' ) )
@@ -80,8 +81,6 @@ class ChainsTabContent {
                 card.remove();
             }
         });
-        
-        console.log(`Chains grid rendered: ${chainData.size} chains`);
         
         if (this.tabManager && this.tabManager.resizeManager) {
             setTimeout(() => {
@@ -272,7 +271,7 @@ class ChainsTabContent {
                 <div class="chain-blocks-section">
                     <h6 data-text="subsequent_blocks_title">${GetText('subsequent_blocks_title')} (${chainData.BlockNum})</h6>
                     <div class="blocks-list">
-                        ${chainData.BlockNum ? chainData.BlockList.map( block => `
+                        ${chainData.BlockNum ? chainData.BlockList.sort( c => c.Index ).map( block => `
                             <div class="block-item ${block.Index === 0 ? 'root-block' : ''}">
                                 <div class="block-header">
                                     <span>
@@ -298,19 +297,34 @@ class ChainsTabContent {
                         `).join('') : `<p class="text-muted" data-text="no_block_data">${GetText('no_block_data')}</p>`}
                     </div>
                 </div>
+                <div class="chain-blocks-section">
+                    <h6 data-text="fork_blocks_title">${GetText('fork_blocks_title')} (${chainData.Forks.size})</h6>
+                    <div class="blocks-list">
+                        ${ chainData.Forks.size > 0 ? chainData.GetForks().map(( [blockId, index, peerIds] ) => `
+                            <div class="block-item">
+                                <div class="block-header">
+                                    <span class="block-index">#${index}</span>
+                                    <span class="detail-info-value" title="blockId">${blockId}</span>
+                                </div>
+                                <h6 data-text="support_peers">${GetText('support_peers')}</h6>
+                                <div class="block-header">Peers- ${ peerIds.join( ',' )}</div>
+                            </div>
+                        `).join('') : `<p class="text-muted" data-text="no_fork_data">${GetText('no_fork_data')}</p>`}
+                    </div>
+                </div>
             </div>
         `;
     }
     
-    /**
+    /*
      * Updates the chain details.
      * @param {Object} chainData - The chain data.
      */
-    updateChainDetails(chainData) {
+    /* updateChainDetails(chainData) {
         if (this.selectedChain !== null) {
             this.showChainDetails(this.selectedChain);
         }
-    }
+    } */
     
     /**
      * Clears the selection.
@@ -359,10 +373,10 @@ class ChainsTabContent {
         }
     }
     
-    /**
+    /*
      * Resets the chains grid.
      */
-    resetChainsGrid() {
+    /* resetChainsGrid() {
         this.chainsGridInitialized = false;
         this.clearSelection();
         
@@ -370,7 +384,7 @@ class ChainsTabContent {
         if (container) {
             container.innerHTML = `<p class="text-muted" data-text="sys_not_started">${GetText("sys_not_started")}</p>`;
         }
-    }
+    } */
     
     /**
      * Generates a preview of the chain ID.
