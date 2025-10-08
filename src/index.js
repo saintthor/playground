@@ -61,7 +61,8 @@ class App {
     constructor() {
         /** @type {UIManager} 用户界面管理器 */
         this.uiManager = new UIManager(this);
-        this.DefHash = '';
+        this.ChainDefHash = '';
+        this.TreeDefHash = '';
         /** @type {boolean} 系统运行状态 */
         this.isRunning = false;
 
@@ -479,7 +480,7 @@ class App {
         await Promise.all( Array.from( new Array( config.userCount )).map( _ => new User()));
         this.uiManager.panels.log.AddLog( { dida: -1, user: 'all ' + config.userCount, content: 'users created.', category: 'user' } );
         await Promise.all( Array.from( new Array( this.BlockChainNum )).map(( _, i ) => 
-                                        new BlockChain( this.DefHash, i + 1, this.SysUser.Id )));
+                                        new BlockChain( this.ChainDefHash, i + 1, this.SysUser.Id )));
         this.uiManager.panels.log.AddLog( { dida: -1, blockchain: 'all ' + this.BlockChainNum, content: 'blockchains created.', category: 'blockchain' } );
         const Peers = [...this.AllPeers.values()];
         const PeerNum = Peers.length;

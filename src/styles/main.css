@@ -93,6 +93,7 @@ body {
 .control-panel {
     transition: all 0.3s ease;
     position: relative;
+    z-index: 9;
 }
 .control-panel .panel-content {
     display: flex;
@@ -3495,6 +3496,7 @@ to {
     width: 100% !important;
     box-sizing: border-box !important;
 }
+#tree-def-hash { font-size: 0.9rem; }
 .user-details,
 .node-details,
 .chain-details {

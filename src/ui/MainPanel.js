@@ -62,6 +62,8 @@ class MainPanel {
                     <div class="tab-actions">
                         <button class="btn btn-primary btn-sm" id="send-btn" data-text="transfer" onclick="window.mainPanel.Transfer()">${GetText('transfer')}</button>
                         <button class="btn btn-danger btn-sm" id="attack-btn" data-text="attack" onclick="window.mainPanel.Attack()">${GetText('attack')}</button>
+                        <button class="btn btn-primary btn-sm" id="msg-btn" data-text="new_msg" onclick="window.mainPanel.NewMsg()">${GetText('new_msg')}</button>
+                        <button class="btn btn-primary btn-sm" id="reply-btn" data-text="reply" onclick="window.mainPanel.Reply()">${GetText('reply')}</button>
                     </div>
                     <div class="tab-buttons">
                         <button class="tab-button active" data-tab="help" data-text="help_tab">${GetText('help_tab')}</button>
@@ -168,6 +170,26 @@ class MainPanel {
             return;
         }
         this.LastTransUser.DoubleSpend( this.app.Tick );
+     }
+
+    NewMsg()
+    {
+        if( !this.LastTransUser )
+        {
+            console.log( 'transfer once before attacking.' );
+            return;
+        }
+        //this.LastTransUser.DoubleSpend( this.app.Tick );
+     }
+
+    Reply()
+    {
+        if( !this.LastTransUser )
+        {
+            console.log( 'transfer once before attacking.' );
+            return;
+        }
+        //this.LastTransUser.DoubleSpend( this.app.Tick );
      }
 
 
