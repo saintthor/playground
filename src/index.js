@@ -98,6 +98,7 @@ class App {
         this.AllPeers = Peer.All;
         this.BlockChainNum = 500;
         this.AllBlockchains = BlockChain.All;
+        this.AllBlockTrees = BlockTree.All;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
         this.mockChains = new Map();
@@ -310,6 +311,8 @@ class App {
         this.AllUsers.clear();
         this.AllPeers.clear();
         this.mockChains.clear();
+        this.AllBlockTrees.clear();
+        TreeBlock.All.clear();
         this.selectedUser = null;
         this.selectedChain = null;
     }
@@ -576,6 +579,7 @@ class App {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
                 chainData: this.AllBlockchains,
+                msgData: this.AllBlockTrees,
             };
         }
 
@@ -590,7 +594,8 @@ class App {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
             userData: this.AllUsers,
-            chainData: this.AllBlockchains
+            chainData: this.AllBlockchains,
+            msgData: this.AllBlockTrees
         };
     }
 

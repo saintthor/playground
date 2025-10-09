@@ -32,6 +32,13 @@ class TabManager {
                 lastUpdateTime: null,
                 isLoaded: false,
                 isVisible: false
+            },
+            msgs: {
+                selectedMsg: null,
+                scrollPosition: 0,
+                lastUpdateTime: null,
+                isLoaded: false,
+                isVisible: false
             }
         };
         
@@ -50,6 +57,7 @@ class TabManager {
         this.networkTabContent = null;
         this.usersTabContent = null;
         this.chainsTabContent = null;
+        this.msgTabContent = null;
         
         // 调整大小管理器
         this.resizeManager = null;
@@ -195,6 +203,9 @@ class TabManager {
                 case 'chains':
                     await this.loadChainsTabContent();
                     break;
+                case 'msgs':
+                    await this.loadMsgTabContent();
+                    break;
             }
             
             // 标记为已加载
@@ -214,6 +225,23 @@ class TabManager {
             setTimeout(() => {
                 if (this.helpTabContent) {
                     this.helpTabContent.renderHelpContent();
+                }
+                resolve();
+            }, 10);
+        });
+    }
+
+    /**
+     * 加载消息标签页内容
+     */
+    async loadMsgTabContent() {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (this.msgTabContent && this.mainPanel.app) {
+                    const data = this.mainPanel.app.getMainPanelData();
+                    if (data && data.msgData) {
+                        this.msgTabContent.renderMsgsGrid(data.msgData);
+                    }
                 }
                 resolve();
             }, 10);
@@ -925,7 +953,7 @@ class TabManager {
      * @returns {boolean} - 是否有效
      */
     isValidTabName(tabName) {
-        return ['help', 'network', 'users', 'chains'].includes(tabName);
+        return ['help', 'network', 'users', 'chains', 'msgs'].includes(tabName);
     }
     
     /**
@@ -1085,6 +1113,9 @@ class TabManager {
             
             // 初始化区块链标签页内容组件
             this.chainsTabContent = new ChainsTabContent(this);
+
+            // 初始化消息标签页内容组件
+            this.msgTabContent = new MsgTabContent(this);
             
             console.log('标签页内容组件初始化完成');
             
@@ -1178,6 +1209,9 @@ class TabManager {
                     break;
                 case 'chains':
                     this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
+                    break;
+                case 'msgs':
+                    this.updateMsgsDataIncremental(newData.msgData, previousData?.msgData);
                     break;
             }
             
@@ -1285,6 +1319,25 @@ class TabManager {
             
         } catch (error) {
             console.error('增量更新区块链数据失败:', error);
+        }
+    }
+
+    /**
+     * 增量更新消息数据
+     * @param {Map} newMsgData - 新消息数据
+     * @param {Map} previousMsgData - 之前的消息数据
+     */
+    updateMsgsDataIncremental(newMsgData, previousMsgData) {
+        if (!this.msgTabContent || !newMsgData) {
+            return;
+        }
+
+        try {
+            // 直接进行完整渲染，确保数据能正确显示
+            this.msgTabContent.renderMsgsGrid(newMsgData);
+
+        } catch (error) {
+            console.error('增量更新消息数据失败:', error);
         }
     }
     

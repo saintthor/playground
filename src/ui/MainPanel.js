@@ -70,6 +70,7 @@ class MainPanel {
                         <button class="tab-button" data-tab="network" data-text="network_tab">${GetText('network_tab')}</button>
                         <button class="tab-button" data-tab="users" data-text="users_tab">${GetText('users_tab')}</button>
                         <button class="tab-button" data-tab="chains" data-text="chains_tab">${GetText('chains_tab')}</button>
+                        <button class="tab-button" data-tab="msgs" data-text="msgs_tab">${GetText('msgs_tab')}</button>
                     </div>
                 </div>
                 
@@ -124,6 +125,19 @@ class MainPanel {
                         <div class="tab-section-lower">
                             <div class="chain-details-container" id="chain-details-container">
                                 <p class="text-muted" data-text="click_chain">${GetText('click_chain')}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="msgs-tab">
+                        <div class="tab-section-upper">
+                            <div class="msgs-container" id="msgs-container">
+                                <p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>
+                            </div>
+                        </div>
+                        <div class="tab-section-lower">
+                            <div class="msg-details-container" id="msg-details-container">
+                                <p class="text-muted" data-text="click_msg">${GetText('click_msg')}</p>
                             </div>
                         </div>
                     </div>
