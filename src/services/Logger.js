@@ -5,7 +5,7 @@
  * Supports log classification management, timestamp recording, and related data storage.
  */
 
-export class Logger {
+class Logger {
     /**
      * Log type constants
      */

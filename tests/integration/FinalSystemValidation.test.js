@@ -3,12 +3,6 @@
  * 验证所有功能模块的协同工作和需求完整实现
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { NetManager } from '../../src/services/NetManager.js';
-import { ChainManager } from '../../src/services/ChainManager.js';
-import { Timer } from '../../src/services/Timer.js';
-import { Logger } from '../../src/services/Logger.js';
-import { User } from '../../src/models/User.js';
-import { Crypto } from '../../src/services/Crypto.js';
 
 describe('最终系统验证测试', () => {
     let netManager;

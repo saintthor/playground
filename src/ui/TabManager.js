@@ -32,6 +32,12 @@ class TabManager {
                 lastUpdateTime: null,
                 isLoaded: false,
                 isVisible: false
+            },
+            messages: {
+                selectedTreeId: null,
+                selectedBlockId: null,
+                isLoaded: false,
+                isVisible: false
             }
         };
         
@@ -50,6 +56,7 @@ class TabManager {
         this.networkTabContent = null;
         this.usersTabContent = null;
         this.chainsTabContent = null;
+        this.msgTabContent = null;
         
         // 调整大小管理器
         this.resizeManager = null;
@@ -195,6 +202,9 @@ class TabManager {
                 case 'chains':
                     await this.loadChainsTabContent();
                     break;
+                case 'messages':
+                    await this.loadMsgTabContent();
+                    break;
             }
             
             // 标记为已加载
@@ -214,6 +224,20 @@ class TabManager {
             setTimeout(() => {
                 if (this.helpTabContent) {
                     this.helpTabContent.renderHelpContent();
+                }
+                resolve();
+            }, 10);
+        });
+    }
+
+    async loadMsgTabContent() {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (this.msgTabContent && this.mainPanel.app) {
+                    const data = this.mainPanel.app.getMainPanelData();
+                    if (data && data.msgTrees) {
+                        this.msgTabContent.renderMsgTrees(data.msgTrees);
+                    }
                 }
                 resolve();
             }, 10);
@@ -453,6 +477,8 @@ class TabManager {
                     return this.getUsersTabState();
                 case 'chains':
                     return this.getChainsTabState();
+                case 'messages':
+                    return this.getMessagesTabState();
                 default:
                     return null;
             }
@@ -516,6 +542,17 @@ class TabManager {
             scrollPosition: chainsTab.scrollTop || 0
         };
     }
+
+    getMessagesTabState() {
+        const messagesTab = document.getElementById('messages-tab');
+        if (!messagesTab) return {};
+
+        return {
+            selectedTreeId: this.msgTabContent ? this.msgTabContent.selectedTreeId : null,
+            selectedBlockId: this.msgTabContent ? this.msgTabContent.selectedBlockId : null,
+            scrollPosition: messagesTab.scrollTop || 0
+        };
+    }
     
     /**
      * 应用标签页状态
@@ -536,6 +573,9 @@ class TabManager {
                     break;
                 case 'chains':
                     this.applyChainsTabState(state);
+                    break;
+                case 'messages':
+                    this.applyMessagesTabState(state);
                     break;
             }
         } catch (error) {
@@ -560,6 +600,42 @@ class TabManager {
         if (state.selectedNode !== null && this.networkTabContent) {
             setTimeout(() => {
                 this.networkTabContent.setSelectedNode(state.selectedNode, false);
+            }, 100);
+        }
+    }
+
+    applyMessagesTabState(state) {
+        const messagesTab = document.getElementById('messages-tab');
+        if (!messagesTab) return;
+
+        if (state.scrollPosition) {
+            messagesTab.scrollTop = state.scrollPosition;
+        }
+
+        if (state.selectedTreeId && this.msgTabContent) {
+            setTimeout(() => {
+                this.msgTabContent.handleMsgTreeClick(state.selectedTreeId);
+                if (state.selectedBlockId) {
+                    this.msgTabContent.handleBlockClick(state.selectedBlockId);
+                }
+            }, 100);
+        }
+    }
+
+    applyMessagesTabState(state) {
+        const messagesTab = document.getElementById('messages-tab');
+        if (!messagesTab) return;
+
+        if (state.scrollPosition) {
+            messagesTab.scrollTop = state.scrollPosition;
+        }
+
+        if (state.selectedTreeId && this.msgTabContent) {
+            setTimeout(() => {
+                this.msgTabContent.handleMsgTreeClick(state.selectedTreeId);
+                if (state.selectedBlockId) {
+                    this.msgTabContent.handleBlockClick(state.selectedBlockId);
+                }
             }, 100);
         }
     }
@@ -925,7 +1001,7 @@ class TabManager {
      * @returns {boolean} - 是否有效
      */
     isValidTabName(tabName) {
-        return ['help', 'network', 'users', 'chains'].includes(tabName);
+        return ['help', 'network', 'users', 'chains', 'messages'].includes(tabName);
     }
     
     /**
@@ -1085,6 +1161,9 @@ class TabManager {
             
             // 初始化区块链标签页内容组件
             this.chainsTabContent = new ChainsTabContent(this);
+
+            // 初始化消息标签页内容组件
+            this.msgTabContent = new MsgTabContent(this);
             
             console.log('标签页内容组件初始化完成');
             
@@ -1178,6 +1257,9 @@ class TabManager {
                     break;
                 case 'chains':
                     //this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
+                    break;
+                case 'messages':
+                    this.updateMessagesDataIncremental(newData.msgTrees, previousData?.msgTrees);
                     break;
             }
             
@@ -1285,6 +1367,18 @@ class TabManager {
             
         } catch (error) {
             console.error('增量更新区块链数据失败:', error);
+        }
+    }
+
+    updateMessagesDataIncremental(newMsgTrees, previousMsgTrees) {
+        if (!this.msgTabContent || !newMsgTrees) {
+            return;
+        }
+
+        try {
+            this.msgTabContent.renderMsgTrees(newMsgTrees);
+        } catch (error) {
+            console.error('增量更新消息数据失败:', error);
         }
     }
     

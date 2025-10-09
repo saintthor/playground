@@ -5,8 +5,6 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { PerformanceOptimizer } from '../../src/services/PerformanceOptimizer.js';
-import { Crypto } from '../../src/services/Crypto.js';
 
 describe('PerformanceOptimizer', () => {
     let optimizer;

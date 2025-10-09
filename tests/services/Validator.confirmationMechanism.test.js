@@ -8,8 +8,6 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Validator } from '../../src/services/Validator.js';
-import { Block } from '../../src/models/Block.js';
 
 describe('Validator - 确认等待和冲突检测', () => {
     let validator;

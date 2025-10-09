@@ -5,7 +5,7 @@
  * 支持错误监控、统计和调试信息收集
  */
 
-export class ErrorHandler {
+class ErrorHandler {
     /**
      * 错误类型常量
      */

@@ -3,9 +3,6 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { SystemMonitor } from '../../src/services/SystemMonitor.js';
-import { ErrorHandler } from '../../src/services/ErrorHandler.js';
-import { Logger } from '../../src/services/Logger.js';
 
 // 模拟 performance API
 global.performance = {

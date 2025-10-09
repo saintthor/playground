@@ -2,7 +2,6 @@
  * UIManager 测试
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { UIManager } from '../../src/ui/UIManager.js';
 
 // Mock DOM environment
 const mockDOM = () => {

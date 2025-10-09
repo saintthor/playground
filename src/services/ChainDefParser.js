@@ -7,9 +7,7 @@
  * - 定义文件的 SHA256 哈希计算
  */
 
-import { Crypto } from './Crypto.js';
-
-export class ChainDefParser {
+class ChainDefParser {
     /**
      * 解析区块链定义文件
      * @param {string|Object} definitionInput - 定义文件内容（JSON字符串或对象）

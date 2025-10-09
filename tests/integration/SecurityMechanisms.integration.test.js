@@ -9,15 +9,6 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Validator } from '../../src/services/Validator.js';
-import { NetManager } from '../../src/services/NetManager.js';
-import { ChainManager } from '../../src/services/ChainManager.js';
-import { User } from '../../src/models/User.js';
-import { Block } from '../../src/models/Block.js';
-import { BlockChain } from '../../src/models/BlockChain.js';
-import { Timer } from '../../src/services/Timer.js';
-import { Logger } from '../../src/services/Logger.js';
-import { Crypto } from '../../src/services/Crypto.js';
 
 describe('安全机制和攻击检测集成测试', () => {
     let validator;

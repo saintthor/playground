@@ -2,7 +2,6 @@
  * CtrlPanel 测试
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { CtrlPanel } from '../../src/ui/CtrlPanel.js';
 
 // Mock DOM environment
 const mockDOM = () => {

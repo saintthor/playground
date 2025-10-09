@@ -3,7 +3,6 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Timer } from '../../src/services/Timer.js';
 
 describe('Timer', () => {
     let timer;

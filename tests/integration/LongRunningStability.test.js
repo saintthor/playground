@@ -3,13 +3,6 @@
  * 验证系统在长时间运行下的稳定性
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { NetManager } from '../../src/services/NetManager.js';
-import { ChainManager } from '../../src/services/ChainManager.js';
-import { Timer } from '../../src/services/Timer.js';
-import { Logger } from '../../src/services/Logger.js';
-import { AutoTransferManager } from '../../src/services/AutoTransferManager.js';
-import { PaymentRateController } from '../../src/services/PaymentRateController.js';
-import { SystemMonitor } from '../../src/services/SystemMonitor.js';
 
 describe('长时间运行稳定性测试', () => {
     let netManager;

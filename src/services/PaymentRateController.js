@@ -7,7 +7,7 @@
  * - 转账目标用户的随机选择算法
  */
 
-export class PaymentRateController {
+class PaymentRateController {
     /**
      * 构造函数
      * @param {Object} config - 配置参数
