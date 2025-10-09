@@ -1,7 +1,7 @@
 /**
- * @fileoverview MsgTabContent - Messages Tab Content Component
- * Manages the display and interaction of the messages tab.
- * This is a placeholder implementation.
+ * @fileoverview MsgTabContent - “消息”标签页内容组件
+ * 管理“消息”标签页的显示和交互。
+ * 这是一个占位实现。
  * @version 1.0.0
  */
 class MsgTabContent
@@ -19,39 +19,39 @@ class MsgTabContent
     }
 
     /**
-     * Renders the initial content of the messages tab.
+     * 渲染“消息”标签页的初始内容。
      */
     render()
     {
-        const Container = document.getElementById( 'messages-container' );
-        if ( !Container )
+        const container = document.getElementById( 'messages-container' );
+        if ( !container )
         {
             console.error( 'Messages container not found' );
             return;
         }
-        Container.innerHTML = `<p class="text-muted" data-text="no_messages">No messages to display.</p>`;
+        container.innerHTML = `<p class="text-muted" data-text="no_messages">没有消息可显示。</p>`;
 
-        const DetailsContainer = document.getElementById( 'message-details-container' );
-        if ( !DetailsContainer )
+        const detailsContainer = document.getElementById( 'message-details-container' );
+        if ( !detailsContainer )
         {
             console.error( 'Message details container not found' );
             return;
         }
-        DetailsContainer.innerHTML = `<p class="text-muted" data-text="click_message_tree_to_see_details">Click on a message tree to see details.</p>`;
+        detailsContainer.innerHTML = `<p class="text-muted" data-text="click_message_tree_to_see_details">点击消息树查看详情。</p>`;
     }
 
     /**
-     * Renders the list of message block trees. (Placeholder)
-     * @param {Map<string, any>} msgTreesData The message block trees data.
+     * 渲染消息区块树列表 (占位函数)
+     * @param {Map<string, any>} msgTreesData 消息区块树数据
      */
     renderMsgTrees( msgTreesData )
     {
-        // Placeholder function
+        // 占位函数
         this.render();
     }
 
     /**
-     * Destroys the component.
+     * 销毁组件
      */
     destroy()
     {
@@ -59,7 +59,7 @@ class MsgTabContent
     }
 }
 
-// Compatibility for different module systems
+// 兼容不同的模块系统
 if ( typeof module !== 'undefined' && module.exports )
 {
     module.exports = MsgTabContent;

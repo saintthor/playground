@@ -82,7 +82,7 @@ class TabManager {
     
     /**
      * 切换标签页 (性能优化版本)
-     * @param {string} tabName - 标签页名称 ('network', 'users', 'chains')
+     * @param {string} tabName - 标签页名称 ('network', 'users', 'chains', 'messages')
      * @returns {Promise<boolean>} - 切换是否成功
      */
     async switchTab(tabName) {
@@ -390,7 +390,8 @@ class TabManager {
             help: '帮助',
             network: '网络',
             users: '用户',
-            chains: '区块链'
+            chains: '区块链',
+            messages: '消息'
         };
         return names[tabName] || tabName;
     }
@@ -609,28 +610,6 @@ class TabManager {
             }, 100);
         }
     }
-
-    /**
-     * 应用消息标签页状态
-     * @param {Object} state - 消息标签页状态
-     */
-    applyMessagesTabState(state) {
-        const messagesTab = document.getElementById('messages-tab');
-        if (!messagesTab) return;
-
-        if (state.scrollPosition) {
-            messagesTab.scrollTop = state.scrollPosition;
-        }
-
-        if (this.msgTabContent && state.selectedTreeId) {
-            setTimeout(() => {
-                this.msgTabContent.handleMsgTreeClick(state.selectedTreeId);
-                if (state.selectedBlockId) {
-                    this.msgTabContent.handleBlockClick(state.selectedBlockId);
-                }
-            }, 100);
-        }
-    }
     
     /**
      * 应用用户标签页状态
@@ -670,6 +649,28 @@ class TabManager {
         if (state.selectedChain && this.chainsTabContent) {
             setTimeout(() => {
                 this.chainsTabContent.setSelectedChain(state.selectedChain, false);
+            }, 100);
+        }
+    }
+
+    /**
+     * 应用消息标签页状态
+     * @param {Object} state - 消息标签页状态
+     */
+    applyMessagesTabState(state) {
+        const messagesTab = document.getElementById('messages-tab');
+        if (!messagesTab) return;
+
+        if (state.scrollPosition) {
+            messagesTab.scrollTop = state.scrollPosition;
+        }
+
+        if (this.msgTabContent && state.selectedTreeId) {
+            setTimeout(() => {
+                this.msgTabContent.handleMsgTreeClick(state.selectedTreeId);
+                if (state.selectedBlockId) {
+                    this.msgTabContent.handleBlockClick(state.selectedBlockId);
+                }
             }, 100);
         }
     }

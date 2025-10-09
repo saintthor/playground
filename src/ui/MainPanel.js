@@ -68,7 +68,7 @@ class MainPanel {
                         <button class="tab-button" data-tab="network" data-text="network_tab">${GetText('network_tab')}</button>
                         <button class="tab-button" data-tab="users" data-text="users_tab">${GetText('users_tab')}</button>
                         <button class="tab-button" data-tab="chains" data-text="chains_tab">${GetText('chains_tab')}</button>
-                        <button class="tab-button" data-tab="messages" data-text="messages_tab">${GetText('messages_tab')}</button>
+                        <button class="tab-button" data-tab="messages" data-text="messages_tab">消息</button>
                     </div>
                 </div>
                 
@@ -126,7 +126,6 @@ class MainPanel {
                             </div>
                         </div>
                     </div>
-
                     <div class="tab-pane" id="messages-tab">
                         <div class="tab-section-upper">
                             <div class="messages-container" id="messages-container">
@@ -135,7 +134,7 @@ class MainPanel {
                         </div>
                         <div class="tab-section-lower">
                             <div class="message-details-container" id="message-details-container">
-                                <p class="text-muted" data-text="click_message_tree_to_see_details">${GetText('click_message_tree_to_see_details')}</p>
+                                <p class="text-muted" data-text="click_message_tree_to_see_details">点击消息树查看详情。</p>
                             </div>
                         </div>
                     </div>
