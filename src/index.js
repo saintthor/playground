@@ -100,7 +100,6 @@ class App {
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
         this.mockChains = new Map();
-        this.msgTrees = new Map();
 
         /** @type {string|null} 当前选中的用户ID */
         this.selectedUser = null;
@@ -227,7 +226,6 @@ class App {
 
         // 生成模拟数据
         this.generateMockData(config);
-        this._generateMockMessages();
 
         // 更新用户列表（使用真实的用户数据）
         const mockUsers = Array.from(this.AllUsers.entries()).map(([publicKey, userData]) => ({
@@ -825,47 +823,6 @@ class App {
                 }
             }*/
         }
-    }
-
-    _generateMockMessages() {
-        this.msgTrees.clear();
-        if (this.AllUsers.size === 0) return;
-
-        const users = [...this.AllUsers.values()];
-
-        // Create first message tree
-        const tree1 = new BlockTree();
-        const user1 = users[0];
-        const rootBlock1 = new MessageBlock("Hello Blockchain!", user1.Id, null, ["greeting"]);
-        tree1.addBlock(rootBlock1);
-
-        const reply1 = new MessageBlock("Hi there! How are you?", users[1 % users.length].Id, rootBlock1.id, ["reply"]);
-        tree1.addBlock(reply1);
-
-        const reply2 = new MessageBlock("I'm good, thanks! What about you?", users[2 % users.length].Id, reply1.id, ["reply"]);
-        tree1.addBlock(reply2);
-
-        const reply3 = new MessageBlock("Also good. Let's discuss the project.", users[0 % users.length].Id, reply2.id, ["work"]);
-        tree1.addBlock(reply3);
-
-        const reply4 = new MessageBlock("Sure, I have some ideas.", users[2 % users.length].Id, reply3.id, ["work"]);
-        tree1.addBlock(reply4);
-
-        this.msgTrees.set(tree1.rootId, tree1);
-
-        // Create second message tree
-        const tree2 = new BlockTree();
-        const user2 = users[3 % users.length];
-        const rootBlock2 = new MessageBlock("Anyone interested in a side project?", user2.Id, null, ["project", "hiring"]);
-        tree2.addBlock(rootBlock2);
-
-        const reply5 = new MessageBlock("I am! What's the topic?", users[4 % users.length].Id, rootBlock2.id, ["interest"]);
-        tree2.addBlock(reply5);
-
-        const reply6 = new MessageBlock("It's about decentralized identity.", user2.Id, reply5.id, ["project", "did"]);
-        tree2.addBlock(reply6);
-
-        this.msgTrees.set(tree2.rootId, tree2);
     }
 }
 
