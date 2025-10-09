@@ -1,16 +1,18 @@
 /**
- * P2PNode 类单元测试
+ * Node 类单元测试
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Node } from '../../src/models/Node.js';
+import { Crypto } from '../../src/services/Crypto.js';
 
-describe('P2PNode', () => {
+describe('Node', () => {
     let node1, node2, node3;
 
     beforeEach(async () => {
-        node1 = new P2PNode('node1');
-        node2 = new P2PNode('node2');
-        node3 = new P2PNode('node3');
+        node1 = new Node('node1');
+        node2 = new Node('node2');
+        node3 = new Node('node3');
         
         // 初始化密钥对
         await node1.genKeyPair();
@@ -20,7 +22,7 @@ describe('P2PNode', () => {
 
     describe('构造函数和初始化', () => {
         it('应该正确创建节点实例', () => {
-            const node = new P2PNode('test-node');
+            const node = new Node('test-node');
             expect(node.id).toBe('test-node');
             expect(node.publicKey).toBeNull();
             expect(node.privateKey).toBeNull();
@@ -31,7 +33,7 @@ describe('P2PNode', () => {
         });
 
         it('应该成功生成密钥对', async () => {
-            const node = new P2PNode('test-node');
+            const node = new Node('test-node');
             await node.genKeyPair();
             
             expect(node.publicKey).toBeTruthy();
@@ -42,7 +44,7 @@ describe('P2PNode', () => {
         });
 
         it('应该能够获取公钥', async () => {
-            const node = new P2PNode('test-node');
+            const node = new Node('test-node');
             await node.genKeyPair();
             
             const publicKey = node.getPubKey();
@@ -50,7 +52,7 @@ describe('P2PNode', () => {
         });
 
         it('未初始化时获取公钥应该抛出错误', () => {
-            const node = new P2PNode('test-node');
+            const node = new Node('test-node');
             expect(() => node.getPubKey()).toThrow('节点 test-node 尚未初始化密钥对');
         });
     });
@@ -78,7 +80,7 @@ describe('P2PNode', () => {
         });
 
         it('未初始化的节点不能建立连接', async () => {
-            const uninitializedNode = new P2PNode('uninit');
+            const uninitializedNode = new Node('uninit');
             
             await expect(node1.connectTo(uninitializedNode)).rejects.toThrow('节点未初始化，无法建立连接');
         });
@@ -123,7 +125,7 @@ describe('P2PNode', () => {
         });
 
         it('未初始化节点签名应该抛出错误', async () => {
-            const uninitializedNode = new P2PNode('uninit');
+            const uninitializedNode = new Node('uninit');
             await expect(uninitializedNode.signData('test')).rejects.toThrow('节点 uninit 尚未初始化密钥对');
         });
     });
@@ -252,7 +254,7 @@ describe('P2PNode', () => {
         });
 
         it('未初始化节点的连接状态', () => {
-            const uninitializedNode = new P2PNode('uninit');
+            const uninitializedNode = new Node('uninit');
             const status = uninitializedNode.getConnectionStatus();
             
             expect(status.nodeId).toBe('uninit');

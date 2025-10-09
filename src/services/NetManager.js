@@ -4,7 +4,11 @@
  * 负责管理P2P网络的初始化、连接管理、消息广播和网络状态监控
  */
 
-class NetManager {
+import { Node } from '../models/Node.js';
+import { MsgRouter } from './MsgRouter.js';
+import { Timer } from './Timer.js';
+
+export class NetManager {
     /**
      * 构造函数
      * @param {Object} config - 网络配置
@@ -70,7 +74,7 @@ class NetManager {
         
         for (let i = 0; i < this.nodeCount; i++) {
             const nodeId = `node-${i}`;
-            const node = new P2PNode(nodeId);
+            const node = new Node(nodeId);
             this.nodes.set(nodeId, node);
             
             // 异步初始化密钥对

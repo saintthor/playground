@@ -5,6 +5,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import { ChainManager } from '../../src/services/ChainManager.js';
+import { Crypto } from '../../src/services/Crypto.js';
 
 describe('ChainManager', () => {
     let chainManager;

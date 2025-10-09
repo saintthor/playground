@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import { ChainDefParser } from '../../src/services/ChainDefParser.js';
 
 describe('ChainDefParser', () => {
     let validDefinition;

@@ -4,6 +4,9 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
+import { BlockChain } from '../../src/models/BlockChain.js';
+import { Block } from '../../src/models/Block.js';
+import { Crypto } from '../../src/services/Crypto.js';
 
 describe('BlockChain 类测试', () => {
     let keyPair1, keyPair2;

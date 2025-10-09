@@ -5,6 +5,9 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { PaymentRateController } from '../../src/services/PaymentRateController.js';
+import { User } from '../../src/models/User.js';
+import { BlockChain } from '../../src/models/BlockChain.js';
 
 describe('PaymentRateController', () => {
     let controller;

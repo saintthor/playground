@@ -4,7 +4,7 @@
  * 负责消息的路由、优先级处理和网络延迟模拟
  */
 
-class MsgRouter {
+export class MsgRouter {
     /**
      * 构造函数
      * @param {Object} config - 路由器配置

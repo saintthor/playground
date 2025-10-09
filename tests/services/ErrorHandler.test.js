@@ -3,6 +3,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ErrorHandler } from '../../src/services/ErrorHandler.js';
+import { Logger } from '../../src/services/Logger.js';
 
 describe('ErrorHandler', () => {
     let errorHandler;

@@ -7,7 +7,9 @@
  * - 网络活动的统计和监控
  */
 
-class AutoTransferManager {
+import { PaymentRateController } from './PaymentRateController.js';
+
+export class AutoTransferManager {
     /**
      * 构造函数
      * @param {Object} config - 配置参数

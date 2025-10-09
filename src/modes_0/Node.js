@@ -41,7 +41,9 @@
  * @author P2P Blockchain Playground Team
  */
 
-class P2PNode {
+import { Crypto } from '../services/Crypto.js';
+
+export class Node {
     /**
      * 构造函数
      * @param {string} id - 节点ID

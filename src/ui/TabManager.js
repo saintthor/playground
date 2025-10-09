@@ -36,6 +36,8 @@ class TabManager {
             messages: {
                 selectedTreeId: null,
                 selectedBlockId: null,
+                scrollPosition: 0,
+                lastUpdateTime: null,
                 isLoaded: false,
                 isVisible: false
             }
@@ -203,7 +205,7 @@ class TabManager {
                     await this.loadChainsTabContent();
                     break;
                 case 'messages':
-                    await this.loadMsgTabContent();
+                    await this.loadMessagesTabContent();
                     break;
             }
             
@@ -230,14 +232,14 @@ class TabManager {
         });
     }
 
-    async loadMsgTabContent() {
+    /**
+     * 加载消息标签页内容
+     */
+    async loadMessagesTabContent() {
         return new Promise((resolve) => {
             setTimeout(() => {
-                if (this.msgTabContent && this.mainPanel.app) {
-                    const data = this.mainPanel.app.getMainPanelData();
-                    if (data && data.msgTrees) {
-                        this.msgTabContent.renderMsgTrees(data.msgTrees);
-                    }
+                if (this.msgTabContent) {
+                    this.msgTabContent.render();
                 }
                 resolve();
             }, 10);
@@ -543,6 +545,10 @@ class TabManager {
         };
     }
 
+    /**
+     * 获取消息标签页状态
+     * @returns {Object} - 消息标签页状态
+     */
     getMessagesTabState() {
         const messagesTab = document.getElementById('messages-tab');
         if (!messagesTab) return {};
@@ -604,6 +610,10 @@ class TabManager {
         }
     }
 
+    /**
+     * 应用消息标签页状态
+     * @param {Object} state - 消息标签页状态
+     */
     applyMessagesTabState(state) {
         const messagesTab = document.getElementById('messages-tab');
         if (!messagesTab) return;
@@ -612,25 +622,7 @@ class TabManager {
             messagesTab.scrollTop = state.scrollPosition;
         }
 
-        if (state.selectedTreeId && this.msgTabContent) {
-            setTimeout(() => {
-                this.msgTabContent.handleMsgTreeClick(state.selectedTreeId);
-                if (state.selectedBlockId) {
-                    this.msgTabContent.handleBlockClick(state.selectedBlockId);
-                }
-            }, 100);
-        }
-    }
-
-    applyMessagesTabState(state) {
-        const messagesTab = document.getElementById('messages-tab');
-        if (!messagesTab) return;
-
-        if (state.scrollPosition) {
-            messagesTab.scrollTop = state.scrollPosition;
-        }
-
-        if (state.selectedTreeId && this.msgTabContent) {
+        if (this.msgTabContent && state.selectedTreeId) {
             setTimeout(() => {
                 this.msgTabContent.handleMsgTreeClick(state.selectedTreeId);
                 if (state.selectedBlockId) {
@@ -1259,7 +1251,9 @@ class TabManager {
                     //this.updateChainsDataIncremental(newData.chainData, previousData?.chainData);
                     break;
                 case 'messages':
-                    this.updateMessagesDataIncremental(newData.msgTrees, previousData?.msgTrees);
+                    if (this.msgTabContent) {
+                        this.msgTabContent.renderMsgTrees(newData.msgTrees);
+                    }
                     break;
             }
             
@@ -1367,18 +1361,6 @@ class TabManager {
             
         } catch (error) {
             console.error('增量更新区块链数据失败:', error);
-        }
-    }
-
-    updateMessagesDataIncremental(newMsgTrees, previousMsgTrees) {
-        if (!this.msgTabContent || !newMsgTrees) {
-            return;
-        }
-
-        try {
-            this.msgTabContent.renderMsgTrees(newMsgTrees);
-        } catch (error) {
-            console.error('增量更新消息数据失败:', error);
         }
     }
     

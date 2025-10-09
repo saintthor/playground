@@ -575,7 +575,6 @@ class App {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
                 chainData: this.AllBlockchains,
-                msgTrees: this.msgTrees
             };
         }
 
@@ -590,8 +589,7 @@ class App {
                 AllPeers: this.AllPeers,
                 AllUsers: this.AllUsers,
             userData: this.AllUsers,
-            chainData: this.AllBlockchains,
-            msgTrees: this.msgTrees,
+            chainData: this.AllBlockchains
         };
     }
 

@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { MainPanel } from '../../src/ui/MainPanel.js';
 
 // Mock DOM environment
 const mockDOM = () => {

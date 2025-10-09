@@ -3,6 +3,27 @@
  * 测试所有功能模块的协同工作，验证所有需求的完整实现
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { NetManager } from '../../src/services/NetManager.js';
+import { ChainManager } from '../../src/services/ChainManager.js';
+import { ChainDefParser } from '../../src/services/ChainDefParser.js';
+import { Validator } from '../../src/services/Validator.js';
+import { Timer } from '../../src/services/Timer.js';
+import { Logger } from '../../src/services/Logger.js';
+import { MsgRouter } from '../../src/services/MsgRouter.js';
+import { AutoTransferManager } from '../../src/services/AutoTransferManager.js';
+import { PaymentRateController } from '../../src/services/PaymentRateController.js';
+import { SystemMonitor } from '../../src/services/SystemMonitor.js';
+import { ErrorHandler } from '../../src/services/ErrorHandler.js';
+import { PerformanceOptimizer } from '../../src/services/PerformanceOptimizer.js';
+import { UIManager } from '../../src/ui/UIManager.js';
+import { CtrlPanel } from '../../src/ui/CtrlPanel.js';
+import { MainPanel } from '../../src/ui/MainPanel.js';
+import { LogPanel } from '../../src/ui/LogPanel.js';
+import { User } from '../../src/models/User.js';
+import { Node } from '../../src/models/Node.js';
+import { BlockChain } from '../../src/models/BlockChain.js';
+import { Block } from '../../src/models/Block.js';
+import { Crypto } from '../../src/services/Crypto.js';
 
 describe('综合系统集成测试', () => {
     let systemComponents;

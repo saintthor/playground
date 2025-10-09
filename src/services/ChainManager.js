@@ -7,7 +7,11 @@
  * - 区块链标识符的生成和管理
  */
 
-class ChainManager {
+import { BlockChain } from '../models/BlockChain.js';
+import { ChainDefParser } from './ChainDefParser.js';
+import { Crypto } from './Crypto.js';
+
+export class ChainManager {
     constructor() {
         this.blockchains = new Map(); // chainId -> BlockChain
         this.userChains = new Map(); // userId -> Set<chainId>

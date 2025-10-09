@@ -5,6 +5,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { NetManager } from '../../src/services/NetManager.js';
+import { ChainManager } from '../../src/services/ChainManager.js';
+import { PerformanceOptimizer } from '../../src/services/PerformanceOptimizer.js';
+import { Crypto } from '../../src/services/Crypto.js';
+import { User } from '../../src/models/User.js';
+import { Timer } from '../../src/services/Timer.js';
 
 describe('大规模网络性能测试', () => {
     let netManager;

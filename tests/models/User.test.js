@@ -5,6 +5,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import { User } from '../../src/models/User.js';
+import { BlockChain } from '../../src/models/BlockChain.js';
 
 describe('User', () => {
     let user;

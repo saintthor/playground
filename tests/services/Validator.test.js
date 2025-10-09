@@ -8,6 +8,10 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { Validator } from '../../src/services/Validator.js';
+import { Block } from '../../src/models/Block.js';
+import { BlockChain } from '../../src/models/BlockChain.js';
+import { Crypto } from '../../src/services/Crypto.js';
 
 describe('Validator', () => {
     let validator;

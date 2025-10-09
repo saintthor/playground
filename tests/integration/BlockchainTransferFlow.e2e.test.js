@@ -10,6 +10,13 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ChainManager } from '../../src/services/ChainManager.js';
+import { NetManager } from '../../src/services/NetManager.js';
+import { Validator } from '../../src/services/Validator.js';
+import { User } from '../../src/models/User.js';
+import { Node } from '../../src/models/Node.js';
+import { Timer } from '../../src/services/Timer.js';
+import { Logger } from '../../src/services/Logger.js';
 
 describe('端到端区块链转移流程测试', () => {
     let chainManager;

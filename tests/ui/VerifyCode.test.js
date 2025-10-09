@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { UIManager } from '../../src/ui/UIManager.js';
+import { Crypto } from '../../src/services/Crypto.js';
 
 // Mock DOM environment
 const mockApp = {

@@ -5,7 +5,7 @@
  * 支持自动恢复和预警机制
  */
 
-class SystemMonitor {
+export class SystemMonitor {
     /**
      * 监控指标类型
      */

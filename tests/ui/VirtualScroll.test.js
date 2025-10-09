@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { VirtualScroll } from '../../src/ui/VirtualScroll.js';
 
 // Mock DOM 环境
 const mockContainer = () => {

@@ -126,10 +126,11 @@ class MainPanel {
                             </div>
                         </div>
                     </div>
+
                     <div class="tab-pane" id="messages-tab">
                         <div class="tab-section-upper">
                             <div class="messages-container" id="messages-container">
-                                <p class="text-muted" data-text="no_messages">${GetText('no_messages')}</p>
+                                <p class="text-muted" data-text="sys_not_started">${GetText('sys_not_started')}</p>
                             </div>
                         </div>
                         <div class="tab-section-lower">

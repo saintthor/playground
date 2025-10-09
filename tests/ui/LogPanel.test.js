@@ -3,6 +3,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { LogPanel } from '../../src/ui/LogPanel.js';
+import { Logger } from '../../src/services/Logger.js';
 
 // Mock DOM
 const mockDOM = () => {

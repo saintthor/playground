@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { NetManager } from '../../src/services/NetManager.js';
 
 describe('NetManager', () => {
     let netManager;

@@ -5,6 +5,11 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { AutoTransferManager } from '../../src/services/AutoTransferManager.js';
+import { User } from '../../src/models/User.js';
+import { BlockChain } from '../../src/models/BlockChain.js';
+import { NetManager } from '../../src/services/NetManager.js';
+import { Logger } from '../../src/services/Logger.js';
 
 describe('AutoTransferManager Integration', () => {
     let transferManager;
