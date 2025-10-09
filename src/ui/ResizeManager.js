@@ -25,7 +25,8 @@ class ResizeManager {
         this.tabRatios = {
             network: this.defaultRatio,
             users: this.defaultRatio,
-            chains: this.defaultRatio
+            chains: this.defaultRatio,
+            msgs: this.defaultRatio
         };
         
         // 存储管理
@@ -77,7 +78,7 @@ class ResizeManager {
      */
     createResizeHandles() {
         try {
-            const tabNames = ['network', 'users', 'chains'];
+            const tabNames = ['network', 'users', 'chains', 'msgs'];
             
             tabNames.forEach(tabName => {
                 const tabPane = document.getElementById(`${tabName}-tab`);
@@ -787,7 +788,7 @@ class ResizeManager {
      * @returns {boolean} - 是否有效
      */
     isValidTabName(tabName) {
-        return ['network', 'users', 'chains'].includes(tabName);
+        return ['network', 'users', 'chains', 'msgs'].includes(tabName);
     }
     
     /**

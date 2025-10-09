@@ -34,50 +34,51 @@ class MsgTabContent
         {
             container.innerHTML = `<p class="text-muted" data-text="no_messages_found">${GetText( "no_messages_found" )}</p>`;
             this.msgsGridInitialized = false;
-            return;
         }
-
-        this.AllMsgTrees = msgData;
-        let msgsGrid = container.querySelector( '.msgs-grid' );
-        if( !msgsGrid )
+        else
         {
-            msgsGrid = document.createElement( 'div' );
-            msgsGrid.className = 'msgs-grid';
-            container.innerHTML = '';
-            container.appendChild( msgsGrid );
+            this.AllMsgTrees = msgData;
+            let msgsGrid = container.querySelector( '.msgs-grid' );
+            if( !msgsGrid )
+            {
+                msgsGrid = document.createElement( 'div' );
+                msgsGrid.className = 'msgs-grid';
+                container.innerHTML = '';
+                container.appendChild( msgsGrid );
+            }
+
+            for( const [treeId, tree] of msgData )
+            {
+                let msgCard = msgsGrid.querySelector( `[data-msg-id="${treeId}"]` );
+
+                if( !msgCard )
+                {
+                    msgCard = document.createElement( 'div' );
+                    msgCard.className = 'msg-card';
+                    msgCard.setAttribute( 'data-msg-id', treeId );
+
+                    const msgIdPreview = this.generateIdPreview( treeId );
+                    msgCard.innerHTML = `<span class="msg-id-preview">${ msgIdPreview }</span>`;
+                    msgsGrid.appendChild( msgCard );
+
+                    msgCard.addEventListener( 'click', () =>
+                    {
+                        this.handleMsgTreeClick( treeId );
+                    });
+                }
+            }
+
+            const existingCards = msgsGrid.querySelectorAll( '.msg-card' );
+            existingCards.forEach( card =>
+            {
+                const msgId = card.getAttribute( 'data-msg-id' );
+                if( !msgData.has( msgId ) )
+                {
+                    card.remove();
+                }
+            });
             this.msgsGridInitialized = true;
         }
-
-        for( const [treeId, tree] of msgData )
-        {
-            let msgCard = msgsGrid.querySelector( `[data-msg-id="${treeId}"]` );
-
-            if( !msgCard )
-            {
-                msgCard = document.createElement( 'div' );
-                msgCard.className = 'msg-card';
-                msgCard.setAttribute( 'data-msg-id', treeId );
-
-                const msgIdPreview = this.generateIdPreview( treeId );
-                msgCard.innerHTML = `<span class="msg-id-preview">${ msgIdPreview }</span>`;
-                msgsGrid.appendChild( msgCard );
-
-                msgCard.addEventListener( 'click', () =>
-                {
-                    this.handleMsgTreeClick( treeId );
-                });
-            }
-        }
-
-        const existingCards = msgsGrid.querySelectorAll( '.msg-card' );
-        existingCards.forEach( card =>
-        {
-            const msgId = card.getAttribute( 'data-msg-id' );
-            if( !msgData.has( msgId ) )
-            {
-                card.remove();
-            }
-        });
 
         if( this.tabManager && this.tabManager.resizeManager )
         {
