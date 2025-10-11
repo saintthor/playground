@@ -147,12 +147,15 @@ class User
         }
     };
     
-    //RecvBlockchain( block )
-    //{
-        //const ChainIds = block.GetBlockChain(); //[root, block...]
-        ////console.log( 'RecvBlockchain', ChainIds, block.Id );
-        //this.OwnChains.set( ChainIds[0], ChainIds );
-    //};
+    SendMessage( msgBlock )
+    {
+        const SrcPeerKs = [...this.Peers.keys()];
+        window.LogPanel.AddLog( { dida: msgBlock.Tick, user: this.Id, block: msgBlock.Id, content: 'add message block by ' + SrcPeerKs.join( ',' ), category: 'user' } );
+        Peer.StartTransing( msgBlock, msgBlock.Tick, SrcPeerKs );
+        //chain.Transfer( 1 );
+        //this.Status = 'sending';
+        //this.Waiting.set(() => this.Status = '', dida + Peer.BroadcastTicks * 4 );
+    }
 
     async Sign( s, pswd )
     {
@@ -168,8 +171,8 @@ class User
         //console.log( 'Verify', this, sig, data, pubKeyS );
         if( this.Cache.get( sig ) === [pubKeyS, s].join( '\n' ))
         {
-            //console.log( 'Verify Cache shot.', sig, this.Cache.get( sig ));
-            return true;
+            console.log( 'Verify Cache shot.', sig, this.Cache.get( sig ));
+            //return true;
         }
         const hash = await Hash( s, 'SHA-1' );
         const pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),

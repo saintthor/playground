@@ -100,7 +100,7 @@ class Peer
                     msg.SaveAt = currTick;
                     if( await p.Receive( msg, neighborId ))
                     {
-                        //console.log( p.Id, 'received', msg.Id );
+                        console.log( p.Id, 'received', msg.Id );
                         Reached.push( [p.Id, msg.color] );
                         p.Broadcast( msg, currTick, neighborId );
                     }
@@ -133,9 +133,9 @@ class Peer
                 }
             }
         };
-        
         if( Reached.length + Trusted.length > 0 )
         {
+        console.log( 'Update', Reached );
             window.app.NetWorkPanal.UpdateTrans( Reached, Trusted );
         }
     };
@@ -151,11 +151,11 @@ class Peer
         }
     }
 
-    Broadcast( msg, currTick, sourceId )  //inner & outer
+    Broadcast( msg, currTick, sourceId )
     {
         [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( [n, t] ) =>
         {
-        //console.log( 'Broadcast', this.Id, n.Id, currTick + t );
+        console.log( 'Broadcast', this.Id, n.Id, currTick + t );
             n.AddMessage( msg, this.Id, currTick + t );
             window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: ( sourceId ? 'start broadcasting.' : 'continue broadcasting.' ) + msg.Id.slice( 0, 16 ), category: 'peer' } );
         } );
@@ -165,24 +165,37 @@ class Peer
 
     async Receive( message, neighborId )
     {
+        //console.log( 'Receive', message, neighborId );
         if( neighborId && !this.Connections.has( neighborId ))
         {
+            console.log( 'Recv false', this.Id );
             return false;
         }
         if( this.RecvedMsgs.has( message.Id ))
         {
+            console.log( 'Recv false', this.Id );
             return false;
         }
         
         this.RecvedMsgs.set( message.Id, message );
         
-        if( message.type === 'NewBlock' )
+        if( message.type === 'MsgBlock' )
         {
-            const CurrBlock = new RebuildBlock( message.block.Id, message.block.Content );
-            if( this.LocalBlocks.has( CurrBlock.Id ))
+            if( this.LocalBlocks.has( message.block.Id ))
+            {
+            console.log( 'Recv false', this.Id );
+                return false;
+            }
+            console.log( 'Recv MsgBlock', this.Id, message.block );
+            return await TreeBlock.Rebuild( message.block.Id, message.block.Meta );
+        }
+        else if( message.type === 'NewBlock' )
+        {
+            if( this.LocalBlocks.has( message.block.Id ))
             {
                 return false;
             }
+            const CurrBlock = new RebuildBlock( message.block.Id, message.block.Content );
             try
             {
                 await this.Verify( CurrBlock );
@@ -194,7 +207,7 @@ class Peer
                 return false;
             }
             
-            this.AcceptBlockchain( CurrBlock );
+            this.AcceptBlock( CurrBlock );
         }
         else if( message.type === "Alarm" )
         {
@@ -230,9 +243,6 @@ class Peer
                 }
             }
         }
-        else if( message.type === "Article" )
-        {
-        }
         return true;
     };
     
@@ -247,9 +257,14 @@ class Peer
         return block;
     }
     
-    AcceptBlockchain( block )
+    AcceptBlock( block )
     {
         this.LocalBlocks.set( block.Id, block );
+        if( block instanceof TreeBlock )
+        {
+            console.log( 'AcceptBlockchain treeblock.' );
+            return;
+        }
         block.RootId = this.FindRoot( block.Id );
         const WaitTicks = window.app.Tick + this.constructor.BroadcastTicks * ( this.Users.has( block.OwnerId ) ? 4 : 2 );
         if( block.Index > 1 )
@@ -344,12 +359,14 @@ class Peer
 
     static StartTransing( block, dida, srcPeerKs )
     {
-        const TransMsg = { Id: "NewBlock" + block.Id, type: "NewBlock", block: block.Copy(),
+        const Type = block instanceof Block ? "NewBlock" : "MsgBlock";
+        const TransMsg = { Id: Type + block.Id, type: Type, block: block.Copy(),
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         srcPeerKs.forEach( k =>
         {
             const peer = this.All.get( k );
-            peer.AcceptBlockchain( block );
+            peer.AcceptBlock( block );
+            console.log( 'StartTransing', dida, peer.Id, TransMsg );
             peer.Broadcast( TransMsg, dida )
         } );
         

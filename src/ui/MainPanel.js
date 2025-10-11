@@ -70,7 +70,7 @@ class MainPanel {
                         <button class="tab-button" data-tab="network" data-text="network_tab">${GetText('network_tab')}</button>
                         <button class="tab-button" data-tab="users" data-text="users_tab">${GetText('users_tab')}</button>
                         <button class="tab-button" data-tab="chains" data-text="chains_tab">${GetText('chains_tab')}</button>
-                        <button class="tab-button" data-tab="msgs" data-text="msgs_tab">${GetText('msgs_tab')}</button>
+                        <button class="tab-button" data-tab="msgs" data-text="trees_tab">${GetText('trees_tab')}</button>
                     </div>
                 </div>
                 
@@ -184,27 +184,32 @@ class MainPanel {
             return;
         }
         this.LastTransUser.DoubleSpend( this.app.Tick );
-     }
+    }
 
-    NewMsg()
+    async NewMsg()
     {
-        if( !this.LastTransUser )
-        {
-            console.log( 'transfer once before attacking.' );
-            return;
-        }
-        //this.LastTransUser.DoubleSpend( this.app.Tick );
-     }
-
-    Reply()
+        const PostUser = this.tabManager.usersTabContent.GetSelected() || this.app.AllUsers.RandVal();
+        this.LastMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags());
+        console.log( this.LastMsg.Copy());
+        window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: this.LastMsg.Id, content: 'start posting.', category: 'post' } );
+        PostUser.SendMessage( this.LastMsg );
+    }
+    
+    RandTags()
     {
-        if( !this.LastTransUser )
+        const Tags = new Set( GetText( 'msg_tags' ).split( '|' ));
+        const GetTags = new Set();
+        for( let i = 3; i-- > 0; )
         {
-            console.log( 'transfer once before attacking.' );
-            return;
+            GetTags.add( Tags.RandVal());
         }
-        //this.LastTransUser.DoubleSpend( this.app.Tick );
-     }
+        return [...GetTags];
+    }
+    
+    async Reply()
+    {
+        
+    }
 
 
     /**

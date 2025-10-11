@@ -2,12 +2,13 @@ class TreeBlock
 {
     static All = new Map();
 
-    constructor( content, parentId, user, tags )
+    constructor( tick, content, user, tags, parentId )
     {
         this.Content = content;
         this.ParentId = parentId || '';
         this.Owner = user;
-        this.Tags = Array.isArray( tags ) ? tags : ( tags ? tags.split( '|' ) : [] );
+        this.Tick = tick;
+        this.Tags = Array.isArray( tags ) ? tags : ( tags ? tags.split( '|' ) : [] ).sort();
 
         return ( async () =>
         {
@@ -16,21 +17,34 @@ class TreeBlock
 
             this.Metadata =
             {
-                timestamp: new Date().toISOString(),
-                publisherKey: this.Owner.Id,
+                dida: tick,
+                pubKey: this.Owner.Id,
                 contentHash: contentHash,
                 parentId: this.ParentId,
-                tags: this.Tags,
+                tags: this.Tags.join( '|' ),
             };
 
-            const canonicalJson = this.CanonicalJSON( this.Metadata );
-            const dataHash = await Hash( canonicalJson, 'SHA-1' );
+            this.canonicalJson = this.CanonicalJSON( this.Metadata );
+            const dataHash = await Hash( this.canonicalJson, 'SHA-256' );
 
             this.Id = await this.Owner.Sign( dataHash );
 
             this.constructor.All.set( this.Id, this );
             return this;
         } )();
+    }
+    
+    Copy()
+    {
+        return { Id: this.Id, Meta: this.canonicalJson };
+    };
+
+    static async Rebuild( id, json )
+    {
+        const Meta = JSON.parse( json );
+        const rslt = await User.Verify( id, json, Meta.pubKey );
+        console.log( 'Rebuild', rslt, id, Meta.pubKey, json );
+        return rslt;
     }
 
     CanonicalJSON( data )

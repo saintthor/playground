@@ -300,6 +300,16 @@ class Text {
             en: 'Blockchains'
         });
         
+        this.textMap.set('trees_tab', {
+            cn: '区块树',
+            en: 'BlockTrees'
+        });
+        
+        this.textMap.set('msg_tags', {
+            cn: '新闻|经济|科技|国际|股市|区块链|人工智能|军事|时尚|动物|游戏|手机|能源|体育|演艺|情感|家庭|招聘|交友|旅游',
+            en: 'News | Economy | Tech | World | Stocks | Blockchain | AI | Military | Fashion | Animals | Gaming | Mobile | Energy | Sports | Entertainment | Emotion | Family | Jobs | Dating | Travel'
+        });
+        
         this.textMap.set('help_tab', {
             cn: '帮助',
             en: 'Help'
