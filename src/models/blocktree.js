@@ -74,6 +74,7 @@ class TreeBlock extends BaseTreeBlock
 {
     constructor( tick, content, user, tags, parentId )
     {
+        super();
         this.Content = content;
         this.ParentId = parentId || '';
         this.Owner = user;
@@ -109,15 +110,25 @@ class RebTreeBlock extends BaseTreeBlock
 {
     constructor( id, meta )
     {
+        super();
         this.Id = id;
         this.Metadata = meta;
         this.Content = "";
         this.FindTree();
     }
     
-    SetContent( text )
+    async SetContent( text )
     {
-        this.Content = text;
+        if( this.Content === "" )
+        {
+            const hash = await Hash( text, 'SHA-256' );
+            if( ABuff2Base64( hash ) !== this.Metadata.contentHash )
+            {
+                return false;
+            }
+            this.Content = text;
+        }
+        return true;
     }
 }
 

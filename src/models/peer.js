@@ -173,7 +173,7 @@ class Peer
         }
         if( this.RecvedMsgs.has( message.Id ))
         {
-            console.log( 'Received before', this.Id );
+            //console.log( 'Received before', this.Id );
             return false;
         }
         
@@ -183,7 +183,7 @@ class Peer
         {
             if( this.LocalBlocks.has( message.block.Id ))
             {
-            console.log( 'Recv false', this.Id );
+                console.log( 'Received before', this.Id );
                 return false;
             }
             console.log( 'Recv MsgMeta', this.Id, message.block );
@@ -197,17 +197,16 @@ class Peer
         }
         else if( message.type === 'MsgText' )
         {
-            const MsgBlock = this.LocalBlocks.has( message.block.Id );
+            const MsgBlock = window.M = this.LocalBlocks.get( message.block.Id );
             if( !MsgBlock )
             {
                 console.log( 'no meta got', this.Id );
                 return false;
             }
-            MsgBlock.SetText( message.block.Text );
             console.log( 'Recv MsgText', this.Id, message.block );
-            return true;
+            return !MsgBlock.SetContent || ( await MsgBlock.SetContent( message.block.Text ));
         }
-        else if( message.type === 'NewBlock' )
+        else if( message.type === 'AOBlock' )
         {
             if( this.LocalBlocks.has( message.block.Id ))
             {
@@ -377,7 +376,7 @@ class Peer
 
     static StartTransing( block, dida, srcPeerKs, step )
     {
-        const Type = block instanceof Block ? "NewBlock" : ["MsgMeta", "MsgText"][step || 0];
+        const Type = block instanceof Block ? "AOBlock" : ["MsgMeta", "MsgText"][step || 0];
         const TransMsg = { Id: Type + block.Id, type: Type, block: block.Copy( step ),
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         srcPeerKs.forEach( k =>

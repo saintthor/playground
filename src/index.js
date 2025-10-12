@@ -523,9 +523,9 @@ class App {
                 }
             }
             
-            await Promise.all( Blockchains.map( c => p.Receive( { Id: "NewBlock" + c.Root.Id, type: "NewBlock",
+            await Promise.all( Blockchains.map( c => p.Receive( { Id: "AOBlock" + c.Root.Id, type: "AOBlock",
                                                                     block: c.Root.Copy() } )));
-            await Promise.all( TransBlocks.map( b => p.Receive( { Id: "NewBlock" + b.Id, type: "NewBlock",
+            await Promise.all( TransBlocks.map( b => p.Receive( { Id: "AOBlock" + b.Id, type: "AOBlock",
                                                                     block: b.Copy() } )));
         }
         this.uiManager.panels.log.AddLog( { dida: -1, peer: 'all', content: 'peers connected to others.', category: 'node' } );
