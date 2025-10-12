@@ -157,33 +157,25 @@ class User
         //this.Waiting.set(() => this.Status = '', dida + Peer.BroadcastTicks * 4 );
     }
 
-    async Sign( s, pswd )
+    async Sign( hash )
     {
-        const ua8 = s instanceof String ? Base642ABuff( s ) : s;
-        const sig = ABuff2Base64( await crypto.subtle.sign( { name: "ECDSA", hash: { name: "SHA-1" }, }, this.PriKey, ua8 ));
-        this.constructor.Cache.set( sig, [this.PubKeyStr, s].join( '\n' ));
-        //console.log( 'Verify Cache set.', sig, this.constructor.Cache.get( sig ));
+        const HashStr = ABuff2Base64( hash );
+        const sig = ABuff2Base64( await crypto.subtle.sign( { name: "ECDSA", hash: { name: "SHA-1" }, }, this.PriKey, hash ));
+        this.constructor.Cache.set( sig, [this.PubKeyStr, HashStr].join( '\n' ));
         return sig;
     };
 
-    static async Verify( sig, s, pubKeyS )
+    static async Verify( sig, hash, pubKeyS )
     {
-        //console.log( 'Verify', this, sig, data, pubKeyS );
-        if( this.Cache.get( sig ) === [pubKeyS, s].join( '\n' ))
+        const HashStr = ABuff2Base64( hash );
+        if( this.Cache.get( sig ) === [pubKeyS, HashStr].join( '\n' ))
         {
-            console.log( 'Verify Cache shot.', sig, this.Cache.get( sig ));
-            //return true;
+            //console.log( 'Verify Cache shot.', sig, this.Cache.get( sig ));
+            return true;
         }
-        const hash = await Hash( s, 'SHA-1' );
         const pubK = await crypto.subtle.importKey( "raw", Base642ABuff( pubKeyS ),
                                 { name: "ECDSA", namedCurve: "P-256", }, false, ["verify"] )
-        const Rslt = crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), hash );
-        if( Rslt )
-        {
-            //console.log( 'Verify Cache set.' );
-            this.Cache.set( sig, [pubKeyS, s].join( '\n' ));
-        }
-        return Rslt;
+        return await crypto.subtle.verify( { name: "ECDSA", hash: { name: "SHA-1" }, }, pubK, Base642ABuff( sig ), hash );
     };
     
     GetAssets()
@@ -191,12 +183,12 @@ class User
         return [...[...this.OwnChains].map( rootId => BlockChain.All.get( rootId ).FaceVal ), 0, 0].reduce(( x, y ) => x + y );
     };
 
-    async CreateBlock( prevIdx, dida, data, prevId )
-    {
-        let block = await new Block( prevIdx + 1, dida, data, prevId );
-        block.Id = await this.Sign( block.Hash );
-        return block;
-    };
+    //async CreateBlock( prevIdx, dida, data, prevId )
+    //{
+        //let block = await new Block( prevIdx + 1, dida, data, prevId );
+        //block.Id = await this.Sign( block.Hash );
+        //return block;
+    //};
     
     StartWait( blockId, tick )
     {

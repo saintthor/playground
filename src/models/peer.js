@@ -155,7 +155,7 @@ class Peer
     {
         [...this.Connections.values()].filter( c => c[0].Id != sourceId ).forEach(( [n, t] ) =>
         {
-        console.log( 'Broadcast', this.Id, n.Id, currTick + t );
+        //console.log( 'Broadcast', this.Id, n.Id, currTick + t );
             n.AddMessage( msg, this.Id, currTick + t );
             window.LogPanel.AddLog( { dida: currTick, peer: this.Id, content: ( sourceId ? 'start broadcasting.' : 'continue broadcasting.' ) + msg.Id.slice( 0, 16 ), category: 'peer' } );
         } );
@@ -262,7 +262,7 @@ class Peer
         this.LocalBlocks.set( block.Id, block );
         if( block instanceof TreeBlock )
         {
-            console.log( 'AcceptBlockchain treeblock.' );
+            //console.log( 'AcceptBlockchain treeblock.' );
             return;
         }
         block.RootId = this.FindRoot( block.Id );
@@ -366,7 +366,7 @@ class Peer
         {
             const peer = this.All.get( k );
             peer.AcceptBlock( block );
-            console.log( 'StartTransing', dida, peer.Id, TransMsg );
+            //console.log( 'StartTransing', dida, peer.Id, TransMsg );
             peer.Broadcast( TransMsg, dida )
         } );
         

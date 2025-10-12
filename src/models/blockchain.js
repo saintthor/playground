@@ -51,7 +51,8 @@ class BaseBlock
 
     async ChkFollow( pubKeyS )
     {
-        return await User.Verify( this.Id, this.Content, pubKeyS );
+        const hash = await Hash( this.Content, 'SHA-1' );
+        return await User.Verify( this.Id, hash, pubKeyS );
     };
 
     get Id() { return this.id; };

@@ -25,7 +25,7 @@ class TreeBlock
             };
 
             this.canonicalJson = this.CanonicalJSON( this.Metadata );
-            const dataHash = await Hash( this.canonicalJson, 'SHA-256' );
+            const dataHash = await Hash( this.canonicalJson, 'SHA-1' );
 
             this.Id = await this.Owner.Sign( dataHash );
 
@@ -42,8 +42,9 @@ class TreeBlock
     static async Rebuild( id, json )
     {
         const Meta = JSON.parse( json );
-        const rslt = await User.Verify( id, json, Meta.pubKey );
-        console.log( 'Rebuild', rslt, id, Meta.pubKey, json );
+        const hash = await Hash( json, 'SHA-1' );
+        const rslt = await User.Verify( id, hash, Meta.pubKey );
+        //console.log( 'Rebuild', rslt, id, Meta.pubKey, json );
         return rslt;
     }
 
