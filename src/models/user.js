@@ -147,14 +147,19 @@ class User
         }
     };
     
-    SendMessage( msgBlock )
+    SendMsgMeta( msgBlock )
     {
         const SrcPeerKs = [...this.Peers.keys()];
-        window.LogPanel.AddLog( { dida: msgBlock.Tick, user: this.Id, block: msgBlock.Id, content: 'add message block by ' + SrcPeerKs.join( ',' ), category: 'user' } );
-        Peer.StartTransing( msgBlock, msgBlock.Tick, SrcPeerKs );
-        //chain.Transfer( 1 );
-        //this.Status = 'sending';
-        //this.Waiting.set(() => this.Status = '', dida + Peer.BroadcastTicks * 4 );
+        window.LogPanel.AddLog( { dida: msgBlock.Tick, user: this.Id, block: msgBlock.Id, content: 'add message meta by ' + SrcPeerKs.join( ',' ), category: 'user' } );
+        Peer.StartTransing( msgBlock, msgBlock.Tick, SrcPeerKs, 0 );
+        this.Waiting.set(() => this.SendMsgText( msgBlock ), msgBlock.Tick + Peer.BroadcastTicks * 2 );
+    }
+
+    SendMsgText( msgBlock )
+    {
+        const SrcPeerKs = [...this.Peers.keys()];
+        window.LogPanel.AddLog( { dida: msgBlock.Tick, user: this.Id, block: msgBlock.Id, content: 'add message text by ' + SrcPeerKs.join( ',' ), category: 'user' } );
+        Peer.StartTransing( msgBlock, msgBlock.Tick, SrcPeerKs, 1 );
     }
 
     async Sign( hash )

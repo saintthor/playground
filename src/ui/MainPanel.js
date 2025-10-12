@@ -190,9 +190,9 @@ class MainPanel {
     {
         const PostUser = this.tabManager.usersTabContent.GetSelected() || this.app.AllUsers.RandVal();
         this.LastMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags());
-        console.log( this.LastMsg.Copy());
+        //console.log( this.LastMsg.Copy( 0 ));
         window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: this.LastMsg.Id, content: 'start posting.', category: 'post' } );
-        PostUser.SendMessage( this.LastMsg );
+        PostUser.SendMsgMeta( this.LastMsg );
     }
     
     RandTags()

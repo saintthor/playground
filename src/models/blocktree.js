@@ -1,52 +1,50 @@
-class TreeBlock
+class BaseTreeBlock
 {
     static All = new Map();
-
-    constructor( tick, content, user, tags, parentId )
-    {
-        this.Content = content;
-        this.ParentId = parentId || '';
-        this.Owner = user;
-        this.Tick = tick;
-        this.Tags = Array.isArray( tags ) ? tags : ( tags ? tags.split( '|' ) : [] ).sort();
-
-        return ( async () =>
-        {
-            const contentHashBuffer = await Hash( this.Content, 'SHA-256' );
-            const contentHash = ABuff2Base64( contentHashBuffer );
-
-            this.Metadata =
-            {
-                dida: tick,
-                pubKey: this.Owner.Id,
-                contentHash: contentHash,
-                parentId: this.ParentId,
-                tags: this.Tags.join( '|' ),
-            };
-
-            this.canonicalJson = this.CanonicalJSON( this.Metadata );
-            const dataHash = await Hash( this.canonicalJson, 'SHA-1' );
-
-            this.Id = await this.Owner.Sign( dataHash );
-
-            this.constructor.All.set( this.Id, this );
-            return this;
-        } )();
-    }
-    
-    Copy()
-    {
-        return { Id: this.Id, Meta: this.canonicalJson };
-    };
+    static AllTrees = new Map();
 
     static async Rebuild( id, json )
     {
         const Meta = JSON.parse( json );
         const hash = await Hash( json, 'SHA-1' );
-        const rslt = await User.Verify( id, hash, Meta.pubKey );
-        //console.log( 'Rebuild', rslt, id, Meta.pubKey, json );
-        return rslt;
+        if( await User.Verify( id, hash, Meta.pubKey ))
+        {
+            return new RebTreeBlock( id, Meta );
+        }
     }
+
+    FindTree()
+    {
+        const Node = new Map();
+        if( this.Metadata.parentId === "" )
+        {
+            this.constructor.AllTrees.set( this.Id, Node );
+            return Node;
+        }
+        
+        const TreeNode = this.constructor.AllTrees.get( this.Metadata.parentId );
+        if( TreeNode )
+        {
+            TreeNode.set( this.Id, Node );
+            return Node;
+        }
+        
+        const Parent = this.constructor.All.get( this.Metadata.parentId );
+        if( Parent )
+        {
+            const TreeNode = Parent.FindTree();
+            if( TreeNode )
+            {
+                TreeNode.set( this.Id, Node );
+                return Node;
+            }
+        }
+    }
+    
+    Copy( step )
+    {
+        return step === 0 ? { Id: this.Id, Meta: this.Json } : { Id: this.Id, Text: this.Content };
+    };
 
     CanonicalJSON( data )
     {
@@ -69,6 +67,57 @@ class TreeBlock
             return `${keyString}:${valueString}`;
         } );
         return `{${objectItems.join( ',' )}}`;
+    }
+}
+
+class TreeBlock extends BaseTreeBlock
+{
+    constructor( tick, content, user, tags, parentId )
+    {
+        this.Content = content;
+        this.ParentId = parentId || '';
+        this.Owner = user;
+        this.Tick = tick;
+        this.Tags = Array.isArray( tags ) ? tags : ( tags ? tags.split( '|' ) : [] ).sort();
+
+        return ( async () =>
+        {
+            const contentHashBuffer = await Hash( this.Content, 'SHA-256' );
+            const contentHash = ABuff2Base64( contentHashBuffer );
+
+            this.Metadata =
+            {
+                dida: tick,
+                pubKey: this.Owner.Id,
+                contentHash: contentHash,
+                parentId: this.ParentId,
+                tags: this.Tags.join( '|' ),
+            };
+
+            this.Json = this.CanonicalJSON( this.Metadata );
+            const MetaHash = await Hash( this.Json, 'SHA-1' );
+
+            this.Id = await this.Owner.Sign( MetaHash );
+
+            this.constructor.All.set( this.Id, this );
+            return this;
+        } )();
+    }
+}
+    
+class RebTreeBlock extends BaseTreeBlock
+{
+    constructor( id, meta )
+    {
+        this.Id = id;
+        this.Metadata = meta;
+        this.Content = "";
+        this.FindTree();
+    }
+    
+    SetContent( text )
+    {
+        this.Content = text;
     }
 }
 

@@ -173,21 +173,39 @@ class Peer
         }
         if( this.RecvedMsgs.has( message.Id ))
         {
-            console.log( 'Recv false', this.Id );
+            console.log( 'Received before', this.Id );
             return false;
         }
         
         this.RecvedMsgs.set( message.Id, message );
         
-        if( message.type === 'MsgBlock' )
+        if( message.type === 'MsgMeta' )
         {
             if( this.LocalBlocks.has( message.block.Id ))
             {
             console.log( 'Recv false', this.Id );
                 return false;
             }
-            console.log( 'Recv MsgBlock', this.Id, message.block );
-            return await TreeBlock.Rebuild( message.block.Id, message.block.Meta );
+            console.log( 'Recv MsgMeta', this.Id, message.block );
+            
+            const MsgBlock = await TreeBlock.Rebuild( message.block.Id, message.block.Meta );
+            if( MsgBlock )
+            {
+                this.LocalBlocks.set( MsgBlock.Id, MsgBlock );
+                return true;
+            }
+        }
+        else if( message.type === 'MsgText' )
+        {
+            const MsgBlock = this.LocalBlocks.has( message.block.Id );
+            if( !MsgBlock )
+            {
+                console.log( 'no meta got', this.Id );
+                return false;
+            }
+            MsgBlock.SetText( message.block.Text );
+            console.log( 'Recv MsgText', this.Id, message.block );
+            return true;
         }
         else if( message.type === 'NewBlock' )
         {
@@ -357,10 +375,10 @@ class Peer
         return Rslt;        
     }
 
-    static StartTransing( block, dida, srcPeerKs )
+    static StartTransing( block, dida, srcPeerKs, step )
     {
-        const Type = block instanceof Block ? "NewBlock" : "MsgBlock";
-        const TransMsg = { Id: Type + block.Id, type: Type, block: block.Copy(),
+        const Type = block instanceof Block ? "NewBlock" : ["MsgMeta", "MsgText"][step || 0];
+        const TransMsg = { Id: Type + block.Id, type: Type, block: block.Copy( step ),
                             color: getColor(( r, g, b ) => r + g > b * 2 && r + g + b < 600 && r + g + b > 100 ) };
         srcPeerKs.forEach( k =>
         {
