@@ -275,8 +275,8 @@ class Text {
         });
         
         this.textMap.set('transfer', {
-            cn: '发送',
-            en: 'Transfer'
+            cn: '支付',
+            en: 'Pay'
         });
         
         this.textMap.set('attack', {

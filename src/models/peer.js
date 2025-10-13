@@ -12,6 +12,7 @@ class Peer
         this.Connections = new Map();
         this.RecvedMsgs = new Map();
         this.BlackList = new Set();
+        this.MsgFgprnts = new Set();
         this.Messages = new Map();      //on the way
         this.WaitList = [];
         this.constructor.All.set( this.Id, this );
@@ -186,6 +187,15 @@ class Peer
                 console.log( 'Received before', this.Id );
                 return false;
             }
+            
+            const Meta = JSON.parse( message.block.Meta );
+            const FingerPrint = await Hash( Meta.contentHash + Meta.parentId, 'SHA-1' );
+            if( this.MsgFgprnts.has( FingerPrint ))
+            {
+                window.LogPanel.AddLog( { dida: window.app.Tick, peer: this.Id, content: 'finger print duplicated.', category: 'peer' } );
+				return false;
+			}
+			this.MsgFgprnts.add( FingerPrint );
             console.log( 'Recv MsgMeta', this.Id, message.block );
             
             const MsgBlock = await TreeBlock.Rebuild( message.block.Id, message.block.Meta );
