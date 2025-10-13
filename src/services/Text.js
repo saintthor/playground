@@ -18,8 +18,8 @@ class Text {
     {
         // 应用标题和基础文本
         this.textMap.set('app_title', {
-            cn: 'AOB 钞票演示平台',
-            en: 'AOB Banknotes Playground'
+            cn: '去中心化演示平台',
+            en: 'Decentralization Playground'
         });
         
         this.textMap.set('language_switch', {
@@ -59,8 +59,8 @@ class Text {
         });
         
         this.textMap.set('tree_def', {
-            cn: "定义区块树中的每个区块为一条消息，包括消息内容、元数据和 ID。元数据是 JSON，包括发布时间戳（ms）；发布者公钥；消息内容的 sha256 值；上级消息的 ID 或本定义文件的 sha256 值；标签。标签如有多个，用 | 分隔。ID 为用户对元数据签名的结果。所有二进制数据用 base64 格式。",
-            en: 'Define each block in the block tree as a message consisting of message content, metadata, and an ID. The metadata is in JSON format and includes the publication timestamp (ms), the publisher’s public key, the SHA-256 hash of the message content, the ID of the parent message or the SHA-256 hash of this definition file, and tags (if multiple, separated by “|”). The ID is the result of the user’s signature over the metadata. All binary data is encoded in Base64 format.'
+            cn: "定义区块树中的每个区块为一条消息，包括消息内容、元数据和 ID。元数据是 JSON，包括发布时间戳（滴答）；发布者公钥；消息内容的 sha256 值；上级消息的 ID 或本定义文件的 sha256 值；标签。标签如有多个，用 | 分隔。ID 为用户对元数据签名的结果。所有二进制数据用 base64 格式。",
+            en: 'Define each block in the block tree as a message consisting of message content, metadata, and an ID. The metadata is in JSON format and includes the publication timestamp (tick), the publisher’s public key, the SHA-256 hash of the message content, the ID of the parent message or the SHA-256 hash of this definition file, and tags (if multiple, separated by “|”). The ID is the result of the user’s signature over the metadata. All binary data is encoded in Base64 format.'
         });
         
         this.textMap.set('tree_def_hash', {
@@ -379,17 +379,22 @@ class Text {
         
         this.textMap.set('click_node_prompt', {
             cn: '请点击网络图上的节点查看详情',
-            en: 'Click on a node in the network graph to view details'
+            en: 'Click on a node in the above graph to view details'
         });
         
         this.textMap.set('click_user', {
             cn: '请点击用户缩略图查看详情',
-            en: 'Click on a user in the network graph to view details'
+            en: 'Click on a user in the above graph to view details'
         });
         
         this.textMap.set('click_chain', {
             cn: '请点击区块链缩略图查看详情',
-            en: 'Click on a blockchain in the network graph to view details'
+            en: 'Click on a blockchain in the above graph to view details'
+        });
+        
+        this.textMap.set('click_msg', {
+            cn: '请点击消息树缩略图查看详情',
+            en: 'Click on a blocktree in the above graph to view details'
         });
         
         this.textMap.set('node_users', {

@@ -275,6 +275,7 @@ class HelpTabContent {
                         <li><a href="#network-view" class="help-nav-link">网络视图</a></li>
                         <li><a href="#users-view" class="help-nav-link">用户视图</a></li>
                         <li><a href="#blockchain-view" class="help-nav-link">区块链视图</a></li>
+                        <li><a href="#blocktree-view" class="help-nav-link">区块树视图</a></li>
                         <li><a href="#logs-panel" class="help-nav-link">日志面板</a></li>
                     </ul>
                 </div>
@@ -282,10 +283,16 @@ class HelpTabContent {
                 <div class="help-main">
                     <section id="overview" class="help-section">
                         <h2>概述</h2>
-                        <p>AOB 游乐场是一个教育性的区块链网络模拟器，帮助您理解基于先进区块链技术构建的加密货币的工作原理。</p>
-                        <p>原子物权链（<a href="https://mostdecentralized.free.bg/" target="_blank">Atomic Ownership Blockchains</a>，AOB）是新一代区块链技术，在去中心化与安全方面优于比特币，性能容量方面优于联盟链。</p>
-                        <p>AOB 的基本原理是令多条公域私有链在用户之间互相转送，高效地记载每条链的归属转移历史。用作货币时，将每一条链视为一张钞票，功能与纸钞票相似，通过每张钞票的归属确定用户的资产数额。</p>
-                        <h3>主要功能</h3>
+                        <p>本游乐场是对未来的极致去中心化世界的模拟器，通过区块树与区块链两种数据结构以无中心方式实现消息与财富的传递。</p>
+                        <h3>区块树</h3>
+                        <p>区块树用于传递消息。每条消息生成一个区块。若 A 消息是对 B 消息的回复，则 A 的元数据中要引用 B 的 ID，A 为 B 的下级区块。由于每条消息可以有多条回复，一个话题里的所有消息会构成一棵区块树。</p>
+                        <p>每条消息的数据包括：1、消息内容文本；2、元数据 JSON，含有消息内容的哈希值、发布时间、作者的公钥、上级消息 ID、标签等字段；3、ID，由作者对元数据签名而得。</p>
+                        <p>为防止抄袭，消息广播分为两步。首先广播 ID 和元数据，接收者可用 ID 验证元数据。一段时间后再广播消息内容，接收者再以元数据中的哈希值验证消息内容。若在第一阶段发现两条消息的元数据中有相同的内容哈希值和上级消息 ID，则判定为抄袭。此时抄袭者不知道对应的消息内容，可以进一步甄别（甄别过程未实现）。</p>
+                        <h3>区块链</h3>
+                        <p>区块链用于传递财富。所用的原子物权链（<a href="https://mostdecentralized.free.bg/" target="_blank">Atomic Ownership Blockchains</a>，AOB）是新一代区块链技术，在去中心化与安全方面优于比特币，性能容量方面优于联盟链。</p>
+                        <p>AOB 是多链系统，它们都是公域私有链。每条链都有主人，只有主人有权加区块。主人可通过添加区块将自己的链送给他人。然后接收者就成了新的主人，有权再通过加区块将这条链送给另一人。</p>
+						<p>这些区块链在用户之间互相转送，高效地记载每条链的归属转移历史。用作货币时，将每一条链视为一张钞票，功能与纸钞票相似，通过每张钞票的归属确定用户的资产数额，将货币支付落实到若干钞票的转移上，即可实现理想的加密货币。</p>
+                        <h2>主要功能</h2>
                         <ul>
                             <li><strong>网络模拟</strong>：模拟去中心网络节点和连接</li>
                             <li><strong>用户管理</strong>：创建虚拟用户并分配到网络节点</li>
@@ -301,8 +308,10 @@ class HelpTabContent {
                             <li><strong>配置网络参数</strong>：在左侧控制面板设置节点数量、用户数量等</li>
                             <li><strong>定义区块链</strong>：配置区块链的面值和序列号范围</li>
                             <li><strong>启动系统</strong>：点击"开始"按钮启动模拟</li>
-                            <li><strong>转送</strong>：在主面板上方点发送按钮，可展现一条区块链被转送给另一用户的过程。</li>
-                            <li><strong>攻击</strong>：在主面板上方点攻击按钮，可对前一次转送实施双花攻击。</li>
+                            <li><strong>支付</strong>：在主面板上方点支付按钮，可展现一条区块链被添加支付区块给另一用户，并将支付区块广播到全网的过程。</li>
+                            <li><strong>攻击</strong>：在主面板上方点攻击按钮，可对前一次支付实施双花攻击。</li>
+                            <li><strong>新消息</strong>：在主面板上方点新消息按钮，可展现一个新消息区块作为区块树的根，分两步广播到全网的过程。</li>
+                            <li><strong>回复</strong>：在主面板上方点回复按钮，可展现一个回复消息区块分两步广播到全网的过程。</li>
                             <li><strong>监控日志</strong>：在右侧日志面板查看系统活动日志</li>
                         </ol>
                     </section>
@@ -467,6 +476,31 @@ class HelpTabContent {
                                 <li>当前拥有者信息</li>
                                 <li>区块链的面值</li>
                                 <li>包含的所有区块</li>
+                                <li>相关的系统日志</li>
+                            </ul>
+                        </div>
+                    </section>
+                    
+                    <section id="blocktree-view" class="help-section">
+                        <h2>区块树视图</h2>
+                        <p>区块树标签页显示系统中所有区块树的状态和详细信息。</p>
+                        
+                        <div class="help-item">
+                            <h4>区块树网格</h4>
+                            <p>上方区域显示所有区块树的缩略信息：</p>
+                            <ul>
+                                <li><strong>树ID预览：</strong>区块链ID的前6个字符</li>
+                                <li><strong>转移状态：</strong>黄色边框表示正在转移</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="help-item">
+                            <h4>区块树详情</h4>
+                            <p>点击区块树可以查看详细信息：</p>
+                            <ul>
+                                <li>区块树中的所有区块</li>
+                                <li>每个区块的 ID、元数据和内容</li>
+                                <li>区块链是否被抄袭</li>
                                 <li>相关的系统日志</li>
                             </ul>
                         </div>

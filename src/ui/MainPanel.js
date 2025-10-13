@@ -189,10 +189,9 @@ class MainPanel {
     async NewMsg()
     {
         const PostUser = this.tabManager.usersTabContent.GetSelected() || this.app.AllUsers.RandVal();
-        this.LastMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags());
-        //console.log( this.LastMsg.Copy( 0 ));
-        window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: this.LastMsg.Id, content: 'start posting.', category: 'post' } );
-        PostUser.SendMsgMeta( this.LastMsg );
+        const NewMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags());
+        window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: NewMsg.Id, content: 'start posting.', category: 'post' } );
+        PostUser.SendMsgMeta( NewMsg );
     }
     
     RandTags()
@@ -208,7 +207,11 @@ class MainPanel {
     
     async Reply()
     {
-        
+        const PostUser = this.tabManager.usersTabContent.GetSelected() || this.app.AllUsers.RandVal();
+        const ParentMsg = TreeBlock.All.RandVal();
+        const ReplyMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags(), ParentMsg?.Id );
+        window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: ReplyMsg.Id, content: 'start reply.', category: 'post' } );
+        PostUser.SendMsgMeta( ReplyMsg );
     }
 
 
