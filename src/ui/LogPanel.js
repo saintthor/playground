@@ -74,6 +74,11 @@ class LogPanel {
                             区块链日志
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="post-logs-tab" data-tab="post" type="button" role="tab" data-text="post_logs">
+                            消息
+                        </button>
+                    </li>
                 </ul>
             </div>
             <div class="log-content">
@@ -96,6 +101,11 @@ class LogPanel {
                     <div class="tab-pane" id="blockchain-logs-content">
                         <div class="log-list" id="blockchain-logs-list">
                             <div class="log-placeholder" data-text="no_blockchain_logs">暂无区块链日志</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="post-logs-content">
+                        <div class="log-list" id="post-logs-list">
+                            <div class="log-placeholder" data-text="no_post_logs">暂无消息日志</div>
                         </div>
                     </div>
                     <div class="tab-pane" id="filter-logs-content">
@@ -223,6 +233,9 @@ class LogPanel {
     getLogCategory(log) {
         // 根据日志内容和类别判断分类
         if (log.category) {
+            if (log.category.includes('post')) {
+                return 'post';
+            }
             if (log.category.includes('node') || log.category.includes('peer')) {
                 return 'node';
             }
@@ -259,7 +272,8 @@ class LogPanel {
             all: 'no_logs',
             node: 'no_node_logs',
             user: 'no_user_logs',
-            blockchain: 'no_blockchain_logs'
+            blockchain: 'no_blockchain_logs',
+            post: 'no_post_logs'
         };
         return GetText(textIds[tabName] || 'no_logs');
     }
@@ -270,7 +284,7 @@ class LogPanel {
      */
     switchToCategory( category, itemId )
     {
-        if( ['node', 'user', 'blockchain'].includes( category ))
+        if( ['node', 'user', 'blockchain', 'post'].includes( category ))
         {
             this.switchTab( category );
             const tabPane = document.querySelector( '#log-tab-content .active' );

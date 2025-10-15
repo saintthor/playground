@@ -351,6 +351,11 @@ class Text {
             en: 'Blockchain'
         });
         
+        this.textMap.set('post_logs', {
+            cn: '消息',
+            en: 'Message'
+        });
+
         this.textMap.set('export_logs', {
             cn: '导出日志',
             en: 'Export'
@@ -511,6 +516,11 @@ class Text {
             en: 'No blockchain logs'
         });
         
+        this.textMap.set('no_post_logs', {
+            cn: '暂无消息日志',
+            en: 'No message logs'
+        });
+
         // 通用文本
         this.textMap.set('assets', {
             cn: '资产',
