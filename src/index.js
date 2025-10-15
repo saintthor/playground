@@ -98,7 +98,7 @@ class App {
         this.AllPeers = Peer.All;
         this.BlockChainNum = 500;
         this.AllBlockchains = BlockChain.All;
-        this.AllBlockTrees = BlockTree.All;
+        this.AllBlockTrees = BaseTreeBlock.AllTrees;
 
         /** @type {Map<string, Object>} 模拟区块链数据存储 */
         this.mockChains = new Map();

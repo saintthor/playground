@@ -47,7 +47,7 @@ class MsgTabContent
                 container.appendChild( msgsGrid );
             }
 
-            for( const [treeId, tree] of msgData )
+            for( const treeId of msgData.keys())
             {
                 let msgCard = msgsGrid.querySelector( `[data-msg-id="${treeId}"]` );
 
@@ -154,6 +154,13 @@ class MsgTabContent
                 detailsContainer.innerHTML = `<p class="text-muted" data-text="msg_data_not_found">${GetText('msg_data_not_found')}</p>`;
                 return;
             }
+            
+            const Layers = [[treeId, 0]].concat( this.GetTreeLayer( treeData, 0 ));
+            console.log( Layers );
+            
+            detailsContainer.innerHTML = Layers.map( l => this.GenMsgHtml( ...l )).join( '' );
+            return;
+
 
             const detailsHTML = this.generateMsgDetailsHTML( treeData );
             detailsContainer.innerHTML = detailsHTML;
@@ -173,6 +180,21 @@ class MsgTabContent
             console.error( 'Failed to show message details:', error );
             detailsContainer.innerHTML = `<p class="text-danger" data-text="error_showing_msg_details">${GetText('error_showing_msg_details')}</p>`;
         }
+    }
+    
+    GenMsgHtml( msgId, layer )
+    {
+        const MsgData = TreeBlock.All.get( msgId );
+        
+        return `<div class="msgline" style="margin-left:${ layer * 40 }px">
+                    <div class="msg-id"><span data-text="ID">${ GetText( 'ID' ) }</span><span>${ msgId }</span></div>
+                    <div class="msg-content"><span data-text="content">${ GetText( 'content' ) }</span><span>${ MsgData.Content }</span></div>
+                    <div class="msg-dida"><span data-text="dida">${ GetText( 'dida' ) }</span><span>${ MsgData.Metadata.dida }</span></div>
+                    <div class="msg-author"><span data-text="author">${ GetText( 'author' ) }</span><span>${ MsgData.Metadata.pubKey }</span></div>
+                    <div class="msg-hash"><span data-text="content_hash">${ GetText( 'content_hash' ) }</span><span>${ MsgData.Metadata.contentHash }</span></div>
+                    <div class="msg-parent"><span data-text="parent_msg">${ GetText( 'parent_msg' ) }</span><span>${ MsgData.Metadata.parentId }</span></div>
+                    <div class="msg-tag"><span data-text="tags">${ GetText( 'tags' ) }</span><span>${ MsgData.Metadata.tags }</span></div>
+                </div>`
     }
 
     /**
@@ -195,6 +217,15 @@ class MsgTabContent
         `;
     }
 
+    GetTreeLayer( tree, layer )
+    {
+        if( tree.size === 0 )
+        {
+            return [];
+        }
+        return [...tree.entries()].map(( [k, subTree] ) => [[k, layer + 1]].concat( this.GetTreeLayer( subTree, layer + 1 ))).reduce(( x, y ) => x.concat( y ));
+    }
+    
     /**
      * Renders the block tree structure in the left panel.
      * @param {BlockTree} treeData - The message tree data.
@@ -203,8 +234,8 @@ class MsgTabContent
     {
         const container = document.getElementById( 'msg-tree-view-container' ).querySelector( '.tree-container' );
         if( !container ) return;
-
-        const blockMap = new Map( treeData.BlockList.map( block => [block.Id, block] ) );
+        
+        const blockMap = new Map( treeData.BlockList.map( block => [block.Id, block] ));
         const childrenMap = new Map();
 
         treeData.BlockList.forEach( block =>

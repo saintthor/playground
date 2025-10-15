@@ -191,6 +191,7 @@ class MainPanel {
         const PostUser = this.tabManager.usersTabContent.GetSelected() || this.app.AllUsers.RandVal();
         const NewMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags());
         window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: NewMsg.Id, content: 'start posting.', category: 'post' } );
+        BlockTree.All.set( NewMsg.Id, NewMsg );
         PostUser.SendMsgMeta( NewMsg );
     }
     
@@ -207,10 +208,14 @@ class MainPanel {
     
     async Reply()
     {
-        const PostUser = this.tabManager.usersTabContent.GetSelected() || this.app.AllUsers.RandVal();
+        const PostUser = this.app.AllUsers.RandVal();
         const ParentMsg = TreeBlock.All.RandVal();
-        const ReplyMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags(), ParentMsg?.Id );
+        const ReplyMsg = await new TreeBlock( this.app.Tick, 'content_' + this.app.Tick, PostUser, this.RandTags(), ParentMsg?.Id || '' );
         window.LogPanel.AddLog( { dida: this.app.Tick, user: PostUser.Id, post: ReplyMsg.Id, content: 'start reply.', category: 'post' } );
+        if( !ParentMsg )
+        {
+            BlockTree.All.set( ReplyMsg.Id, ReplyMsg );
+        }
         PostUser.SendMsgMeta( ReplyMsg );
     }
 

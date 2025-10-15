@@ -833,6 +833,68 @@ body {
     background: #d4edda;
     color: #155724;
 }
+.msgs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 5px;
+    justify-content: start;
+    padding: 10px;
+}
+.msgs-container {
+    height: calc(100% - 2rem);
+    overflow-y: auto;
+}
+.msgs-grid .msg-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px !important;
+    height: 32px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box !important;
+}
+.msg-id-preview {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #495057;
+    font-family: "Courier New", monospace;
+    line-height: 1;
+}
+.msg-card:hover {
+    border-color: #17a2b8;
+    box-shadow: 0 2px 8px rgba(23,162,184,0.15);
+    transform: translateY(-2px);
+}
+.msg-card.transferring {
+    border-color: #ffc107;
+    background: #fff3cd;
+}
+.msg-card.selected {
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.25);
+}
+.msg-value {
+    color: #28a745;
+    font-weight: 600;
+}
+.msgline {
+    margin: 12px;
+    border-left: 2px solid #55aa88;
+}
+.msg-status {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #d4edda;
+    color: #155724;
+}
 .log-controls {
 
     gap: 0.5rem;

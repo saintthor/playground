@@ -101,7 +101,7 @@ class Peer
                     msg.SaveAt = currTick;
                     if( await p.Receive( msg, neighborId ))
                     {
-                        console.log( p.Id, 'received', msg.Id );
+                        //console.log( p.Id, 'received', msg.Id );
                         Reached.push( [p.Id, msg.color] );
                         p.Broadcast( msg, currTick, neighborId );
                     }
@@ -136,7 +136,6 @@ class Peer
         };
         if( Reached.length + Trusted.length > 0 )
         {
-        console.log( 'Update', Reached );
             window.app.NetWorkPanal.UpdateTrans( Reached, Trusted );
         }
     };
@@ -164,6 +163,10 @@ class Peer
         sourceId || window.app.NetWorkPanal.ShowMessage( msg );
     };
 
+    GetMsgTreeView( treeId )
+    {
+    };
+    
     async Receive( message, neighborId )
     {
         //console.log( 'Receive', message, neighborId );
@@ -196,7 +199,7 @@ class Peer
 				return false;
 			}
 			this.MsgFgprnts.add( FingerPrint );
-            console.log( 'Recv MsgMeta', this.Id, message.block );
+            //console.log( 'Recv MsgMeta', this.Id, message.block );
             
             const MsgBlock = await TreeBlock.Rebuild( message.block.Id, message.block.Meta );
             if( MsgBlock )

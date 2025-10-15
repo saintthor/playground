@@ -658,6 +658,36 @@ class Text {
             en: 'Failures'
         });
         
+        this.textMap.set('content', {
+            cn: '内容',
+            en: 'Content'
+        });
+
+        this.textMap.set('dida', {
+            cn: '时间',
+            en: 'Dida'
+        });
+
+        this.textMap.set('author', {
+            cn: '作者',
+            en: 'Author'
+        });
+
+        this.textMap.set('content_hash', {
+            cn: '内容哈希值',
+            en: 'Content hash'
+        });
+
+        this.textMap.set('parent_msg', {
+            cn: '上级节点',
+            en: 'Parent node'
+        });
+
+        this.textMap.set('tags', {
+            cn: '标签',
+            en: 'Tags'
+        });
+
         // 帮助页面文本
         this.textMap.set('help_toc', {
             cn: '目录',
@@ -972,6 +1002,10 @@ class Text {
         this.textMap.set('chain_id_root_hash_label', {
             cn: '区块链ID (根区块哈希):',
             en: 'Chain ID (Root Block Hash):'
+        });
+        this.textMap.set('no_messages_found', {
+            cn: '区块树数据未找到',
+            en: 'Blocktree data not found'
         });
         this.textMap.set('owner_public_key_label', {
             cn: '拥有者公钥:',
