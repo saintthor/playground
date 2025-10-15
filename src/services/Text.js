@@ -5,7 +5,7 @@
 class Text {
     constructor()
     {
-        this.language = 'cn'; // 默认中文
+        this.language = 'en';
         this.textMap = new Map();
         this.initTextMap();
         window.Text = this;
