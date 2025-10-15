@@ -44,6 +44,7 @@ class HelpTabContent {
                         <li><a href="#network-view" class="help-nav-link">Network View</a></li>
                         <li><a href="#users-view" class="help-nav-link">Users View</a></li>
                         <li><a href="#blockchain-view" class="help-nav-link">Blockchain View</a></li>
+                        <li><a href="#blocktree-view" class="help-nav-link">Block Tree View</a></li>
                         <li><a href="#logs-panel" class="help-nav-link">Logs Panel</a></li>
                     </ul>
                 </div>
@@ -51,10 +52,16 @@ class HelpTabContent {
                 <div class="help-main">
                     <section id="overview" class="help-section">
                         <h2>Overview</h2>
-                        <p>AOB Playground is an educational blockchain network simulator that helps you understand how cryptocurrencies built on advanced blockchain technology work.</p>
-                        <p><a href="https://mostdecentralized.free.bg/" target="_blank">Atomic Ownership Blockchains</a>, (AOB) is a new generation of blockchain technology that surpasses Bitcoin in decentralization and security, and outperforms consortium chains in performance and capacity.</p>
-                        <p>The basic principle of AOB is to have multiple public domain private blockchains transfer between users, efficiently recording the ownership transfer history of each blockchain. When used as currency, each blockchain is treated as a banknote, functioning similarly to paper money, determining users' asset amounts through the ownership of each banknote.</p>
-                        <h3>Main Features</h3>
+                        <p>This playground is a simulator of the future's ultimate decentralized world, realizing the decentralized transfer of messages and wealth through two data structures: block trees and blockchains.</p>
+                        <h3>Block Tree</h3>
+                        <p>Block trees are used to transfer messages. Each message generates a block. If message A is a reply to message B, then A's metadata will reference B's ID, making A a child block of B. Since each message can have multiple replies, all messages in a topic will form a block tree.</p>
+                        <p>The data for each message includes: 1. The message content text; 2. Metadata in JSON format, containing fields such as the hash of the message content, publication time, author's public key, parent message ID, and tags; 3. The ID, which is obtained by the author signing the metadata.</p>
+                        <p>To prevent plagiarism, message broadcasting is divided into two steps. First, the ID and metadata are broadcasted; recipients can verify the metadata using the ID. After a period of time, the message content is broadcasted, and recipients can then verify the content using the hash in the metadata. If two messages are found in the first phase with the same content hash and parent message ID in their metadata, it is judged as plagiarism. At this point, the plagiarist does not know the corresponding message content, allowing for further verification (the verification process is not yet implemented).</p>
+                        <h3>Blockchain</h3>
+                        <p>Blockchains are used to transfer wealth. The <a href="https://mostdecentralized.free.bg/" target="_blank">Atomic Ownership Blockchains</a> (AOB) used here are a new generation of blockchain technology that surpasses Bitcoin in decentralization and security, and outperforms consortium chains in performance and capacity.</p>
+                        <p>AOB is a multi-chain system, and they are all public-domain private chains. Each chain has an owner, and only the owner has the right to add blocks. The owner can give their chain to someone else by adding a block. The recipient then becomes the new owner, who has the right to give the chain to another person by adding another block.</p>
+                        <p>These blockchains are transferred between users, efficiently recording the ownership transfer history of each chain. When used as currency, each chain is treated as a banknote, functioning similarly to paper money. The asset amount of a user is determined by the ownership of each banknote, and currency payment is realized through the transfer of several banknotes, thus achieving an ideal cryptocurrency.</p>
+                        <h2>Main Features</h2>
                         <ul>
                             <li><strong>Network Simulation</strong>: Simulate decentralized network nodes and connections</li>
                             <li><strong>User Management</strong>: Create virtual users and assign them to network nodes</li>
@@ -70,8 +77,10 @@ class HelpTabContent {
                             <li><strong>Configure Network Parameters</strong>: Set the number of nodes, users, etc. in the left control panel</li>
                             <li><strong>Define Blockchains</strong>: Configure blockchain denominations and serial number ranges</li>
                             <li><strong>Start System</strong>: Click the "Start" button to launch the simulation</li>
-                            <li><strong>Transfer</strong>: Click the send button at the top of the main panel to show the process of a blockchain being transferred to another user.</li>
-                            <li><strong>Attack</strong>: Click the attack button at the top of the main panel to perform a double-spending attack on the previous transfer.</li>
+                            <li><strong>Payment</strong>: Click the payment button at the top of the main panel to show the process of a blockchain being transferred to another user by adding a payment block and broadcasting it to the entire network.</li>
+                            <li><strong>Attack</strong>: Click the attack button at the top of the main panel to perform a double-spending attack on the previous payment.</li>
+                            <li><strong>New Message</strong>: Click the new message button at the top of the main panel to show the process of a new message block being broadcasted in two steps to the entire network as the root of a block tree.</li>
+                            <li><strong>Reply</strong>: Click the reply button at the top of the main panel to show the process of a reply message block being broadcasted in two steps to the entire network.</li>
                             <li><strong>Monitor Logs</strong>: View system activity logs in the right log panel</li>
                         </ol>
                     </section>
@@ -241,6 +250,31 @@ class HelpTabContent {
                         </div>
                     </section>
                     
+                    <section id="blocktree-view" class="help-section">
+                        <h2>Block Tree View</h2>
+                        <p>The Block Tree tab displays the status and detailed information of all block trees in the system.</p>
+
+                        <div class="help-item">
+                            <h4>Block Tree Grid</h4>
+                            <p>The upper area displays summary information of all block trees:</p>
+                            <ul>
+                                <li><strong>Tree ID Preview:</strong> First 6 characters of the block tree ID</li>
+                                <li><strong>Broadcast Status:</strong> Yellow border indicates a broadcast is in progress</li>
+                            </ul>
+                        </div>
+
+                        <div class="help-item">
+                            <h4>Block Tree Details</h4>
+                            <p>Click on a block tree to view detailed information:</p>
+                            <ul>
+                                <li>All blocks in the block tree</li>
+                                <li>The ID, metadata, and content of each block</li>
+                                <li>Whether the message has been plagiarized</li>
+                                <li>Related system logs</li>
+                            </ul>
+                        </div>
+                    </section>
+
                     <section id="logs-panel" class="help-section">
                         <h2>Logs Panel</h2>
                         <p>The log panel on the right displays all activity records during system operation.</p>
