@@ -884,9 +884,32 @@ body {
     color: #28a745;
     font-weight: 600;
 }
+.msg-details-container{
+    overflow-y: auto;
+}
 .msgline {
     margin: 12px;
     border-left: 2px solid #55aa88;
+}
+.msg-id {
+    border-top: 2px solid #55aa88;
+}
+.msg-tag {
+    border-bottom: 2px solid #55aa88;
+}
+.msgline>div>span{
+    padding-left: 18px;
+    padding-right: 18px;
+    display: inline;
+}
+.msgline>div>span:first-child {
+    background: #ccc;
+    width: 160px;
+    display: inline-block;
+    border-bottom: 1px solid #55aa88;
+}
+.base64 {
+    font-size: 0.7rem;
 }
 .msg-status {
     font-size: 0.8rem;

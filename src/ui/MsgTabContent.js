@@ -187,12 +187,12 @@ class MsgTabContent
         const MsgData = TreeBlock.All.get( msgId );
         
         return `<div class="msgline" style="margin-left:${ layer * 40 }px">
-                    <div class="msg-id"><span data-text="ID">${ GetText( 'ID' ) }</span><span>${ msgId }</span></div>
+                    <div class="msg-id"><span data-text="ID">${ GetText( 'ID' ) }</span><span class="base64">${ msgId }</span></div>
                     <div class="msg-content"><span data-text="content">${ GetText( 'content' ) }</span><span>${ MsgData.Content }</span></div>
                     <div class="msg-dida"><span data-text="dida">${ GetText( 'dida' ) }</span><span>${ MsgData.Metadata.dida }</span></div>
-                    <div class="msg-author"><span data-text="author">${ GetText( 'author' ) }</span><span>${ MsgData.Metadata.pubKey }</span></div>
-                    <div class="msg-hash"><span data-text="content_hash">${ GetText( 'content_hash' ) }</span><span>${ MsgData.Metadata.contentHash }</span></div>
-                    <div class="msg-parent"><span data-text="parent_msg">${ GetText( 'parent_msg' ) }</span><span>${ MsgData.Metadata.parentId }</span></div>
+                    <div class="msg-author"><span data-text="author">${ GetText( 'author' ) }</span><span class="base64">${ MsgData.Metadata.pubKey }</span></div>
+                    <div class="msg-hash"><span data-text="content_hash">${ GetText( 'content_hash' ) }</span><span class="base64">${ MsgData.Metadata.contentHash }</span></div>
+                    <div class="msg-parent"><span data-text="parent_msg">${ GetText( 'parent_msg' ) }</span><span class="base64">${ MsgData.Metadata.parentId }</span></div>
                     <div class="msg-tag"><span data-text="tags">${ GetText( 'tags' ) }</span><span>${ MsgData.Metadata.tags }</span></div>
                 </div>`
     }
